@@ -1,0 +1,206 @@
+export interface Student {
+  id: number;
+  name: string;
+  nim: string;
+  email: string;
+  university: string;
+  phone: string;
+  gender: "Laki-laki" | "Perempuan";
+  program: string;
+  company: string;
+  role: string;
+  status: "Aktif" | "Dalam Review" | "Selesai";
+  progress: number;
+  lastActive: string;
+  avatarColor: string;
+  address: string;
+  period: string;
+  grade: number | null;
+  logbooksCount: number;
+  logbooksPending: number;
+  attendance: {
+    present: number;
+    sick: number;
+    leave: number;
+    absent: number;
+  };
+}
+
+export const studentsData: Student[] = [
+  {
+    id: 1,
+    name: "Budi Santoso",
+    nim: "2201012001",
+    email: "budi.santoso@student.ui.ac.id",
+    university: "Universitas Indonesia",
+    phone: "+62 812-9876-5432",
+    gender: "Laki-laki",
+    program: "S1 Teknik Informatika",
+    company: "PT. Global Teknologi Nusantara",
+    role: "Software Engineering Intern",
+    status: "Aktif",
+    progress: 85,
+    lastActive: "Hari ini, 09:30",
+    avatarColor: "from-blue-500 to-indigo-500",
+    address: "Jl. Margonda Raya No. 100, Depok, Jawa Barat",
+    period: "1 Februari 2026 - 31 Juli 2026",
+    grade: 88,
+    logbooksCount: 8,
+    logbooksPending: 2,
+    attendance: { present: 76, sick: 2, leave: 1, absent: 0 }
+  },
+  {
+    id: 2,
+    name: "Siti Rahmawati",
+    nim: "2201012042",
+    email: "siti.rahma@student.itb.ac.id",
+    university: "Institut Teknologi Bandung",
+    phone: "+62 856-1234-5678",
+    gender: "Perempuan",
+    program: "S1 Sistem Informasi",
+    company: "Bank Central Indonesia Tbk.",
+    role: "Data Analyst Intern",
+    status: "Aktif",
+    progress: 60,
+    lastActive: "Kemarin, 14:15",
+    avatarColor: "from-pink-500 to-rose-500",
+    address: "Jl. Ganesha No. 10, Bandung, Jawa Barat",
+    period: "1 Februari 2026 - 31 Juli 2026",
+    grade: 82,
+    logbooksCount: 8,
+    logbooksPending: 4,
+    attendance: { present: 74, sick: 1, leave: 2, absent: 1 }
+  },
+  {
+    id: 3,
+    name: "Rian Hidayat",
+    nim: "2201012015",
+    email: "rian.h@student.ugm.ac.id",
+    university: "Universitas Gadjah Mada",
+    phone: "+62 878-5555-4433",
+    gender: "Laki-laki",
+    program: "S1 Teknik Informatika",
+    company: "Shopee Indonesia",
+    role: "Frontend Developer Intern",
+    status: "Aktif",
+    progress: 90,
+    lastActive: "23 Mei 2026",
+    avatarColor: "from-cyan-500 to-blue-500",
+    address: "Jl. Kaliurang KM 5, Sleman, DI Yogyakarta",
+    period: "1 Februari 2026 - 31 Juli 2026",
+    grade: 92,
+    logbooksCount: 8,
+    logbooksPending: 0,
+    attendance: { present: 79, sick: 0, leave: 0, absent: 0 }
+  },
+  {
+    id: 4,
+    name: "Amanda Putri",
+    nim: "2201012088",
+    email: "amanda.putri@binus.ac.id",
+    university: "Universitas Bina Nusantara",
+    phone: "+62 813-8888-9999",
+    gender: "Perempuan",
+    program: "S1 Desain Komunikasi Visual",
+    company: "Gojek Tokopedia (GoTo)",
+    role: "UI/UX Designer Intern",
+    status: "Dalam Review",
+    progress: 40,
+    lastActive: "20 Mei 2026",
+    avatarColor: "from-purple-500 to-indigo-500",
+    address: "Jl. Palmerah Barat No. 29, Jakarta Barat",
+    period: "1 Maret 2026 - 31 Agustus 2026",
+    grade: null,
+    logbooksCount: 6,
+    logbooksPending: 5,
+    attendance: { present: 54, sick: 3, leave: 1, absent: 0 }
+  },
+  {
+    id: 5,
+    name: "Dedi Kurniawan",
+    nim: "2201012102",
+    email: "dedi.k@student.undip.ac.id",
+    university: "Universitas Diponegoro",
+    phone: "+62 821-2233-4455",
+    gender: "Laki-laki",
+    program: "S1 Sistem Informasi",
+    company: "PT. Pertamina (Persero)",
+    role: "Business Analyst Intern",
+    status: "Selesai",
+    progress: 100,
+    lastActive: "Hari ini, 08:00",
+    avatarColor: "from-emerald-500 to-teal-500",
+    address: "Jl. Prof. Soedarto, Tembalang, Semarang, Jawa Tengah",
+    period: "1 Januari 2026 - 30 Juni 2026",
+    grade: 95,
+    logbooksCount: 12,
+    logbooksPending: 0,
+    attendance: { present: 118, sick: 1, leave: 1, absent: 0 }
+  },
+  {
+    id: 6,
+    name: "Fajar Nugroho",
+    nim: "2201012110",
+    email: "fajar.nugroho@student.ui.ac.id",
+    university: "Universitas Indonesia",
+    phone: "+62 812-4444-3333",
+    gender: "Laki-laki",
+    program: "S1 Teknik Elektro",
+    company: "PT. PLN (Persero)",
+    role: "Electrical Engineering Intern",
+    status: "Aktif",
+    progress: 70,
+    lastActive: "22 Mei 2026",
+    avatarColor: "from-amber-500 to-orange-500",
+    address: "Jl. Salemba Raya No. 4, Jakarta Pusat",
+    period: "1 Februari 2026 - 31 Juli 2026",
+    grade: 85,
+    logbooksCount: 8,
+    logbooksPending: 1,
+    attendance: { present: 72, sick: 4, leave: 2, absent: 1 }
+  },
+  {
+    id: 7,
+    name: "Lina Marlina",
+    nim: "2201012123",
+    email: "lina.marlina@student.unpad.ac.id",
+    university: "Universitas Padjadjaran",
+    phone: "+62 811-2222-1111",
+    gender: "Perempuan",
+    program: "S1 Teknik Informatika",
+    company: "Tokopedia",
+    role: "Backend Engineer Intern",
+    status: "Dalam Review",
+    progress: 55,
+    lastActive: "18 Mei 2026",
+    avatarColor: "from-violet-500 to-fuchsia-500",
+    address: "Jl. Raya Bandung Sumedang KM 21, Jatinangor, Jawa Barat",
+    period: "1 Maret 2026 - 31 Agustus 2026",
+    grade: null,
+    logbooksCount: 6,
+    logbooksPending: 3,
+    attendance: { present: 52, sick: 2, leave: 3, absent: 0 }
+  },
+  {
+    id: 8,
+    name: "Andi Pratama",
+    nim: "2201012134",
+    email: "andi.pratama@telkomuniversity.ac.id",
+    university: "Telkom University",
+    phone: "+62 813-7777-6666",
+    gender: "Laki-laki",
+    program: "S1 Sistem Informasi",
+    company: "PT. Telekomunikasi Indonesia",
+    role: "Cloud Specialist Intern",
+    status: "Aktif",
+    progress: 80,
+    lastActive: "21 Mei 2026",
+    avatarColor: "from-red-500 to-orange-500",
+    address: "Jl. Telekomunikasi No. 1, Dayeuhkolot, Bandung, Jawa Barat",
+    period: "1 Februari 2026 - 31 Juli 2026",
+    grade: 87,
+    logbooksCount: 8,
+    logbooksPending: 0,
+    attendance: { present: 77, sick: 1, leave: 1, absent: 0 }
+  }
+];
