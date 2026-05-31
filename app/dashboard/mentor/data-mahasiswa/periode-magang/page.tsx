@@ -22,6 +22,8 @@ import {
   Briefcase
 } from "lucide-react";
 import { studentsData, Student } from "../studentsData";
+import { useStudents } from "@/modules/mahasiswa/hooks";
+import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 interface StudentPeriod {
   studentId: number;
@@ -30,6 +32,9 @@ interface StudentPeriod {
 }
 
 export default function MentorInternshipPeriodPage() {
+  const { rawStudents, refreshStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showToast, setShowToast] = useState("");
   
@@ -54,7 +59,7 @@ export default function MentorInternshipPeriodPage() {
   // Map student info with periods
   const enrichedPeriods = useMemo(() => {
     return periods.map(p => {
-      const student = studentsData.find(s => s.id === p.studentId);
+      const student = studentsList.find(s => s.id === p.studentId);
       return {
         ...p,
         studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
@@ -64,7 +69,7 @@ export default function MentorInternshipPeriodPage() {
         studentCompany: student ? student.company : "-"
       };
     });
-  }, [periods]);
+  }, [periods, studentsList]);
 
   // Filter student periods
   const filteredPeriods = enrichedPeriods.filter(p => {
@@ -88,7 +93,7 @@ export default function MentorInternshipPeriodPage() {
     today.setHours(0, 0, 0, 0);
     start.setHours(0, 0, 0, 0);
     end.setHours(0, 0, 0, 0);
-
+ 
     if (today < start) {
       return { label: "Belum Mulai", color: "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/40" };
     } else if (today > end) {
@@ -121,7 +126,17 @@ export default function MentorInternshipPeriodPage() {
     setIsSaving(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Format period string
+      const formatIndoDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+      };
+      const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
+
+      await mahasiswaAPI.updateStudent(editingStudentId!, {
+        period: periodStr
+      });
+      await refreshStudents();
       
       setPeriods(prev => 
         prev.map(p => 
@@ -131,7 +146,7 @@ export default function MentorInternshipPeriodPage() {
         )
       );
 
-      const studentName = studentsData.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
+      const studentName = studentsList.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
       
       setIsSaving(false);
       setEditingStudentId(null);

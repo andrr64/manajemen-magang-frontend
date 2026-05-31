@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   ArrowLeft,
   Sparkles,
@@ -73,7 +74,7 @@ export default function TestPlayground() {
   const playSound = (type: "success" | "error" | "bell" | "click") => {
     if (typeof window === "undefined") return;
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
       const ctx = new AudioContextClass();
       
@@ -289,14 +290,14 @@ export default function TestPlayground() {
         </div>
 
         {/* Back button */}
-        <a
+        <Link
           href="/"
           onClick={() => playSound("click")}
           className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-slate-900 border border-slate-700/50 text-slate-200 transition-all duration-200"
         >
           <ArrowLeft className="w-4 h-4 text-slate-400" />
           <span>Ke Beranda</span>
-        </a>
+        </Link>
       </header>
 
       {/* Main Grid Content */}
@@ -615,8 +616,8 @@ export default function TestPlayground() {
                 </div>
 
                 <div className="relative font-mono text-[10px] text-indigo-300 bg-slate-950 p-4 rounded-xl border border-slate-900 leading-relaxed overflow-x-auto">
-                  <span className="text-slate-500">// Real-time Generated CSS & Glass Tailwind classes</span><br/>
-                  <span className="text-purple-400">className</span>=<span className="text-emerald-300">"bg-white/5 backdrop-blur-[{cardBlur}px] border border-white/[0.{borderOpacity}] rounded-2xl shadow-2xl scale-[{cardScale}]"</span>
+                  <span className="text-slate-500">{"// Real-time Generated CSS & Glass Tailwind classes"}</span><br/>
+                  <span className="text-purple-400">className</span>=<span className="text-emerald-300">&quot;bg-white/5 backdrop-blur-[{cardBlur}px] border border-white/[0.{borderOpacity}] rounded-2xl shadow-2xl scale-[{cardScale}]&quot;</span>
                 </div>
               </div>
             </div>
@@ -646,7 +647,7 @@ export default function TestPlayground() {
                 ].map(status => (
                   <button
                     key={status.id}
-                    onClick={() => handleStatusChange(status.id as any)}
+                    onClick={() => handleStatusChange(status.id as typeof selectedStatus)}
                     className={`px-3 py-2 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
                       selectedStatus === status.id 
                         ? `${status.color} ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950 scale-105` 

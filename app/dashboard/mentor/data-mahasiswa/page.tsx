@@ -14,7 +14,6 @@ import {
   TrendingUp,
   Award,
   CheckCircle,
-  MessageCircle,
   ExternalLink,
   UserPlus,
   Calendar,
@@ -22,8 +21,13 @@ import {
   Check
 } from "lucide-react";
 import { studentsData, Student } from "./studentsData";
+import { useStudents } from "@/modules/mahasiswa/hooks";
+import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 export default function MentorDataMahasiswaPage() {
+  const { rawStudents, isLoading, refreshStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("Semua");
   const [univFilter, setUnivFilter] = useState("Semua");
@@ -69,14 +73,29 @@ export default function MentorDataMahasiswaPage() {
     }
 
     setIsSavingPeriod(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Format period string
+    const formatIndoDate = (dateStr: string) => {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    };
+    const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
+
+    try {
+      await mahasiswaAPI.updateStudent(editingStudentId!, {
+        period: periodStr
+      });
+      await refreshStudents();
+    } catch (err) {
+      console.error("Gagal memperbarui periode magang via API:", err);
+    }
 
     setStudentPeriods((prev) => ({
       ...prev,
       [editingStudentId!]: { startDate: editStartDate, endDate: editEndDate }
     }));
 
-    const studentName = studentsData.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
+    const studentName = studentsList.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
     setIsSavingPeriod(false);
     setEditingStudentId(null);
     setShowPeriodToast(`Periode magang ${studentName} berhasil diperbarui!`);
@@ -85,13 +104,13 @@ export default function MentorDataMahasiswaPage() {
 
   // Extract unique universities for filter dropdown
   const uniqueUniversities = useMemo(() => {
-    const univs = studentsData.map((s) => s.university);
+    const univs = studentsList.map((s) => s.university);
     return ["Semua", ...Array.from(new Set(univs))];
-  }, []);
+  }, [studentsList]);
 
   // Filter students based on all selected criteria
   const filteredStudents = useMemo(() => {
-    return studentsData.filter((s) => {
+    return studentsList.filter((s) => {
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
         q === "" ||
@@ -107,7 +126,7 @@ export default function MentorDataMahasiswaPage() {
 
       return matchesSearch && matchesGender && matchesUniv && matchesStatus;
     });
-  }, [searchQuery, genderFilter, univFilter, statusFilter]);
+  }, [studentsList, searchQuery, genderFilter, univFilter, statusFilter]);
 
   // Pagination logic
   const total = filteredStudents.length;
@@ -122,12 +141,12 @@ export default function MentorDataMahasiswaPage() {
 
   // Quick stats calculation
   const stats = useMemo(() => {
-    const totalCount = studentsData.length;
-    const activeCount = studentsData.filter(s => s.status === "Aktif").length;
-    const pendingCount = studentsData.filter(s => s.status === "Dalam Review").length;
-    const completedCount = studentsData.filter(s => s.status === "Selesai").length;
+    const totalCount = studentsList.length;
+    const activeCount = studentsList.filter(s => s.status === "Aktif").length;
+    const pendingCount = studentsList.filter(s => s.status === "Dalam Review").length;
+    const completedCount = studentsList.filter(s => s.status === "Selesai").length;
     return { totalCount, activeCount, pendingCount, completedCount };
-  }, []);
+  }, [studentsList]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -166,7 +185,7 @@ export default function MentorDataMahasiswaPage() {
                   Atur Periode Magang
                 </h4>
                 <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5">
-                  Mahasiswa: {studentsData.find(s => s.id === editingStudentId)?.name}
+                  Mahasiswa: {studentsList.find(s => s.id === editingStudentId)?.name}
                 </p>
               </div>
             </div>
@@ -264,13 +283,7 @@ export default function MentorDataMahasiswaPage() {
             Reset Filter
           </button>
           
-          <Link
-            href="/dashboard/mentor/data-mahasiswa/periode-magang"
-            className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-xl text-xs font-extrabold text-slate-700 dark:text-slate-300 hover:dark:border-indigo-500 active:scale-95 transition-all cursor-pointer shadow-sm animate-pulse-slow"
-          >
-            <Calendar className="w-3.5 h-3.5 text-indigo-500" />
-            Atur Periode
-          </Link>
+
 
           <Link
             href="/dashboard/mentor/data-mahasiswa/tambah-mahasiswa"
@@ -416,7 +429,16 @@ export default function MentorDataMahasiswaPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {pagedStudents.map((student) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center">
+                    <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                      <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                      <span className="text-xs font-bold">Memuat data mahasiswa bimbingan...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : pagedStudents.map((student) => (
                 <tr 
                   key={student.id} 
                   className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group cursor-pointer"
@@ -491,41 +513,19 @@ export default function MentorDataMahasiswaPage() {
                   </td>
  
                   {/* Column 7: Periode Magang */}
-                  <td className="py-4" onClick={(e) => e.stopPropagation()}>
+                  <td className="py-4">
                     <div className="flex items-center gap-2 group/period">
                       <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
                         <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || "2026-02-01"}</span>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider my-0.5 text-center">s.d.</span>
                         <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || "2026-07-31"}</span>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const p = studentPeriods[student.id] || { startDate: "2026-02-01", endDate: "2026-07-31" };
-                          handleOpenEditPeriod(student.id, p.startDate, p.endDate);
-                        }}
-                        className="p-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-indigo-555 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white text-slate-455 dark:text-slate-500 border border-slate-200 dark:border-slate-800 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-                        title="Atur Periode Magang"
-                      >
-                        <Calendar className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                   </td>
 
                   {/* Column 8: Aksi */}
                   <td className="py-4 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <a
-                        href={`https://wa.me/${student.phone.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/30 dark:border-emerald-800/40 rounded-xl transition-all"
-                        title="Chat WhatsApp"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </a>
                       <Link 
                         href={`/dashboard/mentor/data-mahasiswa/${student.id}`}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 hover:bg-indigo-600 dark:hover:bg-indigo-500 hover:text-white border border-transparent dark:border-slate-800 hover:dark:border-transparent text-[11px] font-bold rounded-xl transition-all text-slate-700 dark:text-slate-300"

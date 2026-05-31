@@ -19,9 +19,11 @@ import {
   Users,
   Send,
   Check,
-  X
+  X,
+  Loader2
 } from "lucide-react";
 import { studentsData, Student } from "../studentsData";
+import { useStudentDetail } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -29,10 +31,15 @@ interface PageProps {
 
 export default function MentorStudentDetailPage({ params }: PageProps) {
   const unwrappedParams = use(params);
-  const studentId = parseInt(unwrappedParams.id, 10);
+  // Parse numeric IDs (like 1, 2) but keep UUID strings intact!
+  const studentId = /^\d+$/.test(unwrappedParams.id) 
+    ? parseInt(unwrappedParams.id, 10) 
+    : unwrappedParams.id;
   
-  // Find the student
-  const student = studentsData.find((s) => s.id === studentId);
+  const { student: apiStudent, isLoading } = useStudentDetail(studentId);
+  
+  // Find the student (fallback to mock file if API not yet populated)
+  const student = apiStudent || studentsData.find((s) => s.id === studentId);
 
   // States for interactive dummy features
   const [commentInput, setCommentInput] = useState("");
@@ -41,6 +48,15 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
     { sender: "Mahasiswa", text: "Baik Pak, terima kasih masukannya. Minggu ini saya mulai lanjut integrasi API.", time: "Hari ini, 08:15" }
   ]);
   const [successMessage, setSuccessMessage] = useState("");
+
+  if (isLoading) {
+    return (
+      <div className="max-w-md mx-auto py-32 text-center space-y-4">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mx-auto" />
+        <p className="text-xs text-slate-400 font-semibold">Memuat profil lengkap mahasiswa...</p>
+      </div>
+    );
+  }
 
   // Handler to add a comment
   const handleAddComment = (e: React.FormEvent) => {

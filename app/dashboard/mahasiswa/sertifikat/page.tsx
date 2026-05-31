@@ -13,25 +13,16 @@ import {
   X,
   Sparkles
 } from "lucide-react";
+import { useCertificate } from "@/modules/sertifikat/hooks";
 
 export default function StudentSertifikatPage() {
+  const { certificate, isLoading } = useCertificate();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  // Certificate details based on Budi Santoso (uploaded by Mentor Dr. Ahmad Hidayat)
-  const certificateInfo = {
-    number: "CERT/IF/UI-GTN/2026/05/0021",
-    issueDate: "29 Mei 2026",
-    grade: "A (Sangat Memuaskan)",
-    recipient: "Budi Santoso",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    fileSize: "2.8 MB",
-    fileFormat: "PDF Document"
-  };
-
   const handleDownload = () => {
+    if (!certificate) return;
     setIsDownloading(true);
     
     // Simulate premium download loader
@@ -41,14 +32,53 @@ export default function StudentSertifikatPage() {
       
       // Simulate file download trigger
       const link = document.createElement("a");
-      link.href = "#";
-      link.setAttribute("download", `Sertifikat_Magang_${certificateInfo.recipient.replace(" ", "_")}.pdf`);
+      link.href = certificate.downloadUrl || "#";
+      link.setAttribute("download", `Sertifikat_Magang_${certificate.recipient.replace(" ", "_")}.pdf`);
       document.body.appendChild(link);
       document.body.removeChild(link);
 
       setTimeout(() => setShowToast(false), 4000);
     }, 1500);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+        <p className="text-slate-500 dark:text-slate-400 font-extrabold text-sm animate-pulse">
+          Memuat berkas sertifikat kelulusan...
+        </p>
+      </div>
+    );
+  }
+
+  if (!certificate || certificate.status !== "Issued") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Sertifikat Kelulusan</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Unduh atau tinjau berkas sertifikat resmi yang telah diunggah oleh mentor bimbingan Anda.</p>
+        </div>
+        
+        <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-8 md:p-12 shadow-xl bg-white dark:bg-[#070e24]/40 text-center max-w-2xl mx-auto space-y-6">
+          <div className="w-20 h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 border border-amber-200/40 dark:border-amber-900/40 flex items-center justify-center mx-auto shadow-md">
+            <Award className="w-10 h-10 animate-bounce" />
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-black text-lg text-slate-900 dark:text-white">Sertifikat Magang Belum Diterbitkan</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed max-w-md mx-auto">
+              Dokumen formal kelulusan magang Anda saat ini sedang diproses oleh Dosen Pembimbing Akademik atau Mentor Industri Anda. 
+            </p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-sm mx-auto pt-2">
+              Segera setelah berkas sertifikat ditandatangani dan diunggah oleh mentor, dokumen PDF resmi Anda akan langsung tersedia di halaman ini.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const certificateInfo = certificate;
 
   return (
     <div className="space-y-6 relative pb-10">

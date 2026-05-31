@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { GraduationCap, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
@@ -44,13 +45,13 @@ export default function LoginPage() {
     <div className="min-h-screen w-full flex flex-col justify-center items-center bg-grid-pattern relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
       {/* Tombol Kembali ke Beranda */}
       <div className="absolute top-6 left-6 z-10">
-        <a
+        <Link
           href="/"
           className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
           Kembali ke Beranda
-        </a>
+        </Link>
       </div>
 
       {/* Decorative Blur Backgrounds */}
@@ -209,9 +210,9 @@ export default function LoginPage() {
         {/* Sign up simulated */}
         <div className="mt-8 text-center text-sm font-semibold text-slate-500">
           Belum terdaftar?{" "}
-          <a href="/#daftar" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+          <Link href="/#daftar" className="text-indigo-600 dark:text-indigo-400 hover:underline">
             Buat akun program magang
-          </a>
+          </Link>
         </div>
       </div>
     </div>

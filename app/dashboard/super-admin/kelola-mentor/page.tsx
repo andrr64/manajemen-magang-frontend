@@ -395,7 +395,7 @@ export default function KelolaMentorPage() {
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-2">Tipe:</span>
               <select
                 value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value as any)}
+                onChange={(e) => setSelectedType(e.target.value as "Semua" | "Akademik" | "Industri")}
                 className="bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none pr-1"
               >
                 <option value="Semua">Semua Tipe</option>
@@ -409,7 +409,7 @@ export default function KelolaMentorPage() {
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-2">Status:</span>
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value as any)}
+                onChange={(e) => setSelectedStatus(e.target.value as "Semua" | "Aktif" | "Nonaktif")}
                 className="bg-transparent border-none text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none pr-1"
               >
                 <option value="Semua">Semua Status</option>

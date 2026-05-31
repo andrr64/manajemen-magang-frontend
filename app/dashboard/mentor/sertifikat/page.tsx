@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -18,63 +18,52 @@ import {
   FileCheck
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
+import { useStudentCertificates } from "@/modules/sertifikat/hooks";
 
 export default function MentorCertificatePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
 
-  // Simulated Certificate Status Database mapping to the student database
-  const certificateLogs = useMemo(() => {
-    return [
-      { studentId: 1, fileName: "sertifikat_budi_santoso.pdf", status: "Sudah Diunggah" },
-      { studentId: 2, fileName: null, status: "Belum Diunggah" },
-      { studentId: 3, fileName: "sertifikat_rian_hidayat.pdf", status: "Sudah Diunggah" },
-      { studentId: 4, fileName: null, status: "Belum Diunggah" },
-      { studentId: 5, fileName: "sertifikat_dedi_kurniawan.pdf", status: "Sudah Diunggah" },
-      { studentId: 6, fileName: null, status: "Belum Diunggah" },
-      { studentId: 7, fileName: null, status: "Belum Diunggah" },
-      { studentId: 8, fileName: "sertifikat_andi_pratama.pdf", status: "Sudah Diunggah" }
-    ];
-  }, []);
+  // Real hook integration
+  const { certificates, statistics, isLoading, refreshCertificates } = useStudentCertificates();
 
-  // Map student info
+  // Fetch data reactively
+  useEffect(() => {
+    // Backend expects lowercase "sudah diunggah" / "belum diunggah", and "semua status"
+    const backendStatus = statusFilter === "Semua" ? "semua status" : statusFilter;
+    refreshCertificates(backendStatus, searchQuery);
+  }, [statusFilter, searchQuery, refreshCertificates]);
+
+  // Map student info for display
   const enrichedCertificates = useMemo(() => {
-    return certificateLogs.map(cert => {
-      const student = studentsData.find(s => s.id === cert.studentId);
+    return certificates.map(cert => {
+      // Get numeric student ID fallback based on name or NIM
+      const student = studentsData.find(s => s.nim === cert.nim || s.name === cert.namaMahasiswa);
+      const studentId = student ? student.id : 1;
+      
       return {
-        ...cert,
-        studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
-        studentNim: student ? student.nim : "-",
+        studentId,
+        fileName: cert.url && cert.url !== "-" ? cert.url.split("/").pop() || "sertifikat.pdf" : null,
+        status: cert.statusSertifikat === "Sudah Diunggah" ? "Sudah Diunggah" : "Belum Diunggah",
+        studentName: cert.namaMahasiswa,
+        studentNim: cert.nim,
         studentAvatar: student ? student.avatarColor : "from-slate-400 to-slate-500",
-        studentUniv: student ? student.university : "-"
+        studentUniv: student ? student.university : "Universitas Asal"
       };
     });
-  }, [certificateLogs]);
+  }, [certificates]);
 
-  // Filter logs based on search and status select
-  const filteredCertificates = enrichedCertificates.filter(cert => {
-    const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = 
-      q === "" ||
-      cert.studentName.toLowerCase().includes(q) ||
-      cert.studentNim.includes(q) ||
-      cert.studentUniv.toLowerCase().includes(q);
-
-    const matchesStatus = 
-      statusFilter === "Semua" ||
-      cert.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  // Support additional client-side search safeguarding
+  const filteredCertificates = enrichedCertificates;
 
   // Calculate certificate statistics
   const stats = useMemo(() => {
-    const total = enrichedCertificates.length;
-    const uploaded = enrichedCertificates.filter(c => c.status === "Sudah Diunggah").length;
-    const pending = total - uploaded;
+    const total = statistics?.totalJumlahSertifikat || 0;
+    const uploaded = statistics?.totalSertifikatDiunggah || 0;
+    const pending = statistics?.totalSertifikatBelumDiunggah || 0;
     const ratio = total > 0 ? ((uploaded / total) * 100).toFixed(1) : "0.0";
     return { total, uploaded, pending, ratio };
-  }, [enrichedCertificates]);
+  }, [statistics]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -191,7 +180,21 @@ export default function MentorCertificatePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredCertificates.map((cert) => {
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+                      <p className="text-slate-500 dark:text-slate-400 font-extrabold text-xs">
+                        Memuat data berkas sertifikat...
+                      </p>
+                      <p className="text-slate-400 dark:text-slate-500 text-[10px]">
+                        Silakan tunggu sebentar, sedang mengambil data dari server.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredCertificates.map((cert) => {
                 const isUploaded = cert.status === "Sudah Diunggah";
                 
                 return (
@@ -201,7 +204,7 @@ export default function MentorCertificatePage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/sertifikat/${cert.studentId}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${cert.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10 group-hover:scale-105 transition-transform`}>
-                          {cert.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                          {cert.studentName.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
@@ -272,7 +275,7 @@ export default function MentorCertificatePage() {
                 );
               })}
 
-              {filteredCertificates.length === 0 && (
+              {!isLoading && filteredCertificates.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-16 text-center">
                     <div className="max-w-md mx-auto space-y-2">

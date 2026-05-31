@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -16,10 +16,19 @@ import {
   Sparkles
 } from "lucide-react";
 import { studentsData, Student } from "../data-mahasiswa/studentsData";
+import { useStudentAssessments } from "@/modules/penilaian/hooks";
 
 export default function MentorPenilaianPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
+
+  // Instantiating real assessments hook
+  const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
+
+  // Reactive Effect to fetch assessments from API whenever filters change
+  useEffect(() => {
+    refreshAssessments(statusFilter, searchQuery);
+  }, [statusFilter, searchQuery, refreshAssessments]);
 
   // Reset Filters
   const handleResetFilters = () => {
@@ -27,35 +36,34 @@ export default function MentorPenilaianPage() {
     setStatusFilter("Semua");
   };
 
-  // Filter students based on criteria
-  const filteredStudents = useMemo(() => {
-    return studentsData.filter(student => {
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch = 
-        q === "" ||
-        student.name.toLowerCase().includes(q) ||
-        student.nim.includes(q) ||
-        student.university.toLowerCase().includes(q) ||
-        student.company.toLowerCase().includes(q);
-
-      const isGraded = student.grade !== null;
-      const matchesStatus = 
-        statusFilter === "Semua" ||
-        (statusFilter === "Sudah Dinilai" && isGraded) ||
-        (statusFilter === "Belum Dinilai" && !isGraded);
-
-      return matchesSearch && matchesStatus;
+  // Map student evaluation list response to view models
+  const enrichedStudents = useMemo(() => {
+    return assessments.map(item => {
+      const studentIdNum = item.mahasiswaId ? parseInt(item.mahasiswaId.toString(), 10) : 0;
+      const student = studentsData.find(s => s.id === studentIdNum || s.nim === item.nim);
+      return {
+        id: item.mahasiswaId,
+        name: item.namaMahasiswa,
+        nim: item.nim,
+        university: student ? student.university : "Universitas Mitra",
+        company: student ? student.company : "Kantor Mitra",
+        avatarColor: student ? student.avatarColor : "from-indigo-500 to-cyan-500",
+        grade: item.nilaiTotal,
+        penilaianId: item.penilaianId
+      };
     });
-  }, [searchQuery, statusFilter]);
+  }, [assessments]);
 
-  // Calculate assessment quick statistics
+  const filteredStudents = enrichedStudents;
+
+  // Calculate assessment quick statistics reactively
   const stats = useMemo(() => {
-    const total = studentsData.length;
-    const graded = studentsData.filter(s => s.grade !== null).length;
+    const total = assessments.length;
+    const graded = assessments.filter(s => s.penilaianId !== null).length;
     const pending = total - graded;
     const ratio = total > 0 ? ((graded / total) * 100).toFixed(1) : "0.0";
     return { total, graded, pending, ratio };
-  }, []);
+  }, [assessments]);
 
   return (
     <div className="space-y-6">
@@ -167,8 +175,22 @@ export default function MentorPenilaianPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredStudents.map((student) => {
-                const isGraded = student.grade !== null;
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+                      <p className="text-slate-500 dark:text-slate-400 font-extrabold text-xs">
+                        Memuat data penilaian mahasiswa...
+                      </p>
+                      <p className="text-slate-400 dark:text-slate-500 text-[10px]">
+                        Silakan tunggu sebentar, sedang mengambil data dari server.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredStudents.map((student) => {
+                const isGraded = student.penilaianId !== null && student.penilaianId !== undefined;
                 
                 return (
                   <tr key={student.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
@@ -177,7 +199,7 @@ export default function MentorPenilaianPage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/penilaian/${student.id}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10 group-hover:scale-105 transition-transform`}>
-                          {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                          {student.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">

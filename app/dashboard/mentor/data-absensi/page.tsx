@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Search, 
   Clock, 
@@ -18,16 +18,19 @@ import {
   Trash2
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
+import { useAttendance } from "@/modules/absensi/hooks";
+import { absensiAPI } from "@/modules/absensi/api";
 
 interface AttendanceLog {
-  id: number;
-  studentId: number;
+  id: string | number;
+  studentId?: string | number;
   date: string;
   checkIn: string;
   checkOut: string;
-  duration: string;
-  location: string;
-  status: "Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa";
+  duration?: string;
+  location?: string;
+  type: "Hadir" | "Izin" | "Sakit" | "Alpha";
+  status: "Diverifikasi" | "Menunggu" | "Ditolak";
   notes?: string;
 }
 
@@ -38,34 +41,46 @@ export default function MentorAttendancePage() {
   const [isExporting, setIsExporting] = useState(false);
 
   // States for viewing leave document modal
-  const [viewingLeaveDoc, setViewingLeaveDoc] = useState<{ studentName: string; type: "Sakit" | "Izin"; notes: string } | null>(null);
+  const [viewingLeaveDoc, setViewingLeaveDoc] = useState<{ studentName: string; type: "Sakit" | "Izin"; notes: string; documentUrl?: string | null } | null>(null);
 
-  const handleViewDocument = (studentName: string, type: "Sakit" | "Izin", notes: string) => {
-    setViewingLeaveDoc({ studentName, type, notes });
+  const handleViewDocument = (studentName: string, type: "Sakit" | "Izin", notes: string, documentUrl?: string | null) => {
+    setViewingLeaveDoc({ studentName, type, notes, documentUrl });
   };
 
-  // Dynamic Dummy Attendance Database mapped to the student records
-  const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>([
-    { id: 1, studentId: 1, date: "Kamis, 28 Mei 2026", checkIn: "07:45 WIB", checkOut: "17:05 WIB", duration: "9 jam 20 mnt", location: "PT. Global Teknologi (WFH)", status: "Hadir" },
-    { id: 2, studentId: 2, date: "Kamis, 28 Mei 2026", checkIn: "08:00 WIB", checkOut: "17:15 WIB", duration: "9 jam 15 mnt", location: "Bank Central Indonesia (On-site)", status: "Hadir" },
-    { id: 3, studentId: 3, date: "Kamis, 28 Mei 2026", checkIn: "07:30 WIB", checkOut: "16:45 WIB", duration: "9 jam 15 mnt", location: "Shopee Indonesia (On-site)", status: "Hadir" },
-    { id: 4, studentId: 4, date: "Kamis, 28 Mei 2026", checkIn: "-", checkOut: "-", duration: "-", location: "-", status: "Izin", notes: "Sakit gigi, izin berobat ke dokter gigi." },
-    { id: 5, studentId: 5, date: "Kamis, 28 Mei 2026", checkIn: "07:55 WIB", checkOut: "17:00 WIB", duration: "9 jam 05 mnt", location: "PT. Pertamina (WFH)", status: "Hadir" },
-    { id: 6, studentId: 6, date: "Kamis, 28 Mei 2026", checkIn: "-", checkOut: "-", duration: "-", location: "-", status: "Sakit", notes: "Sakit demam tinggi, melampirkan surat dokter." },
-    { id: 7, studentId: 7, date: "Kamis, 28 Mei 2026", checkIn: "08:15 WIB", checkOut: "-", duration: "-", location: "Tokopedia Office (On-site)", status: "Belum Check-Out" },
-    { id: 8, studentId: 8, date: "Kamis, 28 Mei 2026", checkIn: "07:50 WIB", checkOut: "17:02 WIB", duration: "9 jam 12 mnt", location: "Telkom Bandung (On-site)", status: "Hadir" }
-  ]);
+  // Real React Hook Integration
+  const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory } = useAttendance();
+
+  // Reactive Effect to fetch logs from API whenever filters change
+  useEffect(() => {
+    refreshHistory(statusFilter, searchQuery);
+  }, [statusFilter, searchQuery, refreshHistory]);
 
   // Map attendance logs to actual student profile info
   const enrichedLogs = useMemo(() => {
     return attendanceLogs.map(log => {
-      const student = studentsData.find(s => s.id === log.studentId);
+      const studentIdNum = log.studentId ? parseInt(log.studentId.toString(), 10) : 0;
+      const student = studentsData.find(s => s.id === studentIdNum || s.id === log.studentId);
+      
+      // Calculate presence status matching rendering expectations ("Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa")
+      let status: "Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa" = "Hadir";
+      if (log.type === "Hadir") {
+        status = log.checkOut === "Pending" ? "Belum Check-Out" : "Hadir";
+      } else if (log.type === "Izin") {
+        status = "Izin";
+      } else if (log.type === "Sakit") {
+        status = "Sakit";
+      } else if (log.type === "Alpha") {
+        status = "Alfa";
+      }
+
       return {
         ...log,
-        studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
-        studentNim: student ? student.nim : "-",
+        studentName: log.studentName || (student ? student.name : "Mahasiswa Tidak Dikenal"),
+        studentNim: log.studentNim || (student ? student.nim : "-"),
         studentAvatar: student ? student.avatarColor : "from-slate-400 to-slate-500",
-        studentUniv: student ? student.university : "-"
+        studentUniv: student ? student.university : "-",
+        location: student ? `${student.company} (On-site)` : "Kantor Mitra",
+        status
       };
     });
   }, [attendanceLogs]);
@@ -76,7 +91,7 @@ export default function MentorAttendancePage() {
     const matchesSearch = 
       q === "" ||
       log.studentName.toLowerCase().includes(q) ||
-      log.studentNim.includes(q) ||
+      log.studentNim.toLowerCase().includes(q) ||
       log.studentUniv.toLowerCase().includes(q) ||
       log.location.toLowerCase().includes(q);
 
@@ -84,45 +99,62 @@ export default function MentorAttendancePage() {
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate live stats
+  // Calculate live stats reactively
   const stats = useMemo(() => {
     const total = enrichedLogs.length;
     const present = enrichedLogs.filter(l => l.status === "Hadir").length;
     const pendingCheckout = enrichedLogs.filter(l => l.status === "Belum Check-Out").length;
     const off = enrichedLogs.filter(l => l.status === "Sakit" || l.status === "Izin").length;
-    const rate = ((present + off) / total) * 100;
+    const rate = total > 0 ? ((present + off) / total) * 100 : 0;
     return { total, present, pendingCheckout, off, rate: rate.toFixed(1) };
   }, [enrichedLogs]);
 
-  // Simulated live attendance action
-  const handleDeleteLog = (logId: number, studentName: string) => {
+  // Real action handlers delegating to the custom hook
+  const handleDeleteLog = async (logId: string | number, studentName: string) => {
     if (confirm(`Apakah Anda yakin ingin menghapus catatan absensi untuk ${studentName}?`)) {
-      setAttendanceLogs(prev => prev.filter(log => log.id !== logId));
-      setShowToast(`Absensi ${studentName} berhasil dihapus.`);
-      setTimeout(() => setShowToast(""), 4000);
+      try {
+        await deleteLog(logId);
+        setShowToast(`Absensi ${studentName} berhasil dihapus.`);
+        setTimeout(() => setShowToast(""), 4000);
+      } catch (err: any) {
+        alert(err.message || "Gagal menghapus catatan absensi.");
+      }
     }
   };
 
-  const handleVerifyLog = (logId: number, studentName: string) => {
-    setAttendanceLogs(prev => 
-      prev.map(log => 
-        log.id === logId 
-          ? { ...log, status: "Hadir", checkOut: log.checkOut === "-" ? "17:00 WIB" : log.checkOut, duration: log.duration === "-" ? "9 jam" : log.duration } 
-          : log
-      )
-    );
-    setShowToast(`Status absensi ${studentName} berhasil disetujui!`);
-    setTimeout(() => setShowToast(""), 4000);
+  const handleVerifyLog = async (logId: string | number, studentName: string) => {
+    try {
+      await verify(logId, "Diverifikasi");
+      setShowToast(`Status absensi ${studentName} berhasil disetujui!`);
+      setTimeout(() => setShowToast(""), 4000);
+    } catch (err: any) {
+      alert(err.message || "Gagal menyetujui absensi.");
+    }
   };
 
-  // Simulated report export
-  const handleExport = () => {
+  // Real CSV spreadsheet export handler with dynamic download triggers
+  const handleExport = async () => {
     setIsExporting(true);
-    setTimeout(() => {
-      setIsExporting(false);
+    try {
+      const response = await absensiAPI.exportAbsensi(statusFilter, searchQuery);
+      const csvContent = response.data;
+      
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;\ufeff" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "rekap-absensi.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       setShowToast("Laporan absensi bulanan berhasil diekspor ke Excel!");
       setTimeout(() => setShowToast(""), 4000);
-    }, 1500);
+    } catch (err: any) {
+      alert(err.message || "Gagal mengekspor laporan absensi.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -196,7 +228,7 @@ export default function MentorAttendancePage() {
                     <span className="text-slate-400 dark:text-slate-500">Keterangan</span>
                     <span className="col-span-2">: {viewingLeaveDoc.type === "Sakit" ? "Sakit / Tidak Fit" : "Izin Keperluan Keadaan Darurat"}</span>
                     <span className="text-slate-400 dark:text-slate-500">Alasan Tertulis</span>
-                    <span className="col-span-2 text-indigo-600 dark:text-indigo-400 font-bold">: "{viewingLeaveDoc.notes}"</span>
+                    <span className="col-span-2 text-indigo-600 dark:text-indigo-400 font-bold">: &quot;{viewingLeaveDoc.notes}&quot;</span>
                   </div>
                   <p>
                     Diberikan surat keterangan ini untuk dapat dipergunakan sebagaimana mestinya guna pemenuhan perizinan kegiatan program magang industri (MBKM).
@@ -223,6 +255,17 @@ export default function MentorAttendancePage() {
 
             {/* Modal Actions */}
             <div className="flex items-center justify-end gap-3 pt-2 text-xs">
+              {viewingLeaveDoc.documentUrl && (
+                <a
+                  href={viewingLeaveDoc.documentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold rounded-xl transition-all cursor-pointer inline-flex items-center gap-1"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  Buka Lampiran Asli
+                </a>
+              )}
               <button
                 onClick={() => setViewingLeaveDoc(null)}
                 className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
@@ -312,7 +355,7 @@ export default function MentorAttendancePage() {
           <div className="flex items-center gap-2 text-xs font-bold text-slate-400 dark:text-slate-500">
             <span>Filter Presensi:</span>
             <div className="flex gap-1">
-              {["Semua", "Hadir", "Sakit", "Izin"].map((status) => (
+              {["Semua", "Hadir", "Sakit", "Izin", "Alfa"].map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
@@ -355,7 +398,16 @@ export default function MentorAttendancePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredLogs.map((log) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="py-16 text-center">
+                    <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                      <RefreshCw className="w-8 h-8 animate-spin text-indigo-500" />
+                      <span className="text-xs font-bold">Memuat data absensi harian...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredLogs.map((log) => (
                 <tr key={log.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
                   
                   {/* Student Name */}
@@ -423,7 +475,7 @@ export default function MentorAttendancePage() {
                           {log.notes || "Tidak ada keterangan tambahan."}
                         </span>
                         <button
-                          onClick={() => handleViewDocument(log.studentName, log.status as "Sakit" | "Izin", log.notes || "")}
+                          onClick={() => handleViewDocument(log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document || null)}
                           className="inline-flex items-center gap-1 w-max px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 dark:bg-indigo-950/40 hover:text-white dark:hover:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/30 dark:border-indigo-900/30 rounded-xl text-[9px] font-black cursor-pointer transition-all active:scale-95 shadow-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -475,7 +527,7 @@ export default function MentorAttendancePage() {
                         Tidak ada log absensi hari ini yang cocok
                       </p>
                       <p className="text-slate-400 dark:text-slate-500 text-[10px] leading-relaxed">
-                        Coba sesuaikan pencarian Anda atau kembalikan filter status ke "Semua Status".
+                        Coba sesuaikan pencarian Anda atau kembalikan filter status ke &quot;Semua Status&quot;.
                       </p>
                       <button 
                         onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}

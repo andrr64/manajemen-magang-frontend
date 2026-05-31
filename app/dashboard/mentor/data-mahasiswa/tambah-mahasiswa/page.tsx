@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   GraduationCap
 } from "lucide-react";
+import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 export default function TambahMahasiswaPage() {
   const router = useRouter();
@@ -84,9 +85,22 @@ export default function TambahMahasiswaPage() {
 
     setIsSubmitting(true);
 
-    // Simulate API storage delay
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800));
+      // Call real simulated API to save student details persistently
+      await mahasiswaAPI.createStudent({
+        name: formData.name,
+        nim: formData.nim,
+        email: formData.email,
+        university: formData.university,
+        program: formData.program,
+        company: formData.company,
+        role: formData.role,
+        gender: formData.gender,
+        phone: formData.phone,
+        address: formData.address,
+        period: formData.period
+      });
+
       setIsSubmitting(false);
       setIsSuccess(true);
 
@@ -94,9 +108,9 @@ export default function TambahMahasiswaPage() {
       setTimeout(() => {
         router.push("/dashboard/mentor/data-mahasiswa");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       setIsSubmitting(false);
-      setErrorMessage("Terjadi kesalahan sistem. Silakan coba kembali.");
+      setErrorMessage(err.message || "Terjadi kesalahan sistem. Silakan coba kembali.");
     }
   };
 

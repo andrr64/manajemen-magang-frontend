@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -18,63 +18,51 @@ import {
   FileText
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
+import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
 
 export default function MentorReferenceLetterPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
 
-  // Simulated Reference Letter Database mapping to the student database
-  const letterLogs = useMemo(() => {
-    return [
-      { studentId: 1, fileName: "surat_keterangan_budi_santoso.pdf", status: "Sudah Diunggah" },
-      { studentId: 2, fileName: null, status: "Belum Diunggah" },
-      { studentId: 3, fileName: "surat_keterangan_rian_hidayat.pdf", status: "Sudah Diunggah" },
-      { studentId: 4, fileName: null, status: "Belum Diunggah" },
-      { studentId: 5, fileName: null, status: "Belum Diunggah" },
-      { studentId: 6, fileName: null, status: "Belum Diunggah" },
-      { studentId: 7, fileName: null, status: "Belum Diunggah" },
-      { studentId: 8, fileName: "surat_keterangan_andi_pratama.pdf", status: "Sudah Diunggah" }
-    ];
-  }, []);
+  // Real hook integration
+  const { letters, statistics, isLoading, refreshLetters } = useStudentReferenceLetters();
+
+  // Fetch data reactively
+  useEffect(() => {
+    const backendStatus = statusFilter === "Semua" ? "semua status" : statusFilter;
+    refreshLetters(backendStatus, searchQuery);
+  }, [statusFilter, searchQuery, refreshLetters]);
 
   // Map student info
   const enrichedLetters = useMemo(() => {
-    return letterLogs.map(letLog => {
-      const student = studentsData.find(s => s.id === letLog.studentId);
+    return letters.map(letLog => {
+      const student = studentsData.find(s => s.nim === letLog.nim || s.name === letLog.namaMahasiswa);
+      const studentId = student ? student.id : letLog.mahasiswaId;
+      
       return {
-        ...letLog,
-        studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
-        studentNim: student ? student.nim : "-",
+        id: letLog.mahasiswaId,
+        studentId,
+        fileName: letLog.url && letLog.url !== "-" ? letLog.url.split("/").pop() || "surat_keterangan.pdf" : null,
+        status: letLog.statusSurat === "Sudah Diunggah" ? "Sudah Diunggah" : "Belum Diunggah",
+        studentName: letLog.namaMahasiswa,
+        studentNim: letLog.nim,
         studentAvatar: student ? student.avatarColor : "from-slate-400 to-slate-500",
-        studentUniv: student ? student.university : "-"
+        studentUniv: student ? student.university : "Universitas Mitra"
       };
     });
-  }, [letterLogs]);
+  }, [letters]);
 
   // Filter logs based on search and status select
-  const filteredLetters = enrichedLetters.filter(letLog => {
-    const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = 
-      q === "" ||
-      letLog.studentName.toLowerCase().includes(q) ||
-      letLog.studentNim.includes(q) ||
-      letLog.studentUniv.toLowerCase().includes(q);
-
-    const matchesStatus = 
-      statusFilter === "Semua" ||
-      letLog.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  const filteredLetters = enrichedLetters;
 
   // Calculate certificate statistics
   const stats = useMemo(() => {
-    const total = enrichedLetters.length;
-    const uploaded = enrichedLetters.filter(c => c.status === "Sudah Diunggah").length;
-    const pending = total - uploaded;
+    const total = statistics?.totalJumlahSurat || 0;
+    const uploaded = statistics?.totalSuratDiunggah || 0;
+    const pending = statistics?.totalSuratBelumDiunggah || 0;
     const ratio = total > 0 ? ((uploaded / total) * 100).toFixed(1) : "0.0";
     return { total, uploaded, pending, ratio };
-  }, [enrichedLetters]);
+  }, [statistics]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -191,7 +179,21 @@ export default function MentorReferenceLetterPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredLetters.map((letLog) => {
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+                      <p className="text-slate-500 dark:text-slate-400 font-extrabold text-xs">
+                        Memuat data berkas surat keterangan...
+                      </p>
+                      <p className="text-slate-400 dark:text-slate-500 text-[10px]">
+                        Silakan tunggu sebentar, sedang mengambil data dari server.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredLetters.map((letLog) => {
                 const isUploaded = letLog.status === "Sudah Diunggah";
                 
                 return (
@@ -201,7 +203,7 @@ export default function MentorReferenceLetterPage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/surat-keterangan/${letLog.studentId}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${letLog.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10 group-hover:scale-105 transition-transform`}>
-                          {letLog.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                          {letLog.studentName.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">

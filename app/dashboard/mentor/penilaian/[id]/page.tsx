@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState, useMemo } from "react";
+import React, { use, useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
@@ -26,6 +26,7 @@ import {
   Briefcase
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
+import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -42,10 +43,58 @@ interface CriteriaItem {
 export default function MentorStudentGradingPage({ params }: PageProps) {
   const router = useRouter();
   const unwrappedParams = use(params);
-  const studentId = parseInt(unwrappedParams.id, 10);
   
-  // Find target student
-  const student = studentsData.find(s => s.id === studentId);
+  // Instantiating real evaluation API hook and student assessments list
+  const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
+  const { submitGrades } = useAssessment();
+
+  // Fetch once on mount
+  useEffect(() => {
+    refreshAssessments();
+  }, [refreshAssessments]);
+
+  // Find target assessment record
+  const assessmentRecord = useMemo(() => {
+    return assessments.find(item => String(item.mahasiswaId) === String(unwrappedParams.id));
+  }, [assessments, unwrappedParams.id]);
+
+  // Find target mock student
+  const mockStudent = useMemo(() => {
+    if (!assessmentRecord) {
+      const idNum = parseInt(unwrappedParams.id, 10);
+      return studentsData.find(s => s.id === idNum);
+    }
+    const studentIdNum = assessmentRecord.mahasiswaId ? parseInt(assessmentRecord.mahasiswaId.toString(), 10) : 0;
+    return studentsData.find(s => s.id === studentIdNum || s.nim === assessmentRecord.nim);
+  }, [assessmentRecord, unwrappedParams.id]);
+
+  // Unified student object
+  const student = useMemo(() => {
+    if (assessmentRecord) {
+      return {
+        id: assessmentRecord.mahasiswaId,
+        name: assessmentRecord.namaMahasiswa,
+        nim: assessmentRecord.nim,
+        university: mockStudent ? mockStudent.university : "Universitas Mitra",
+        company: mockStudent ? mockStudent.company : "Kantor Mitra",
+        avatarColor: mockStudent ? mockStudent.avatarColor : "from-indigo-500 to-cyan-500",
+        progress: mockStudent ? mockStudent.progress : 80,
+        grade: assessmentRecord.nilaiTotal
+      };
+    } else if (mockStudent) {
+      return {
+        id: mockStudent.id,
+        name: mockStudent.name,
+        nim: mockStudent.nim,
+        university: mockStudent.university,
+        company: mockStudent.company,
+        avatarColor: mockStudent.avatarColor,
+        progress: mockStudent.progress,
+        grade: mockStudent.grade
+      };
+    }
+    return null;
+  }, [assessmentRecord, mockStudent]);
 
   // Form Assessment Criteria configurations
   const assessmentCriteria: CriteriaItem[] = [
@@ -59,34 +108,13 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   ];
 
   // Initialize grades state. Prefill if student has already been graded in database.
-  const [grades, setGrades] = useState<Record<string, number>>(() => {
-    if (student && student.grade !== null) {
-      // Return custom realistic grades for already graded dummy students
-      if (student.id === 1) return { absensi: 92, kinerja: 88, kedisiplinan: 90, kerjasama: 85, tanggungjawab: 88, komunikasi: 85, penampilan: 86 };
-      if (student.id === 2) return { absensi: 85, kinerja: 80, kedisiplinan: 83, kerjasama: 82, tanggungjawab: 84, komunikasi: 80, penampilan: 82 };
-      if (student.id === 3) return { absensi: 94, kinerja: 90, kedisiplinan: 92, kerjasama: 92, tanggungjawab: 95, komunikasi: 90, penampilan: 93 };
-      if (student.id === 5) return { absensi: 98, kinerja: 94, kedisiplinan: 96, kerjasama: 95, tanggungjawab: 96, komunikasi: 92, penampilan: 95 };
-      if (student.id === 6) return { absensi: 88, kinerja: 84, kedisiplinan: 85, kerjasama: 86, tanggungjawab: 85, komunikasi: 82, penampilan: 85 };
-      if (student.id === 8) return { absensi: 90, kinerja: 86, kedisiplinan: 87, kerjasama: 88, tanggungjawab: 88, komunikasi: 85, penampilan: 86 };
-    }
-    // Standard default starter grade for ungraded students
-    return { absensi: 80, kinerja: 80, kedisiplinan: 80, kerjasama: 80, tanggungjawab: 80, komunikasi: 80, penampilan: 80 };
+  const [grades, setGrades] = useState<Record<string, number>>({
+    absensi: 80, kinerja: 80, kedisiplinan: 80, kerjasama: 80, tanggungjawab: 80, komunikasi: 80, penampilan: 80
   });
 
   // Supporting attachments files for EACH criteria column/slot
-  const [attachments, setAttachments] = useState<Record<string, string | null>>(() => {
-    if (student && student.grade !== null) {
-      return {
-        absensi: "bukti_absen_rekap.pdf",
-        kinerja: "bukti_tugas_laporan.pdf",
-        kedisiplinan: null,
-        kerjasama: "penilaian_peer_to_peer.docx",
-        tanggungjawab: null,
-        komunikasi: null,
-        penampilan: "rubrik_sidang_akhir.pdf"
-      };
-    }
-    return { absensi: null, kinerja: null, kedisiplinan: null, kerjasama: null, tanggungjawab: null, komunikasi: null, penampilan: null };
+  const [attachments, setAttachments] = useState<Record<string, string | null>>({
+    absensi: null, kinerja: null, kedisiplinan: null, kerjasama: null, tanggungjawab: null, komunikasi: null, penampilan: null
   });
 
   // Short descriptive comments for each criteria
@@ -99,6 +127,60 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
     komunikasi: "Responsif saat dipanggil rapat koordinasi.",
     penampilan: "Selalu berpakaian rapi dan profesional saat On-site."
   });
+
+  // Reactively prefill grades and feedback when assessmentRecord or mockStudent becomes available
+  useEffect(() => {
+    if (assessmentRecord) {
+      const isAlreadyGraded = assessmentRecord.nilaiTotal !== null && assessmentRecord.nilaiTotal !== undefined;
+      if (isAlreadyGraded) {
+        setGrades({
+          absensi: assessmentRecord.absensi ?? 80,
+          kinerja: assessmentRecord.kinerja ?? 80,
+          kedisiplinan: assessmentRecord.kedisiplinan ?? 80,
+          kerjasama: assessmentRecord.kerjasama ?? 80,
+          tanggungjawab: assessmentRecord.tanggungJawab ?? 80,
+          komunikasi: assessmentRecord.komunikasi ?? 80,
+          penampilan: assessmentRecord.kerapihan ?? 80,
+        });
+        setAttachments({
+          absensi: "bukti_absen_rekap.pdf",
+          kinerja: "bukti_tugas_laporan.pdf",
+          kedisiplinan: null,
+          kerjasama: "penilaian_peer_to_peer.docx",
+          tanggungjawab: null,
+          komunikasi: null,
+          penampilan: "rubrik_sidang_akhir.pdf"
+        });
+        if (assessmentRecord.catatan) {
+          setFeedbacks({
+            absensi: assessmentRecord.catatan,
+            kinerja: assessmentRecord.catatan,
+            kedisiplinan: assessmentRecord.catatan,
+            kerjasama: assessmentRecord.catatan,
+            tanggungjawab: assessmentRecord.catatan,
+            komunikasi: assessmentRecord.catatan,
+            penampilan: assessmentRecord.catatan,
+          });
+        }
+      }
+    } else if (mockStudent && mockStudent.grade !== null) {
+      setAttachments({
+        absensi: "bukti_absen_rekap.pdf",
+        kinerja: "bukti_tugas_laporan.pdf",
+        kedisiplinan: null,
+        kerjasama: "penilaian_peer_to_peer.docx",
+        tanggungjawab: null,
+        komunikasi: null,
+        penampilan: "rubrik_sidang_akhir.pdf"
+      });
+      if (mockStudent.id === 1) setGrades({ absensi: 92, kinerja: 88, kedisiplinan: 90, kerjasama: 85, tanggungjawab: 88, komunikasi: 85, penampilan: 86 });
+      if (mockStudent.id === 2) setGrades({ absensi: 85, kinerja: 80, kedisiplinan: 83, kerjasama: 82, tanggungjawab: 84, komunikasi: 80, penampilan: 82 });
+      if (mockStudent.id === 3) setGrades({ absensi: 94, kinerja: 90, kedisiplinan: 92, kerjasama: 92, tanggungjawab: 95, komunikasi: 90, penampilan: 93 });
+      if (mockStudent.id === 5) setGrades({ absensi: 98, kinerja: 94, kedisiplinan: 96, kerjasama: 95, tanggungjawab: 96, komunikasi: 92, penampilan: 95 });
+      if (mockStudent.id === 6) setGrades({ absensi: 88, kinerja: 84, kedisiplinan: 85, kerjasama: 86, tanggungjawab: 85, komunikasi: 82, penampilan: 85 });
+      if (mockStudent.id === 8) setGrades({ absensi: 90, kinerja: 86, kedisiplinan: 87, kerjasama: 88, tanggungjawab: 88, komunikasi: 85, penampilan: 86 });
+    }
+  }, [assessmentRecord, mockStudent]);
 
   // States for dynamic uploaders
   const [uploadingCriteria, setUploadingCriteria] = useState<string | null>(null);
@@ -204,21 +286,51 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   // Form Submission
   const handleSaveAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!student) return;
+
     setIsSubmitting(true);
 
+    // Map form inputs to SubmitGradeRequest payload
+    const gradesList = Object.keys(grades).map(key => ({
+      criteriaId: key,
+      score: grades[key],
+      feedback: feedbacks[key] || "Performa magang sangat memuaskan."
+    }));
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await submitGrades({
+        studentId: student.id,
+        periodeMagangId: assessmentRecord?.periodeId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
+        mentorId: assessmentRecord?.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
+        grades: gradesList
+      });
+
       setIsSubmitting(false);
       setIsSuccess(true);
 
       setTimeout(() => {
         router.push("/dashboard/mentor/penilaian");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       setIsSubmitting(false);
-      alert("Gagal menyimpan evaluasi.");
+      alert(err.message || "Gagal menyimpan evaluasi.");
     }
   };
+
+  // Render loading state while fetching assessments
+  if (isLoading) {
+    return (
+      <div className="max-w-md mx-auto py-24 text-center space-y-4">
+        <div className="p-4 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 rounded-full inline-block border border-indigo-100 dark:border-indigo-900/40">
+          <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+        </div>
+        <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Memuat Data Evaluasi</h4>
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+          Sedang mengambil detail penilaian mahasiswa dari server...
+        </p>
+      </div>
+    );
+  }
 
   // Render 404 block if student is missing
   if (!student) {
@@ -300,7 +412,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
           <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm bg-white dark:bg-[#070e24]/40 text-center space-y-4">
             <div className="relative inline-block mx-auto">
               <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-2xl shadow-lg`}>
-                {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                {student.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
               </div>
               <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] border-2 border-white dark:border-slate-900 shadow">
                 {student.id}

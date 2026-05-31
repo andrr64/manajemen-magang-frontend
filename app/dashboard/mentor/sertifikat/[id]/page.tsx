@@ -1,14 +1,11 @@
 "use client";
 
-import React, { use, useState, useMemo, useRef } from "react";
+import React, { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
-  Mail, 
-  Phone, 
   School, 
-  User, 
   FileBadge, 
   CheckCircle, 
   Clock, 
@@ -16,7 +13,6 @@ import {
   Upload, 
   Check, 
   RefreshCw,
-  Eye,
   Sparkles,
   Paperclip,
   Trash2,
@@ -27,6 +23,7 @@ import {
   FileCheck
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
+import { useStudentCertificates } from "@/modules/sertifikat/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -35,27 +32,71 @@ interface PageProps {
 export default function MentorCertificateDetailPage({ params }: PageProps) {
   const router = useRouter();
   const unwrappedParams = use(params);
-  const studentId = parseInt(unwrappedParams.id, 10);
   
-  // Find current student
-  const student = studentsData.find(s => s.id === studentId);
+  // Instantiating real certificates hook
+  const { certificates, isLoading, isSubmitting: isHookSubmitting, uploadStudentCertificate, refreshCertificates } = useStudentCertificates();
 
-  // Simulated starting certificates database
-  const certDb: Record<number, string | null> = {
-    1: "sertifikat_budi_santoso.pdf",
-    2: null,
-    3: "sertifikat_rian_hidayat.pdf",
-    4: null,
-    5: "sertifikat_dedi_kurniawan.pdf",
-    6: null,
-    7: null,
-    8: "sertifikat_andi_pratama.pdf"
-  };
+  // Fetch certificates once on mount
+  useEffect(() => {
+    refreshCertificates();
+  }, [refreshCertificates]);
+
+  // Find matched certificate info from the API results
+  const matchedCert = useMemo(() => {
+    return certificates.find(c => String(c.mahasiswaId) === String(unwrappedParams.id));
+  }, [certificates, unwrappedParams.id]);
+
+  // Find target mock student
+  const mockStudent = useMemo(() => {
+    if (!matchedCert) {
+      const idNum = parseInt(unwrappedParams.id, 10);
+      return studentsData.find(s => s.id === idNum);
+    }
+    return studentsData.find(s => s.nim === matchedCert.nim || s.name === matchedCert.namaMahasiswa);
+  }, [matchedCert, unwrappedParams.id]);
+
+  // Unified student object
+  const student = useMemo(() => {
+    if (matchedCert) {
+      return {
+        id: matchedCert.mahasiswaId,
+        name: matchedCert.namaMahasiswa,
+        nim: matchedCert.nim,
+        university: mockStudent ? mockStudent.university : "Universitas Mitra",
+        company: mockStudent ? mockStudent.company : "Kantor Mitra",
+        avatarColor: mockStudent ? mockStudent.avatarColor : "from-indigo-500 to-cyan-500",
+        grade: mockStudent ? mockStudent.grade : null
+      };
+    } else if (mockStudent) {
+      return {
+        id: mockStudent.id,
+        name: mockStudent.name,
+        nim: mockStudent.nim,
+        university: mockStudent.university,
+        company: mockStudent.company,
+        avatarColor: mockStudent.avatarColor,
+        grade: mockStudent.grade
+      };
+    }
+    return null;
+  }, [matchedCert, mockStudent]);
 
   // State for file attachment upload
-  const [fileName, setFileName] = useState<string | null>(() => {
-    return certDb[studentId] || null;
-  });
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+
+  // Sync state once matchedCert is resolved from backend
+  useEffect(() => {
+    if (matchedCert) {
+      if (matchedCert.url && matchedCert.url !== "-") {
+        setFileName(matchedCert.url.split("/").pop() || "sertifikat.pdf");
+        setFileUrl(matchedCert.url);
+      } else {
+        setFileName(null);
+        setFileUrl(null);
+      }
+    }
+  }, [matchedCert]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileSize, setFileSize] = useState<string>("2.4 MB");
@@ -92,6 +133,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
           clearInterval(interval);
           
           setFileName(file.name);
+          setFileUrl(`https://storage.internflow.com/certificates/${file.name}`);
           setFileSize(`${sizeInMb} MB`);
           setFileType(typeLabel);
           setIsUploading(false);
@@ -109,27 +151,32 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
   const handleRemoveCertificate = () => {
     if (confirm("Apakah Anda yakin ingin menghapus berkas sertifikat ini?")) {
       setFileName(null);
+      setFileUrl(null);
       setShowToast("Berkas sertifikat magang berhasil dihapus.");
       setTimeout(() => setShowToast(""), 3000);
     }
   };
 
-  // Simulated final submit
+  // Real API save submit
   const handleSaveCertificate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!student || !matchedCert) return;
+
     setIsSubmitting(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1400));
+      const finalUrl = fileUrl || `https://storage.internflow.com/certificates/sertifikat_${student.name.toLowerCase().replace(/\s+/g, "_")}.pdf`;
+      await uploadStudentCertificate(matchedCert.periodeMagangId, finalUrl);
+      
       setIsSubmitting(false);
       setIsSuccess(true);
 
       setTimeout(() => {
         router.push("/dashboard/mentor/sertifikat");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       setIsSubmitting(false);
-      alert("Gagal menyimpan berkas.");
+      alert(err.message || "Gagal menyimpan berkas.");
     }
   };
 
@@ -151,6 +198,17 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
           <ArrowLeft className="w-3.5 h-3.5" />
           Kembali ke Daftar Sertifikat
         </Link>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+        <p className="text-slate-500 dark:text-slate-400 font-extrabold text-sm animate-pulse">
+          Memuat data berkas sertifikat...
+        </p>
       </div>
     );
   }
@@ -212,7 +270,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
           <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm bg-white dark:bg-[#070e24]/40 text-center space-y-4">
             <div className="relative inline-block mx-auto">
               <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-2xl shadow-lg`}>
-                {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                {student.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
               </div>
               <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] border-2 border-white dark:border-slate-900 shadow">
                 {student.id}
@@ -432,17 +490,17 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || fileName === null}
+                  disabled={isSubmitting || fileName === null || isHookSubmitting}
                   className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/65 text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
                 >
-                  {isSubmitting ? (
+                  {isSubmitting || isHookSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
                       Menyimpan...
                     </>
                   ) : (
                     <>
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4 text-white" />
                       Simpan & Terapkan
                     </>
                   )}

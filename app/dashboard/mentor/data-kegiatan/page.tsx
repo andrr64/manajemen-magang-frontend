@@ -24,6 +24,7 @@ import {
   XCircle
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
+import { useMentorActivities } from "../../../../modules/kegiatan/hooks";
 
 export interface ActivityLog {
   id: number;
@@ -54,22 +55,13 @@ export default function MentorActivitiesPage() {
     setViewingActivityFile({ studentName, activityName, attachmentName });
   };
 
-  // Interactive Dummy Activity database
-  const [activities, setActivities] = useState<ActivityLog[]>([
-    { id: 1, studentId: 1, activityName: "Implementasi Payment Gateway API Midtrans", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "28", status: "Dalam Review", attachment: "midtrans_integration_doc.pdf" },
-    { id: 2, studentId: 2, activityName: "Visualisasi Data Transaksi Menggunakan Chart.js", category: "Data Analytics", year: "2026", month: "Mei (05)", day: "28", status: "Disetujui", attachment: "chart_analytics_draft.png" },
-    { id: 3, studentId: 3, activityName: "Slicing Landing Page & Setup Tailwind Config", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "27", status: "Disetujui", attachment: "tailwind_slicing_v2.zip" },
-    { id: 4, studentId: 4, activityName: "Riset User Journey & Figma Wireframing Dashboard", category: "UI/UX Design", year: "2026", month: "Mei (05)", day: "26", status: "Dalam Review", attachment: null },
-    { id: 5, studentId: 5, activityName: "Penyusunan Laporan Proyek Akhir Magang Bab 1-3", category: "Administration", year: "2026", month: "Mei (05)", day: "26", status: "Disetujui", attachment: "laporan_akhir_draft1.docx" },
-    { id: 6, studentId: 6, activityName: "Wiring Diagram Listrik Gardu Induk & ETAP", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "25", status: "Dalam Review", attachment: "diagram_wiring_gardu.pdf" },
-    { id: 7, studentId: 7, activityName: "Refactoring Relasional Database Query Optimization", category: "Data Analytics", year: "2026", month: "Mei (05)", day: "25", status: "Dalam Review", attachment: null },
-    { id: 8, studentId: 8, activityName: "Konfigurasi Terraform Script untuk AWS VPC", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "24", status: "Disetujui", attachment: "aws_vpc_terraform.tf" }
-  ]);
+  // Real backend activities hook
+  const { activities, isLoading, approveActivity, rejectActivity } = useMentorActivities();
 
   // Map activities to actual student profile info
   const enrichedActivities = useMemo(() => {
     return activities.map(act => {
-      const student = studentsData.find(s => s.id === act.studentId);
+      const student = studentsData.find(s => String(s.id) === String(act.studentId));
       return {
         ...act,
         studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
@@ -108,77 +100,28 @@ export default function MentorActivitiesPage() {
     return { total, approved, pending, ratio };
   }, [enrichedActivities]);
 
-  // Simulated Edit: Ceklis (Verify/Approve Activity)
-  const handleCeklisActivity = (actId: number, studentName: string) => {
-    setActivities(prev => 
-      prev.map(act => 
-        act.id === actId 
-          ? { ...act, status: "Disetujui" } 
-          : act
-      )
-    );
-    setShowToast(`Kegiataan mahasiswa ${studentName} berhasil disetujui (ceklis)!`);
-    setTimeout(() => setShowToast(""), 4000);
-  };
-
-  // Simulated Edit: Hapus (Delete Activity row)
-  const handleHapusActivity = (actId: number, studentName: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus log kegiatan dari ${studentName}?`)) {
-      setActivities(prev => prev.filter(act => act.id !== actId));
-      setShowToast(`Log kegiatan ${studentName} berhasil dihapus dari sistem.`);
+  // Real Edit: Ceklis (Verify/Approve Activity)
+  const handleCeklisActivity = async (actId: any, studentName: string) => {
+    try {
+      await approveActivity(Number(actId));
+      setShowToast(`Kegiatan mahasiswa ${studentName} berhasil disetujui (ceklis)!`);
       setTimeout(() => setShowToast(""), 4000);
+    } catch (err: any) {
+      alert(err.message || "Gagal menyetujui kegiatan.");
     }
   };
 
-  // Simulated Custom File Upload Action
-  const handleSimulatedUpload = (actId: number, studentName: string) => {
-    const fileNames = [
-      "laporan_kegiatan_final.pdf",
-      "tangkapan_layar_progress.png",
-      "kode_sumber_teruji.zip",
-      "laporan_tambahan.docx",
-      "wireframe_figma.pdf"
-    ];
-    const randomFile = fileNames[Math.floor(Math.random() * fileNames.length)];
-    
-    setUploadingId(actId);
-    setUploadProgress(0);
-
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          
-          setActivities(db => 
-            db.map(act => 
-              act.id === actId 
-                ? { ...act, attachment: randomFile } 
-                : act
-            )
-          );
-
-          setUploadingId(null);
-          setShowToast(`Berkas "${randomFile}" berhasil diunggah untuk ${studentName}!`);
-          setTimeout(() => setShowToast(""), 4000);
-
-          return 100;
-        }
-        return prev + 25;
-      });
-    }, 300);
-  };
-
-  // Clear Attachment
-  const handleRemoveAttachment = (actId: number, studentName: string) => {
-    setActivities(prev => 
-      prev.map(act => 
-        act.id === actId 
-          ? { ...act, attachment: null } 
-          : act
-      )
-    );
-    setShowToast(`Lampiran berkas untuk ${studentName} berhasil dihapus.`);
-    setTimeout(() => setShowToast(""), 4000);
+  // Real Edit: Hapus (Delete Activity row)
+  const handleHapusActivity = async (actId: any, studentName: string) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus log kegiatan dari ${studentName}?`)) {
+      try {
+        await rejectActivity(Number(actId));
+        setShowToast(`Log kegiatan ${studentName} berhasil dihapus dari sistem.`);
+        setTimeout(() => setShowToast(""), 4000);
+      } catch (err: any) {
+        alert(err.message || "Gagal menghapus kegiatan.");
+      }
+    }
   };
 
   return (
@@ -244,7 +187,7 @@ export default function MentorActivitiesPage() {
                     Berikut merupakan hasil rangkuman, implementasi, dan pengujian teknis yang telah dikerjakan untuk target minggu ini. Pekerjaan mencakup konfigurasi lingkungan kerja, analisis dependensi, penyusunan rancangan logika program, penanganan kasus kegagalan transaksi, hingga integrasi backend dengan antarmuka klien.
                   </p>
                   <p className="bg-slate-50 dark:bg-slate-950/40 p-3 border border-slate-150/45 dark:border-slate-850 rounded-xl font-mono text-[9px] text-slate-500 dark:text-slate-450 whitespace-pre-wrap leading-normal">
-                    // Hasil Pengujian Log & Verifikasi Berkas
+                    {"// Hasil Pengujian Log & Verifikasi Berkas"}
                     Status: Sukses Kompilasi
                     Checksum MD5: 9a8f7b6c5d4e3f2a1b0c9d8e7f6a5b4c
                     Uji Beban (Stres-Test): 150 requests/sec, latency &lt; 85ms
@@ -420,7 +363,18 @@ export default function MentorActivitiesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredActivities.map((act, index) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-16 text-center">
+                    <div className="max-w-md mx-auto space-y-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto" />
+                      <p className="text-slate-400 dark:text-slate-550 font-extrabold text-xs">
+                        Memuat Laporan Kegiatan...
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredActivities.map((act, index) => (
                 <tr key={act.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
                   
                   {/* Column 1: No. */}
