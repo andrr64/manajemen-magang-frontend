@@ -1,5 +1,5 @@
 export interface Activity {
-  id: number;
+  id: number | string;
   title: string;
   date: string;
   time: string;
@@ -9,7 +9,7 @@ export interface Activity {
 }
 
 export interface ActivityLog {
-  id: number;
+  id: number | string;
   studentId?: string | number;
   studentName: string;
   studentNim: string;
@@ -34,7 +34,13 @@ export interface CreateActivityRequest {
 }
 
 export interface ApproveActivityRequest {
-  id: number;
+  id: number | string;
   status: "Disetujui" | "Ditolak";
   notes?: string;
+}
+
+export interface ActivityStat {
+  totalKegiatan: number;
+  disetujui: number;
+  ditolak: number;
 }

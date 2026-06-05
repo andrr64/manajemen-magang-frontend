@@ -32,3 +32,44 @@ export interface SubmitGradeRequest {
     feedback: string;
   }[];
 }
+
+export interface PenilaianResponse {
+  id: string;
+  periodeMagangId: string;
+  mahasiswaId: string;
+  nim: string;
+  namaMahasiswa: string;
+  mentorId: string;
+  namaMentor: string;
+  kinerja: number;
+  kedisiplinan: number;
+  tanggungJawab: number;
+  komunikasi: number;
+  sikap: number;
+  kerapihan: number;
+  absensi: number;
+  kerjasama: number;
+  nilaiTotal: number;
+  catatan: string;
+  statusPenilaian: string;
+}
+
+export interface PenilaianRequest {
+  periodeMagangId: string;
+  mentorId: string;
+  kinerja: number;
+  kedisiplinan: number;
+  tanggungJawab: number;
+  komunikasi: number;
+  sikap: number;
+  kerapihan: number;
+  absensi: number;
+  kerjasama: number;
+  catatan: string;
+}
+
+export interface PenilaianStatResponse {
+  totalPenilaian: number;
+  totalSudahDinilai: number;
+  totalBelumDinilai: number;
+}

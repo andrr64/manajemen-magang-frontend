@@ -1,5 +1,5 @@
 import { executeHybridRequest, mockDB } from "../api-client";
-import { Activity, CreateActivityRequest } from "./types";
+import { Activity, CreateActivityRequest, ActivityStat } from "./types";
 
 export interface MentorActivityLog {
   id: number | string;
@@ -290,6 +290,56 @@ export const kegiatanAPI = {
         const updated = activities.filter(a => String(a.id) !== String(activityId));
         mockDB.set<MentorActivityLog[]>("mentor_activities", updated);
         return true;
+      }
+    );
+  },
+
+  getActivityFileUrl: async (activityId: number | string) => {
+    return executeHybridRequest<{ url: string }>(
+      `Get file URL for activity ID: ${activityId}`,
+      `/api/kegiatan/${activityId}/file`,
+      {
+        method: "GET"
+      },
+      () => {
+        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
+        const act = activities.find(a => String(a.id) === String(activityId));
+        if (!act || !act.attachment) {
+          throw new Error("Berkas lampiran tidak ditemukan.");
+        }
+        return { url: `https://storage.internflow.com/logbook/${act.attachment}` };
+      }
+    );
+  },
+
+  getActivityStatistics: async (status?: string, namaMahasiswa?: string) => {
+    const q = new URLSearchParams();
+    if (status && status !== "Semua") q.append("status", status.toLowerCase());
+    if (namaMahasiswa) q.append("namaMahasiswa", namaMahasiswa);
+
+    return executeHybridRequest<ActivityStat>(
+      "Get activity statistics",
+      `/api/kegiatan/statistik?${q.toString()}`,
+      {
+        method: "GET"
+      },
+      () => {
+        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
+        const filtered = activities.filter(a => {
+          const matchStatus = !status || status === "Semua" || a.status === status;
+          const matchName = !namaMahasiswa || a.activityName.toLowerCase().includes(namaMahasiswa.toLowerCase());
+          return matchStatus && matchName;
+        });
+
+        const totalKegiatan = filtered.length;
+        const disetujui = filtered.filter(a => a.status === "Disetujui").length;
+        const ditolak = filtered.filter(a => (a.status as any) === "Ditolak").length;
+
+        return {
+          totalKegiatan,
+          disetujui,
+          ditolak
+        };
       }
     );
   }

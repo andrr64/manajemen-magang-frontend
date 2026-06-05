@@ -25,6 +25,12 @@ export interface VerifyLetterResponse {
   message: string;
 }
 
+// Real Backend Request Types
+export interface SuratKeteranganRequest {
+  periodeMagangId: string;
+  url: string;
+}
+
 // Real Backend Response Types
 export interface SuratKeteranganResponse {
   id: string | null;

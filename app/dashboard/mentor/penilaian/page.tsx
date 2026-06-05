@@ -16,7 +16,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { studentsData, Student } from "../data-mahasiswa/studentsData";
-import { useStudentAssessments } from "@/modules/penilaian/hooks";
+import { useStudentAssessments, usePenilaianStats } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/mahasiswa/hooks";
 
 export default function MentorPenilaianPage() {
@@ -25,6 +25,7 @@ export default function MentorPenilaianPage() {
 
   // Instantiating real assessments hook
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
+  const { stats: apiStats } = usePenilaianStats(searchQuery);
   const { rawStudents } = useStudents();
   const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
@@ -60,12 +61,20 @@ export default function MentorPenilaianPage() {
 
   // Calculate assessment quick statistics reactively
   const stats = useMemo(() => {
+    if (apiStats) {
+      return {
+        total: apiStats.totalPenilaian,
+        graded: apiStats.totalSudahDinilai,
+        pending: apiStats.totalBelumDinilai,
+        ratio: apiStats.totalPenilaian > 0 ? ((apiStats.totalSudahDinilai / apiStats.totalPenilaian) * 100).toFixed(1) : "0.0"
+      };
+    }
     const total = assessments.length;
     const graded = assessments.filter(s => s.penilaianId !== null).length;
     const pending = total - graded;
     const ratio = total > 0 ? ((graded / total) * 100).toFixed(1) : "0.0";
     return { total, graded, pending, ratio };
-  }, [assessments]);
+  }, [assessments, apiStats]);
 
   return (
     <div className="space-y-6">

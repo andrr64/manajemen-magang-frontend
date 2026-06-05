@@ -14,6 +14,17 @@ const INITIAL_LETTER: LetterInfo = {
   hrName: "Siti Amelia, M.Psi."
 };
 
+const INITIAL_MOCK_LIST: SuratKeteranganResponse[] = [
+  { id: "cert-1", periodeMagangId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81", mahasiswaId: "1", nim: "2201012001", namaMahasiswa: "Budi Santoso", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" },
+  { id: null, periodeMagangId: "period-2", mahasiswaId: "2", nim: "2201012042", namaMahasiswa: "Siti Rahmawati", url: "-", statusSurat: "belum diunggah", createdAt: null },
+  { id: "cert-3", periodeMagangId: "period-3", mahasiswaId: "3", nim: "2201012015", namaMahasiswa: "Rian Hidayat", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" },
+  { id: null, periodeMagangId: "period-4", mahasiswaId: "4", nim: "2201012088", namaMahasiswa: "Amanda Putri", url: "-", statusSurat: "belum diunggah", createdAt: null },
+  { id: null, periodeMagangId: "period-5", mahasiswaId: "5", nim: "2201012102", namaMahasiswa: "Dedi Kurniawan", url: "-", statusSurat: "belum diunggah", createdAt: null },
+  { id: null, periodeMagangId: "period-6", mahasiswaId: "6", nim: "2201012110", namaMahasiswa: "Fajar Nugroho", url: "-", statusSurat: "belum diunggah", createdAt: null },
+  { id: null, periodeMagangId: "period-7", mahasiswaId: "7", nim: "2201012123", namaMahasiswa: "Lina Marlina", url: "-", statusSurat: "belum diunggah", createdAt: null },
+  { id: "cert-8", periodeMagangId: "period-8", mahasiswaId: "8", nim: "2201012134", namaMahasiswa: "Andi Pratama", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" }
+];
+
 function mapBackendLetterToFrontend(item: any): LetterInfo {
   return {
     number: "GTN/HRD-INTERN/V/2026/0892",
@@ -198,16 +209,8 @@ export const suratKeteranganAPI = {
         method: "GET"
       },
       () => {
-        return [
-          { id: "cert-1", periodeMagangId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81", mahasiswaId: "1", nim: "2201012001", namaMahasiswa: "Budi Santoso", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" },
-          { id: null, periodeMagangId: "period-2", mahasiswaId: "2", nim: "2201012042", namaMahasiswa: "Siti Rahmawati", url: "-", statusSurat: "belum diunggah", createdAt: null },
-          { id: "cert-3", periodeMagangId: "period-3", mahasiswaId: "3", nim: "2201012015", namaMahasiswa: "Rian Hidayat", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" },
-          { id: null, periodeMagangId: "period-4", mahasiswaId: "4", nim: "2201012088", namaMahasiswa: "Amanda Putri", url: "-", statusSurat: "belum diunggah", createdAt: null },
-          { id: null, periodeMagangId: "period-5", mahasiswaId: "5", nim: "2201012102", namaMahasiswa: "Dedi Kurniawan", url: "-", statusSurat: "belum diunggah", createdAt: null },
-          { id: null, periodeMagangId: "period-6", mahasiswaId: "6", nim: "2201012110", namaMahasiswa: "Fajar Nugroho", url: "-", statusSurat: "belum diunggah", createdAt: null },
-          { id: null, periodeMagangId: "period-7", mahasiswaId: "7", nim: "2201012123", namaMahasiswa: "Lina Marlina", url: "-", statusSurat: "belum diunggah", createdAt: null },
-          { id: "cert-8", periodeMagangId: "period-8", mahasiswaId: "8", nim: "2201012134", namaMahasiswa: "Andi Pratama", url: "https://storage.internflow.com/letters/completion-letter.pdf", statusSurat: "Sudah Diunggah", createdAt: "2026-05-29T10:00:00Z" }
-        ].filter(item => {
+        const list = mockDB.get<SuratKeteranganResponse[]>("letters_list", INITIAL_MOCK_LIST);
+        return list.filter(item => {
           const isUploaded = item.id !== null;
           const statusMatch = status === "Semua" || !status ||
             (status === "Sudah Diunggah" && isUploaded) ||
@@ -233,10 +236,20 @@ export const suratKeteranganAPI = {
         method: "GET"
       },
       () => {
+        const list = mockDB.get<SuratKeteranganResponse[]>("letters_list", INITIAL_MOCK_LIST);
+        const filtered = list.filter(item => {
+          if (!namaMahasiswa) return true;
+          return item.namaMahasiswa.toLowerCase().includes(namaMahasiswa.toLowerCase()) || item.nim.includes(namaMahasiswa);
+        });
+
+        const totalSuratDiunggah = filtered.filter(item => item.id !== null).length;
+        const totalJumlahSurat = filtered.length;
+        const totalSuratBelumDiunggah = totalJumlahSurat - totalSuratDiunggah;
+
         return {
-          totalSuratDiunggah: 3,
-          totalSuratBelumDiunggah: 5,
-          totalJumlahSurat: 8
+          totalSuratDiunggah,
+          totalSuratBelumDiunggah,
+          totalJumlahSurat
         };
       }
     );
@@ -254,17 +267,33 @@ export const suratKeteranganAPI = {
         })
       },
       () => {
-        const mockResponse: SuratKeteranganResponse = {
-          id: "cert-new",
-          periodeMagangId,
-          mahasiswaId: "1",
-          nim: "2201012001",
-          namaMahasiswa: "Budi Santoso",
-          url,
-          statusSurat: "Sudah Diunggah",
-          createdAt: new Date().toISOString()
-        };
-        return mockResponse;
+        const list = mockDB.get<SuratKeteranganResponse[]>("letters_list", INITIAL_MOCK_LIST);
+        const idx = list.findIndex(item => item.periodeMagangId === periodeMagangId);
+        let updated: SuratKeteranganResponse;
+        if (idx !== -1) {
+          updated = {
+            ...list[idx],
+            id: list[idx].id || `letter-${Date.now()}`,
+            url,
+            statusSurat: "Sudah Diunggah",
+            createdAt: new Date().toISOString()
+          };
+          list[idx] = updated;
+        } else {
+          updated = {
+            id: `letter-${Date.now()}`,
+            periodeMagangId,
+            mahasiswaId: "new-student",
+            nim: "2201012999",
+            namaMahasiswa: "Mahasiswa Baru",
+            url,
+            statusSurat: "Sudah Diunggah",
+            createdAt: new Date().toISOString()
+          };
+          list.push(updated);
+        }
+        mockDB.set<SuratKeteranganResponse[]>("letters_list", list);
+        return updated;
       }
     );
   }

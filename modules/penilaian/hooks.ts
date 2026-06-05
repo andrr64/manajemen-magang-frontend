@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { AssessmentItem, GradeSummary, SubmitGradeRequest } from "./types";
+import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianStatResponse } from "./types";
 import { penilaianAPI } from "./api";
 
 export function useAssessment() {
@@ -104,5 +104,35 @@ export function useStudentAssessments() {
     isLoading,
     error,
     refreshAssessments: fetchAssessments
+  };
+}
+
+export function usePenilaianStats(namaMahasiswa?: string) {
+  const [stats, setStats] = useState<PenilaianStatResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await penilaianAPI.getPenilaianStatistics(namaMahasiswa);
+      setStats(response.data);
+    } catch (err: any) {
+      setError(err.message || "Gagal memuat statistik penilaian.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [namaMahasiswa]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return {
+    stats,
+    isLoading,
+    error,
+    refreshStats: fetchStats
   };
 }

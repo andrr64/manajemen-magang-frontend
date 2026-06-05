@@ -21,6 +21,12 @@ export interface VerifyCertificateResponse {
   message: string;
 }
 
+// Real Backend Request Types
+export interface SertifikatRequest {
+  periodeMagangId: string;
+  url: string;
+}
+
 // Real Backend Response Types
 export interface SertifikatResponse {
   id: string | null;

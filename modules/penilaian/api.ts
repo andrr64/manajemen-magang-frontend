@@ -1,5 +1,5 @@
 import { executeHybridRequest, mockDB } from "../api-client";
-import { AssessmentItem, GradeSummary, SubmitGradeRequest } from "./types";
+import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianResponse, PenilaianStatResponse } from "./types";
 
 const INITIAL_ASSESSMENTS: AssessmentItem[] = [
   { 
@@ -58,12 +58,174 @@ const INITIAL_ASSESSMENTS: AssessmentItem[] = [
   }
 ];
 
+const DEFAULT_STUDENT_ASSESSMENTS = [
+  {
+    periodeId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
+    mahasiswaId: "1",
+    nim: "2201012001",
+    namaMahasiswa: "Budi Santoso",
+    penilaianId: "pen-1",
+    mentorId: "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
+    namaMentor: "Dr. Ahmad Hidayat, M.T.",
+    nilaiTotal: 88.0,
+    catatan: "Sangat baik.",
+    kinerja: 88.0,
+    kedisiplinan: 90.0,
+    tanggungJawab: 85.0,
+    komunikasi: 85.0,
+    sikap: 92.0,
+    kerapihan: 80.0,
+    absensi: 96.0,
+    kerjasama: 88.0,
+    statusPenilaian: "Sudah Dinilai"
+  },
+  {
+    periodeId: "periode-2",
+    mahasiswaId: " sit-2",
+    nim: "2201012042",
+    namaMahasiswa: "Siti Rahmawati",
+    penilaianId: "pen-2",
+    mentorId: "mentor-1",
+    namaMentor: "Mentor A",
+    nilaiTotal: 82.0,
+    catatan: "Bagus.",
+    kinerja: 80.0,
+    kedisiplinan: 83.0,
+    tanggungJawab: 84.0,
+    komunikasi: 80.0,
+    sikap: 85.0,
+    kerapihan: 82.0,
+    absensi: 85.0,
+    kerjasama: 82.0,
+    statusPenilaian: "Sudah Dinilai"
+  },
+  {
+    periodeId: "periode-3",
+    mahasiswaId: "3",
+    nim: "2201012015",
+    namaMahasiswa: "Rian Hidayat",
+    penilaianId: "pen-3",
+    mentorId: "mentor-1",
+    namaMentor: "Mentor A",
+    nilaiTotal: 92.0,
+    catatan: "Luar biasa.",
+    kinerja: 90.0,
+    kedisiplinan: 92.0,
+    tanggungJawab: 95.0,
+    komunikasi: 90.0,
+    sikap: 94.0,
+    kerapihan: 93.0,
+    absensi: 94.0,
+    kerjasama: 92.0,
+    statusPenilaian: "Sudah Dinilai"
+  },
+  {
+    periodeId: "periode-4",
+    mahasiswaId: "4",
+    nim: "2201012088",
+    namaMahasiswa: "Amanda Putri",
+    penilaianId: null,
+    mentorId: null,
+    namaMentor: null,
+    nilaiTotal: null,
+    catatan: null,
+    kinerja: null,
+    kedisiplinan: null,
+    tanggungJawab: null,
+    komunikasi: null,
+    sikap: null,
+    kerapihan: null,
+    absensi: null,
+    kerjasama: null,
+    statusPenilaian: "Belum Dinilai"
+  },
+  {
+    periodeId: "periode-5",
+    mahasiswaId: "5",
+    nim: "2201012102",
+    namaMahasiswa: "Dedi Kurniawan",
+    penilaianId: "pen-5",
+    mentorId: "mentor-1",
+    namaMentor: "Mentor A",
+    nilaiTotal: 95.0,
+    catatan: "Sangat luar biasa.",
+    kinerja: 94.0,
+    kedisiplinan: 96.0,
+    tanggungJawab: 96.0,
+    komunikasi: 92.0,
+    sikap: 98.0,
+    kerapihan: 95.0,
+    absensi: 98.0,
+    kerjasama: 95.0,
+    statusPenilaian: "Sudah Dinilai"
+  },
+  {
+    periodeId: "periode-6",
+    mahasiswaId: "6",
+    nim: "2201012110",
+    namaMahasiswa: "Fajar Nugroho",
+    penilaianId: "pen-6",
+    mentorId: "mentor-1",
+    namaMentor: "Mentor A",
+    nilaiTotal: 85.0,
+    catatan: "Baik.",
+    kinerja: 84.0,
+    kedisiplinan: 85.0,
+    tanggungJawab: 85.0,
+    komunikasi: 82.0,
+    sikap: 88.0,
+    kerapihan: 85.0,
+    absensi: 88.0,
+    kerjasama: 86.0,
+    statusPenilaian: "Sudah Dinilai"
+  },
+  {
+    periodeId: "periode-7",
+    mahasiswaId: "7",
+    nim: "2201012123",
+    namaMahasiswa: "Lina Marlina",
+    penilaianId: null,
+    mentorId: null,
+    namaMentor: null,
+    nilaiTotal: null,
+    catatan: null,
+    kinerja: null,
+    kedisiplinan: null,
+    tanggungJawab: null,
+    komunikasi: null,
+    sikap: null,
+    kerapihan: null,
+    absensi: null,
+    kerjasama: null,
+    statusPenilaian: "Belum Dinilai"
+  },
+  {
+    periodeId: "periode-8",
+    mahasiswaId: "8",
+    nim: "2201012134",
+    namaMahasiswa: "Andi Pratama",
+    penilaianId: "pen-8",
+    mentorId: "mentor-1",
+    namaMentor: "Mentor A",
+    nilaiTotal: 87.0,
+    catatan: "Memuaskan.",
+    kinerja: 86.0,
+    kedisiplinan: 87.0,
+    tanggungJawab: 88.0,
+    komunikasi: 85.0,
+    sikap: 90.0,
+    kerapihan: 86.0,
+    absensi: 90.0,
+    kerjasama: 88.0,
+    statusPenilaian: "Sudah Dinilai"
+  }
+];
+
 function mapBackendPenilaianToFrontend(item: any): AssessmentItem[] {
-  // Back-map from flat entity model properties back to multi-criteria array objects
   return [
     { id: "absensi", name: "Kedisiplinan Absensi", desc: "Kehadiran harian dan ketepatan check-in.", score: item.absensi || 90, weight: 15, feedback: item.catatan || "Bagus", attachment: null },
     { id: "kinerja", name: "Kinerja Proyek", desc: "Kualitas hasil pengerjaan proyek magang.", score: item.kinerja || 88, weight: 20, feedback: item.catatan || "Sangat baik", attachment: null },
-    { id: "tanggungjawab", name: "Bertanggung Jawab", desc: "Komitmen menyelesaikan tugas.", score: item.tanggungJawab || 85, weight: 15, feedback: item.catatan || "Komit", attachment: null },
+    { id: "tanggungjawab", name: "Bertanggung Jawab", desc: "Komitmen menyelesaikan tugas.", score: item.tanggungJawab || item.tanggungjawab || 85, weight: 15, feedback: item.catatan || "Komit", attachment: null },
     { id: "sikap", name: "Etika & Sikap Kerja", desc: "Sikap kerja profesional.", score: item.sikap || 92, weight: 10, feedback: item.catatan || "Sopan", attachment: null },
     { id: "keaktifan", name: "Keaktifan & Komunikasi", desc: "Daily stand-up koordinasi tim.", score: item.komunikasi || 85, weight: 15, feedback: item.catatan || "Aktif", attachment: null },
     { id: "laporan", name: "Laporan Akhir Magang", desc: "Sistematika penulisan laporan magang.", score: item.nilaiTotal || 86, weight: 25, feedback: item.catatan || "Rapih", attachment: null }
@@ -143,7 +305,6 @@ export const penilaianAPI = {
   },
 
   submitStudentGrades: async (payload: SubmitGradeRequest) => {
-    // Collect specific rubric points from payload array values
     const getVal = (id: string) => {
       const g = payload.grades.find(item => String(item.criteriaId).toLowerCase().includes(id));
       return g ? g.score : 85.0;
@@ -169,25 +330,65 @@ export const penilaianAPI = {
         })
       },
       () => {
-        const current = mockDB.get<AssessmentItem[]>("assessments", INITIAL_ASSESSMENTS);
+        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
+        const index = current.findIndex(item => String(item.mahasiswaId) === String(payload.studentId));
         
-        payload.grades.forEach(g => {
-          const index = current.findIndex(item => item.id === String(g.criteriaId) || item.name.toLowerCase().includes(String(g.criteriaId).toLowerCase()));
-          if (index !== -1) {
-            current[index].score = g.score;
-            current[index].feedback = g.feedback;
-          }
-        });
+        const kinerja = getVal("kinerja");
+        const kedisiplinan = getVal("kedisiplinan") || getVal("absensi");
+        const tanggungJawab = getVal("tanggungjawab");
+        const komunikasi = getVal("komunikasi") || getVal("keaktifan");
+        const sikap = getVal("sikap");
+        const kerapihan = getVal("penampilan") || 85.0;
+        const absensi = getVal("absensi");
+        const kerjasama = getVal("kerjasama") || 85.0;
+        const catatan = payload.grades[0]?.feedback || "Performa magang sangat memuaskan.";
+        const nilaiTotal = parseFloat(((kinerja * 0.2) + (kedisiplinan * 0.15) + (tanggungJawab * 0.15) + (komunikasi * 0.1) + (sikap * 0.1) + (kerapihan * 0.1) + (absensi * 0.1) + (kerjasama * 0.1)).toFixed(1));
 
-        mockDB.set<AssessmentItem[]>("assessments", current);
+        if (index !== -1) {
+          current[index] = {
+            ...current[index],
+            penilaianId: current[index].penilaianId || `pen-${Date.now()}`,
+            nilaiTotal,
+            catatan,
+            kinerja,
+            kedisiplinan,
+            tanggungJawab,
+            komunikasi,
+            sikap,
+            kerapihan,
+            absensi,
+            kerjasama,
+            statusPenilaian: "Sudah Dinilai"
+          };
+        } else {
+          current.push({
+            periodeId: payload.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
+            mahasiswaId: String(payload.studentId),
+            nim: "2201012001",
+            namaMahasiswa: "Mahasiswa Baru",
+            penilaianId: `pen-${Date.now()}`,
+            mentorId: payload.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
+            namaMentor: "Mentor A",
+            nilaiTotal,
+            catatan,
+            kinerja,
+            kedisiplinan,
+            tanggungJawab,
+            komunikasi,
+            sikap,
+            kerapihan,
+            absensi,
+            kerjasama,
+            statusPenilaian: "Sudah Dinilai"
+          });
+        }
+        mockDB.set<any[]>("student_assessments", current);
         return true;
       }
-    ).then(() => {
+    ).then((res) => {
       return {
-        data: true,
-        status: 200,
-        message: "Grades submitted successfully",
-        timestamp: new Date().toISOString()
+        ...res,
+        data: true
       };
     });
   },
@@ -205,96 +406,8 @@ export const penilaianAPI = {
         method: "GET"
       },
       () => {
-        return [
-          {
-            periodeId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
-            mahasiswaId: "1",
-            nim: "2201012001",
-            namaMahasiswa: "Budi Santoso",
-            penilaianId: "pen-1",
-            mentorId: "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
-            namaMentor: "Mentor A",
-            nilaiTotal: 88.0,
-            catatan: "Sangat baik."
-          },
-          {
-            periodeId: "periode-2",
-            mahasiswaId: " sit-2",
-            nim: "2201012042",
-            namaMahasiswa: "Siti Rahmawati",
-            penilaianId: "pen-2",
-            mentorId: "mentor-1",
-            namaMentor: "Mentor A",
-            nilaiTotal: 82.0,
-            catatan: "Bagus."
-          },
-          {
-            periodeId: "periode-3",
-            mahasiswaId: "3",
-            nim: "2201012015",
-            namaMahasiswa: "Rian Hidayat",
-            penilaianId: "pen-3",
-            mentorId: "mentor-1",
-            namaMentor: "Mentor A",
-            nilaiTotal: 92.0,
-            catatan: "Luar biasa."
-          },
-          {
-            periodeId: "periode-4",
-            mahasiswaId: "4",
-            nim: "2201012088",
-            namaMahasiswa: "Amanda Putri",
-            penilaianId: null,
-            mentorId: null,
-            namaMentor: null,
-            nilaiTotal: null,
-            catatan: null
-          },
-          {
-            periodeId: "periode-5",
-            mahasiswaId: "5",
-            nim: "2201012102",
-            namaMahasiswa: "Dedi Kurniawan",
-            penilaianId: "pen-5",
-            mentorId: "mentor-1",
-            namaMentor: "Mentor A",
-            nilaiTotal: 95.0,
-            catatan: "Sangat luar biasa."
-          },
-          {
-            periodeId: "periode-6",
-            mahasiswaId: "6",
-            nim: "2201012110",
-            namaMahasiswa: "Fajar Nugroho",
-            penilaianId: "pen-6",
-            mentorId: "mentor-1",
-            namaMentor: "Mentor A",
-            nilaiTotal: 85.0,
-            catatan: "Baik."
-          },
-          {
-            periodeId: "periode-7",
-            mahasiswaId: "7",
-            nim: "2201012123",
-            namaMahasiswa: "Lina Marlina",
-            penilaianId: null,
-            mentorId: null,
-            namaMentor: null,
-            nilaiTotal: null,
-            catatan: null
-          },
-          {
-            periodeId: "periode-8",
-            mahasiswaId: "8",
-            nim: "2201012134",
-            namaMahasiswa: "Andi Pratama",
-            penilaianId: "pen-8",
-            mentorId: "mentor-1",
-            namaMentor: "Mentor A",
-            nilaiTotal: 87.0,
-            catatan: "Memuaskan."
-          }
-        ].filter(item => {
+        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
+        return current.filter(item => {
           const isGraded = item.penilaianId !== null;
           const matchesStatus =
             status === "Semua" ||
@@ -309,6 +422,52 @@ export const penilaianAPI = {
 
           return matchesStatus && matchesName;
         });
+      }
+    ).then((res) => {
+      if (res.data && Array.isArray(res.data)) {
+        return {
+          ...res,
+          data: res.data.map((item: any) => ({
+            ...item,
+            penilaianId: item.statusPenilaian === "Sudah Dinilai" ? (item.id || item.penilaianId) : null,
+            periodeId: item.periodeMagangId || item.periodeId,
+            periodeMagangId: item.periodeMagangId || item.periodeId,
+            tanggungJawab: item.tanggungJawab !== undefined ? item.tanggungJawab : item.tanggungjawab,
+            tanggungjawab: item.tanggungJawab !== undefined ? item.tanggungJawab : item.tanggungjawab
+          }))
+        };
+      }
+      return res;
+    });
+  },
+
+  getPenilaianStatistics: async (namaMahasiswa?: string) => {
+    const queryParams = new URLSearchParams();
+    if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
+
+    const url = `/api/penilaian/statistik?${queryParams.toString()}`;
+    return executeHybridRequest<PenilaianStatResponse>(
+      "Get assessment statistics",
+      url,
+      {
+        method: "GET"
+      },
+      () => {
+        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
+        const filtered = current.filter(item => {
+          if (!namaMahasiswa) return true;
+          return item.namaMahasiswa.toLowerCase().includes(namaMahasiswa.toLowerCase()) || item.nim.includes(namaMahasiswa);
+        });
+
+        const totalPenilaian = filtered.length;
+        const totalSudahDinilai = filtered.filter(item => item.penilaianId !== null || item.statusPenilaian === "Sudah Dinilai").length;
+        const totalBelumDinilai = totalPenilaian - totalSudahDinilai;
+
+        return {
+          totalPenilaian,
+          totalSudahDinilai,
+          totalBelumDinilai
+        };
       }
     );
   }

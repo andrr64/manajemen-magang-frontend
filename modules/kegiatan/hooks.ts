@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Activity, CreateActivityRequest } from "./types";
+import { Activity, CreateActivityRequest, ActivityStat } from "./types";
 import { kegiatanAPI, MentorActivityLog } from "./api";
 
 export function useActivities() {
@@ -41,12 +41,12 @@ export function useActivities() {
     }
   };
 
-  const uploadAttachment = async (activityId: number, fileName: string, fileSize: string) => {
+  const uploadAttachment = async (activityId: number | string, fileName: string, fileSize: string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       const response = await kegiatanAPI.uploadStudentAttachment(activityId, fileName, fileSize);
-      setActivities(prev => prev.map(a => a.id === activityId ? response.data : a));
+      setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? response.data : a));
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal mengunggah berkas lampiran.";
@@ -57,12 +57,12 @@ export function useActivities() {
     }
   };
 
-  const deleteActivity = async (activityId: number) => {
+  const deleteActivity = async (activityId: number | string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       await kegiatanAPI.deleteStudentActivity(activityId);
-      setActivities(prev => prev.filter(a => a.id !== activityId));
+      setActivities(prev => prev.filter(a => String(a.id) !== String(activityId)));
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus kegiatan.";
@@ -108,12 +108,12 @@ export function useMentorActivities() {
     fetchActivities();
   }, [fetchActivities]);
 
-  const approveActivity = async (activityId: number) => {
+  const approveActivity = async (activityId: number | string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       const response = await kegiatanAPI.approveMentorActivity(activityId, "Disetujui");
-      setActivities(prev => prev.map(a => a.id === activityId ? response.data : a));
+      setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? response.data : a));
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memverifikasi kegiatan.";
@@ -124,12 +124,12 @@ export function useMentorActivities() {
     }
   };
 
-  const rejectActivity = async (activityId: number) => {
+  const rejectActivity = async (activityId: number | string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       await kegiatanAPI.deleteMentorActivity(activityId);
-      setActivities(prev => prev.filter(a => a.id !== activityId));
+      setActivities(prev => prev.filter(a => String(a.id) !== String(activityId)));
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menolak laporan kegiatan.";
@@ -140,6 +140,15 @@ export function useMentorActivities() {
     }
   };
 
+  const fetchFileUrl = async (activityId: number | string) => {
+    try {
+      const response = await kegiatanAPI.getActivityFileUrl(activityId);
+      return response.data.url;
+    } catch (err: any) {
+      throw new Error(err.message || "Gagal mendapatkan tautan berkas.");
+    }
+  };
+
   return {
     activities,
     isLoading,
@@ -147,6 +156,37 @@ export function useMentorActivities() {
     error,
     approveActivity,
     rejectActivity,
+    fetchFileUrl,
     refreshActivities: fetchActivities
+  };
+}
+
+export function useActivityStats(status?: string, namaMahasiswa?: string) {
+  const [stats, setStats] = useState<ActivityStat | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await kegiatanAPI.getActivityStatistics(status, namaMahasiswa);
+      setStats(response.data);
+    } catch (err: any) {
+      setError(err.message || "Gagal memuat statistik kegiatan.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [status, namaMahasiswa]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return {
+    stats,
+    isLoading,
+    error,
+    refreshStats: fetchStats
   };
 }
