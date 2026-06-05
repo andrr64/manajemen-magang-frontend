@@ -63,8 +63,29 @@ function mapBackendActivityToMentorLog(item: any): MentorActivityLog {
     }
   };
 
+  const parseMonth = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      const mNum = String(d.getMonth() + 1).padStart(2, "0");
+      return `${months[d.getMonth()]} (${mNum})`;
+    } catch (_) {
+      return "Juni (06)";
+    }
+  };
+
+  const parseYear = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return String(d.getFullYear());
+    } catch (_) {
+      return "2026";
+    }
+  };
+
   const statusMap: Record<string, "Disetujui" | "Dalam Review"> = {
     "DISETUJUI": "Disetujui",
+    "BELUM DISETUJUI": "Dalam Review",
     "DIREVIEW": "Dalam Review",
     "DRAFT": "Dalam Review",
     "DITOLAK": "Dalam Review" // Fallback to pending review in UI
@@ -72,11 +93,11 @@ function mapBackendActivityToMentorLog(item: any): MentorActivityLog {
 
   return {
     id: item.id,
-    studentId: 1, // Mock student matching UI
+    studentId: item.mahasiswaId || item.studentId || 1,
     activityName: item.judul || "Kegiatan",
     category: "Software Engineering",
-    year: "2026",
-    month: "Mei (05)",
+    year: parseYear(item.waktu || new Date().toISOString()),
+    month: parseMonth(item.waktu || new Date().toISOString()),
     day: parseDay(item.waktu || new Date().toISOString()),
     status: statusMap[item.status?.toUpperCase()] || "Dalam Review",
     attachment: item.fileUrl ? item.fileUrl.split("/").pop() || "bukti.pdf" : null
@@ -227,7 +248,7 @@ export const kegiatanAPI = {
   },
 
   approveMentorActivity: async (activityId: number | string, status: "Disetujui" | "Dalam Review") => {
-    const statusParam = status === "Disetujui" ? "Disetujui" : "Direview";
+    const statusParam = status === "Disetujui" ? "disetujui" : "belum disetujui";
     return executeHybridRequest<MentorActivityLog>(
       `Approve activity ID: ${activityId} to ${status}`,
       `/api/kegiatan/${activityId}/status?status=${statusParam}`,

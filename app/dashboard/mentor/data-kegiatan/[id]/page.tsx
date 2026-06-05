@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { ActivityLog } from "../page";
+import { useMentorActivities } from "../../../../../modules/kegiatan/hooks";
+import { useStudents } from "../../../../../modules/mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,7 +34,7 @@ interface PageProps {
 
 export default function MentorActivityDetailPage({ params }: PageProps) {
   const unwrappedParams = use(params);
-  const activityId = parseInt(unwrappedParams.id, 10);
+  const activityIdStr = unwrappedParams.id;
 
   // Expanded local database with dummy activity logs including description narratives
   const dummyActivities: ActivityLog[] = [
@@ -47,7 +49,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
   ];
 
   // Dummy descriptions for the activities to make details page rich
-  const activityDescriptions: Record<number, string> = {
+  const activityDescriptions: Record<string | number, string> = {
     1: "Mengintegrasikan backend API dengan payment gateway Midtrans untuk menangani transaksi pesanan pelanggan secara aman. Mengembangkan listener webhook untuk mencatat dan memperbarui status pembayaran (pending, capture, settlement, deny, expire) secara asinkronus ke database lokal. Menyusun penanganan pengecualian (exception handling) dan skenario pembatalan transaksi demi menjamin integritas data sistem.",
     2: "Membuat visualisasi analitik untuk data transaksi finansial mingguan dan bulanan pada dashboard utama admin. Menggunakan library Chart.js untuk menampilkan grafik garis multi-dataset (line charts) dan diagram lingkaran (pie charts). Mengoptimalkan query database agregasi PostgreSQL untuk mempercepat perolehan data visualisasi secara real-time.",
     3: "Melakukan proses slicing (konversi rancangan UI Figma) menjadi halaman Landing Page interaktif menggunakan framework Next.js dan styling Tailwind CSS. Menyusun file konfigurasi Tailwind (`tailwind.config.ts`) dengan custom palet warna korporat, breakpoints responsif, serta mendaftarkan dependensi komponen UI agar seragam secara visual.",
@@ -58,10 +60,20 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
     8: "Menyusun skrip infrastruktur berbasis kode (Infrastructure as Code - IaC) menggunakan Terraform untuk mengotomatisasi penyediaan arsitektur jaringan di layanan AWS. Skrip mencakup konfigurasi VPC (Virtual Private Cloud), public & private subnets, internet gateway, route tables, serta pembatasan akses keamanan melalui Security Groups."
   };
 
+  const { activities, approveActivity, rejectActivity } = useMentorActivities();
+  const { rawStudents } = useStudents();
+  
+  const [localActivityOverride, setLocalActivityOverride] = useState<any | null>(null);
+
+  // Combine raw backend students with fallback mock students data
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+
   // Find current activity log
-  const [activity, setActivity] = useState<ActivityLog | undefined>(() => 
-    dummyActivities.find(a => a.id === activityId)
-  );
+  const activity = useMemo(() => {
+    if (localActivityOverride) return localActivityOverride;
+    return activities.find(a => String(a.id) === String(activityIdStr)) || 
+           dummyActivities.find(a => String(a.id) === String(activityIdStr));
+  }, [activities, activityIdStr, localActivityOverride]);
 
   // State for interactive features
   const [commentInput, setCommentInput] = useState("");
@@ -74,8 +86,8 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
   // Map student details dynamically
   const student = useMemo(() => {
     if (!activity) return undefined;
-    return studentsData.find(s => s.id === activity.studentId);
-  }, [activity]);
+    return studentsList.find(s => String(s.id) === String(activity.studentId));
+  }, [activity, studentsList]);
 
   // Handler to add feedback comment
   const handleAddComment = (e: React.FormEvent) => {
@@ -96,18 +108,35 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
   };
 
   // Handler to approve activity (ceklis)
-  const handleApproveActivity = () => {
+  const handleApproveActivity = async () => {
     if (!activity) return;
-    setActivity(prev => prev ? { ...prev, status: "Disetujui" } : undefined);
-    setSuccessToast("Kegiatan mahasiswa telah disetujui (Status: Disetujui)!");
-    setTimeout(() => setSuccessToast(""), 4000);
+    try {
+      if (typeof activity.id === "number" && activity.id <= 8) {
+        setLocalActivityOverride({ ...activity, status: "Disetujui" });
+      } else {
+        await approveActivity(activity.id as any);
+      }
+      setSuccessToast("Kegiatan mahasiswa telah disetujui (Status: Disetujui)!");
+      setTimeout(() => setSuccessToast(""), 4000);
+    } catch (err: any) {
+      alert(err.message || "Gagal menyetujui kegiatan.");
+    }
   };
 
   // Handler to reject activity
-  const handleRejectActivity = () => {
+  const handleRejectActivity = async () => {
     if (!activity) return;
-    setSuccessToast("Log kegiatan ini telah ditolak. Silakan berikan catatan revisi.");
-    setTimeout(() => setSuccessToast(""), 4000);
+    try {
+      if (typeof activity.id === "number" && activity.id <= 8) {
+        setLocalActivityOverride({ ...activity, status: "Ditolak" });
+      } else {
+        await rejectActivity(activity.id as any);
+      }
+      setSuccessToast("Log kegiatan ini telah ditolak.");
+      setTimeout(() => setSuccessToast(""), 4000);
+    } catch (err: any) {
+      alert(err.message || "Gagal menolak kegiatan.");
+    }
   };
 
   // Render 404 block if activity not found
@@ -119,7 +148,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
         </div>
         <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Kegiatan Tidak Ditemukan</h4>
         <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-          Data log kegiatan dengan ID #{unwrappedParams.id} tidak terdaftar di sistem bimbingan magang.
+          Data log kegiatan dengan ID #{activityIdStr} tidak terdaftar di sistem bimbingan magang.
         </p>
         <Link 
           href="/dashboard/mentor/data-kegiatan"

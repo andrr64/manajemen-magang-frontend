@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -47,6 +48,8 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   // Instantiating real evaluation API hook and student assessments list
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { submitGrades } = useAssessment();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Fetch once on mount
   useEffect(() => {
@@ -61,12 +64,10 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   // Find target mock student
   const mockStudent = useMemo(() => {
     if (!assessmentRecord) {
-      const idNum = parseInt(unwrappedParams.id, 10);
-      return studentsData.find(s => s.id === idNum);
+      return studentsList.find(s => String(s.id) === String(unwrappedParams.id));
     }
-    const studentIdNum = assessmentRecord.mahasiswaId ? parseInt(assessmentRecord.mahasiswaId.toString(), 10) : 0;
-    return studentsData.find(s => s.id === studentIdNum || s.nim === assessmentRecord.nim);
-  }, [assessmentRecord, unwrappedParams.id]);
+    return studentsList.find(s => String(s.id) === String(assessmentRecord.mahasiswaId) || s.nim === assessmentRecord.nim);
+  }, [assessmentRecord, unwrappedParams.id, studentsList]);
 
   // Unified student object
   const student = useMemo(() => {

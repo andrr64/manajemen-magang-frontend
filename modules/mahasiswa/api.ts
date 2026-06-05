@@ -116,24 +116,26 @@ const INITIAL_STUDENTS: Student[] = [
 
 function mapBackendStudentToFrontend(item: any): Student {
   const formatDate = (start: string | null, end: string | null) => {
-    if (!start || !end) return "1 Februari 2026 - 31 Juli 2026";
+    if (!start || !end) return "-";
     try {
       const parse = (s: string) => {
         const d = new Date(s);
-        return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+        return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
       };
       return `${parse(start)} - ${parse(end)}`;
     } catch (_) {
-      return "1 Februari 2026 - 31 Juli 2026";
+      return "-";
     }
   };
 
-  const statusMap: Record<string, "Aktif" | "Selesai"> = {
-    "AKTIF": "Aktif",
-    "REVIEW": "Aktif",
-    "DALAM REVIEW": "Aktif",
-    "SELESAI": "Selesai"
-  };
+  const statusPeriodeUpper = item.statusPeriode?.toUpperCase();
+  const status: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan" = 
+    !statusPeriodeUpper ? "Belum Penempatan" :
+    (statusPeriodeUpper === "SELESAI" ? "Selesai" : 
+     (statusPeriodeUpper === "BATAL" ? "Belum Penempatan" :
+      (statusPeriodeUpper === "REVIEW" || statusPeriodeUpper === "DALAM REVIEW" ? "Dalam Review" : "Aktif")));
+
+  const isPlaced = status !== "Belum Penempatan";
 
   return {
     id: item.id, // numeric or string id
@@ -141,34 +143,62 @@ function mapBackendStudentToFrontend(item: any): Student {
     nim: item.nim || "2201012001",
     email: item.email || "",
     university: item.universitas || "Universitas Indonesia",
-    phone: item.noHp || "081234567890",
+    phone: item.noHp || "-",
     gender: item.gender || "Laki-laki",
     program: "S1 Teknik Informatika",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    status: statusMap[item.statusPeriode?.toUpperCase()] || "Aktif",
-    progress: item.progress || 85,
+    company: isPlaced ? "PT. Global Teknologi Nusantara" : "Belum Ditempatkan",
+    role: isPlaced ? "Software Engineering Intern" : "-",
+    status: status,
+    progress: status === "Selesai" ? 100 : (status === "Belum Penempatan" ? 0 : (status === "Dalam Review" ? 95 : 85)),
     lastActive: "Hari ini, 09:30",
     avatarColor: "from-blue-500 to-indigo-500",
     address: item.address || "Jakarta, Indonesia",
     period: formatDate(item.tanggalMulai, item.tanggalBerakhir),
-    grade: item.grade || 88,
-    logbooksCount: 8,
-    logbooksPending: 2,
-    attendance: { present: 76, sick: 2, leave: 1, absent: 0 }
+    grade: item.grade || (status === "Selesai" ? 90 : null),
+    logbooksCount: isPlaced ? 8 : 0,
+    logbooksPending: isPlaced ? 2 : 0,
+    attendance: isPlaced ? { present: 76, sick: 2, leave: 1, absent: 0 } : { present: 0, sick: 0, leave: 0, absent: 0 },
+    periodeId: item.periodeId,
+    tanggalMulai: item.tanggalMulai,
+    tanggalBerakhir: item.tanggalBerakhir,
+    statusPeriode: item.statusPeriode,
+    mentorId: item.mentorId,
+    namaMentor: item.namaMentor,
+    userId: item.userId
   };
 }
 
 export const mahasiswaAPI = {
-  listStudents: async () => {
+  listStudents: async (filters?: any) => {
+    const params = new URLSearchParams();
+    if (filters?.gender && filters.gender !== "Semua") {
+      params.append("gender", filters.gender);
+    }
+    if (filters?.universitas && filters.universitas !== "Semua") {
+      params.append("universitas", filters.universitas);
+    }
+    if (filters?.status && filters.status !== "Semua") {
+      const backendStatus = filters.status === "Dalam Review" || filters.status === "Aktif" 
+        ? "aktif" 
+        : (filters.status === "Selesai" ? "selesai" : filters.status);
+      params.append("status", backendStatus);
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+
     return executeHybridRequest<Student[]>(
       "List all students",
-      "/api/mahasiswa",
+      `/api/mahasiswa${queryString}`,
       {
         method: "GET"
       },
       () => {
-        return mockDB.get<Student[]>("students", INITIAL_STUDENTS);
+        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
+        return students.filter(s => {
+          const matchGender = !filters?.gender || filters.gender === "Semua" || s.gender === filters.gender;
+          const matchUniv = !filters?.universitas || filters.universitas === "Semua" || s.university === filters.universitas;
+          const matchStatus = !filters?.status || filters.status === "Semua" || s.status === filters.status;
+          return matchGender && matchUniv && matchStatus;
+        });
       }
     ).then((res) => {
       if (res.message.includes("Real")) {
@@ -180,6 +210,41 @@ export const mahasiswaAPI = {
       }
       return res;
     });
+  },
+
+  getStudentStatistics: async (filters?: { gender?: string; universitas?: string }) => {
+    const params = new URLSearchParams();
+    if (filters?.gender && filters.gender !== "Semua") {
+      params.append("gender", filters.gender);
+    }
+    if (filters?.universitas && filters.universitas !== "Semua") {
+      params.append("universitas", filters.universitas);
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+
+    return executeHybridRequest<any>(
+      "Get student statistics",
+      `/api/mahasiswa/statistik${queryString}`,
+      {
+        method: "GET"
+      },
+      () => {
+        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
+        const filtered = students.filter(s => {
+          const matchGender = !filters?.gender || filters.gender === "Semua" || s.gender === filters.gender;
+          const matchUniv = !filters?.universitas || filters.universitas === "Semua" || s.university === filters.universitas;
+          return matchGender && matchUniv;
+        });
+        const totalAktif = filtered.filter(s => s.status === "Aktif").length;
+        const totalSelesai = filtered.filter(s => s.status === "Selesai").length;
+        const totalAktifTanpaPenilaian = filtered.filter(s => s.status === "Aktif" && s.grade === null).length;
+        return {
+          totalAktif,
+          totalSelesai,
+          totalAktifTanpaPenilaian
+        };
+      }
+    );
   },
 
   getStudentById: async (id: number | string) => {
@@ -216,37 +281,37 @@ export const mahasiswaAPI = {
         method: "POST",
         body: JSON.stringify({
           email: payload.email,
-          password: "temporarysecurepassword",
+          password: payload.password || "temporarysecurepassword",
           nim: payload.nim,
           nama: payload.name,
-          noHp: payload.phone,
+          noHp: payload.phone || "-",
           gender: payload.gender,
           universitas: payload.university,
-          tanggalMulai: "2026-02-01",
-          tanggalBerakhir: "2026-07-31",
-          periodeStatus: "aktif"
+          tanggalMulai: payload.tanggalMulai || "2026-02-01",
+          tanggalBerakhir: payload.tanggalBerakhir || "2026-07-31",
+          periodeStatus: payload.periodeStatus || "aktif"
         })
       },
       () => {
         const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
         
         const newStudent: Student = {
-          id: Date.now(),
+          id: String(Date.now()),
           name: payload.name,
           nim: payload.nim,
           email: payload.email,
           university: payload.university,
-          phone: payload.phone,
+          phone: payload.phone || "-",
           gender: payload.gender,
-          program: payload.program,
+          program: payload.program || "S1 Teknik Informatika",
           company: payload.company || "PT. Global Teknologi Nusantara",
           role: payload.role || "Intern",
-          status: "Aktif",
+          status: payload.periodeStatus === "selesai" ? "Selesai" : "Aktif",
           progress: 0,
           lastActive: "Baru terdaftar",
           avatarColor: "from-blue-500 to-indigo-500",
-          address: payload.address,
-          period: payload.period,
+          address: payload.address || "Jakarta, Indonesia",
+          period: payload.period || (payload.tanggalMulai && payload.tanggalBerakhir ? `${payload.tanggalMulai} - ${payload.tanggalBerakhir}` : "1 Februari 2026 - 31 Juli 2026"),
           grade: null,
           logbooksCount: 0,
           logbooksPending: 0,
@@ -323,7 +388,16 @@ export const mahasiswaAPI = {
       }
     };
 
-    const isPeriodProvided = dateRange.length > 1;
+    const isPeriodProvided = payload.periode || dateRange.length > 1;
+    const resolvedPeriode = payload.periode ? {
+      tanggalMulai: payload.periode.tanggalMulai,
+      tanggalBerakhir: payload.periode.tanggalBerakhir,
+      status: payload.periode.status ? payload.periode.status.toUpperCase() : undefined
+    } : (dateRange.length > 1 ? {
+      tanggalMulai: formatDateObj(dateRange[0]),
+      tanggalBerakhir: formatDateObj(dateRange[1]),
+      status: payload.status === "Selesai" ? "SELESAI" : "AKTIF"
+    } : undefined);
 
     return executeHybridRequest<Student>(
       `Update student details for ID: ${id}`,
@@ -338,11 +412,7 @@ export const mahasiswaAPI = {
           noHp: payload.phone,
           address: payload.address,
           universitas: payload.university,
-          periode: isPeriodProvided ? {
-            tanggalMulai: formatDateObj(dateRange[0]),
-            tanggalBerakhir: formatDateObj(dateRange[1]),
-            status: payload.status === "Selesai" ? "SELESAI" : "AKTIF"
-          } : undefined
+          periode: resolvedPeriode
         })
       },
       () => {
@@ -355,7 +425,8 @@ export const mahasiswaAPI = {
 
         const updatedStudent: Student = {
           ...students[index],
-          ...payload
+          ...payload,
+          id: students[index].id
         };
 
         students[index] = updatedStudent;

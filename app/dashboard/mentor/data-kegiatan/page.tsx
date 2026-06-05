@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
 import { useMentorActivities } from "../../../../modules/kegiatan/hooks";
+import { useStudents } from "../../../../modules/mahasiswa/hooks";
 
 export interface ActivityLog {
   id: number;
@@ -56,11 +57,15 @@ export default function MentorActivitiesPage() {
 
   // Real backend activities hook
   const { activities, isLoading, approveActivity, rejectActivity } = useMentorActivities();
+  const { rawStudents } = useStudents();
+
+  // Combine raw backend students with fallback mock students data
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Map activities to actual student profile info
   const enrichedActivities = useMemo(() => {
     return activities.map(act => {
-      const student = studentsData.find(s => String(s.id) === String(act.studentId));
+      const student = studentsList.find(s => String(s.id) === String(act.studentId));
       return {
         ...act,
         studentName: student ? student.name : "Mahasiswa Tidak Dikenal",

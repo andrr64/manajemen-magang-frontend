@@ -20,6 +20,7 @@ import {
 import { studentsData } from "../data-mahasiswa/studentsData";
 import { useAttendance } from "@/modules/absensi/hooks";
 import { absensiAPI } from "@/modules/absensi/api";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 interface AttendanceLog {
   id: string | number;
@@ -49,6 +50,8 @@ export default function MentorAttendancePage() {
 
   // Real React Hook Integration
   const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory } = useAttendance();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Reactive Effect to fetch logs from API whenever filters change
   useEffect(() => {
@@ -58,8 +61,7 @@ export default function MentorAttendancePage() {
   // Map attendance logs to actual student profile info
   const enrichedLogs = useMemo(() => {
     return attendanceLogs.map(log => {
-      const studentIdNum = log.studentId ? parseInt(log.studentId.toString(), 10) : 0;
-      const student = studentsData.find(s => s.id === studentIdNum || s.id === log.studentId);
+      const student = studentsList.find(s => String(s.id) === String(log.studentId));
       
       // Calculate presence status matching rendering expectations ("Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa")
       let status: "Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa" = "Hadir";

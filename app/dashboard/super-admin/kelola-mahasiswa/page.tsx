@@ -20,132 +20,57 @@ import {
   Zap,
   MapPin,
   Clock,
-  BookOpen
+  BookOpen,
+  Loader2
 } from "lucide-react";
-
-interface StudentRecord {
-  id: number;
-  name: string;
-  nim: string;
-  email: string;
-  phone: string;
-  university: string;
-  program: string;
-  company: string; // "Belum Ditempatkan" if no company
-  role: string;
-  status: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan";
-  progress: number;
-  period: string;
-}
+import { useStudents, useStudentStats } from "@/modules/mahasiswa/hooks";
+import { Student } from "@/modules/mahasiswa/types";
+import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 export default function KelolaMahasiswaPage() {
-  // Initial Mock Students Data
-  const [students, setStudents] = useState<StudentRecord[]>([
-    {
-      id: 1,
-      name: "Budi Santoso",
-      nim: "2201012001",
-      email: "budi.santoso@student.ui.ac.id",
-      phone: "0812-9876-5432",
-      university: "Universitas Indonesia",
-      program: "S1 Teknik Informatika",
-      company: "PT. Global Teknologi Nusantara",
-      role: "Software Engineering Intern",
-      status: "Aktif",
-      progress: 85,
-      period: "1 Feb 2026 - 31 Jul 2026"
-    },
-    {
-      id: 2,
-      name: "Siti Rahmawati",
-      nim: "2201012042",
-      email: "siti.rahma@student.itb.ac.id",
-      phone: "0856-1234-5678",
-      university: "Institut Teknologi Bandung",
-      program: "S1 Sistem Informasi",
-      company: "PT. Shopee Internasional Indonesia",
-      role: "Product Management Intern",
-      status: "Aktif",
-      progress: 70,
-      period: "1 Feb 2026 - 31 Jul 2026"
-    },
-    {
-      id: 3,
-      name: "Andi Wijaya",
-      nim: "2104021105",
-      email: "andi.wijaya@mail.ugm.ac.id",
-      phone: "0813-7788-9900",
-      university: "Universitas Gadjah Mada",
-      program: "S1 Teknologi Informasi",
-      company: "PT. Telkom Indonesia Tbk",
-      role: "Backend Developer Intern",
-      status: "Selesai",
-      progress: 100,
-      period: "1 Jul 2025 - 31 Des 2025"
-    },
-    {
-      id: 4,
-      name: "Roro Fitria",
-      nim: "2206031298",
-      email: "roro.fitria@student.unpad.ac.id",
-      phone: "0821-4455-6677",
-      university: "Universitas Padjadjaran",
-      program: "S1 Akuntansi",
-      company: "PT. Bank Central Asia Tbk",
-      role: "Financial Analyst Intern",
-      status: "Aktif",
-      progress: 60,
-      period: "1 Feb 2026 - 31 Jul 2026"
-    },
-    {
-      id: 5,
-      name: "Farhan Ramadhan",
-      nim: "2201012015",
-      email: "farhan.ramadhan@student.ui.ac.id",
-      phone: "0812-7766-5544",
-      university: "Universitas Indonesia",
-      program: "S1 Teknik Informatika",
-      company: "PT. Bukalapak.com Tbk",
-      role: "Frontend Engineer Intern",
-      status: "Dalam Review",
-      progress: 95,
-      period: "1 Feb 2026 - 31 Jul 2026"
-    },
-    {
-      id: 6,
-      name: "Clara Angelica",
-      nim: "2205013099",
-      email: "clara.a@student.its.ac.id",
-      phone: "0877-2233-4455",
-      university: "Institut Teknologi Sepuluh Nopember",
-      program: "S1 Desain Komunikasi Visual",
-      company: "Belum Ditempatkan",
-      role: "-",
-      status: "Belum Penempatan",
-      progress: 0,
-      period: "-"
-    }
-  ]);
-
   // Search, filter, and tabs state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUniv, setSelectedUniv] = useState<string>("Semua");
   const [selectedStatus, setSelectedStatus] = useState<string>("Semua");
 
+  // Call the backend hooks
+  const {
+    students: filteredStudents,
+    rawStudents,
+    isLoading,
+    isSubmitting,
+    error: apiError,
+    addStudent,
+    removeStudent,
+    refreshStudents
+  } = useStudents({
+    universitas: selectedUniv,
+    status: selectedStatus,
+    searchQuery: searchQuery
+  });
+
+  const {
+    stats: apiStats,
+    refreshStats
+  } = useStudentStats({
+    universitas: selectedUniv
+  });
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<StudentRecord | null>(null);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   // Form State
   const [formName, setFormName] = useState("");
   const [formNim, setFormNim] = useState("");
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
+  const [formGender, setFormGender] = useState<"Laki-laki" | "Perempuan">("Laki-laki");
   const [formUniv, setFormUniv] = useState("Universitas Indonesia");
   const [formProgram, setFormProgram] = useState("");
   const [formCompany, setFormCompany] = useState("");
   const [formRole, setFormRole] = useState("");
-  const [formStatus, setFormStatus] = useState<StudentRecord["status"]>("Aktif");
+  const [formStatus, setFormStatus] = useState<Student["status"]>("Aktif");
   const [formProgress, setFormProgress] = useState(0);
   const [formPeriod, setFormPeriod] = useState("");
 
@@ -154,9 +79,9 @@ export default function KelolaMahasiswaPage() {
 
   // Universities list for filtering
   const universities = useMemo(() => {
-    const list = new Set(students.map(s => s.university));
+    const list = new Set(rawStudents.map(s => s.university));
     return ["Semua", ...Array.from(list)];
-  }, [students]);
+  }, [rawStudents]);
 
   // Reset form helper
   const resetForm = () => {
@@ -164,6 +89,7 @@ export default function KelolaMahasiswaPage() {
     setFormNim("");
     setFormEmail("");
     setFormPhone("");
+    setFormGender("Laki-laki");
     setFormUniv("Universitas Indonesia");
     setFormProgram("");
     setFormCompany("");
@@ -181,12 +107,13 @@ export default function KelolaMahasiswaPage() {
   };
 
   // Open Modal for Edit
-  const handleOpenEditModal = (student: StudentRecord) => {
+  const handleOpenEditModal = (student: Student) => {
     setEditingStudent(student);
     setFormName(student.name);
     setFormNim(student.nim);
     setFormEmail(student.email);
-    setFormPhone(student.phone);
+    setFormPhone(student.phone === "-" ? "" : student.phone);
+    setFormGender(student.gender || "Laki-laki");
     setFormUniv(student.university);
     setFormProgram(student.program);
     setFormCompany(student.company === "Belum Ditempatkan" ? "" : student.company);
@@ -206,7 +133,7 @@ export default function KelolaMahasiswaPage() {
   };
 
   // Handle Form Submit (Add or Edit)
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formName || !formNim || !formEmail || !formProgram) {
@@ -219,81 +146,86 @@ export default function KelolaMahasiswaPage() {
     const resolvedPeriod = formPeriod.trim() || "-";
     const resolvedStatus = resolvedCompany === "Belum Ditempatkan" ? "Belum Penempatan" : formStatus;
 
-    if (editingStudent) {
-      // Edit mode
-      setStudents(students.map(s => s.id === editingStudent.id ? {
-        ...s,
-        name: formName,
-        nim: formNim,
-        email: formEmail,
-        phone: formPhone || "-",
-        university: formUniv,
-        program: formProgram,
-        company: resolvedCompany,
-        role: resolvedRole,
-        status: resolvedStatus,
-        progress: formProgress,
-        period: resolvedPeriod
-      } : s));
-      triggerToast(`Data mahasiswa "${formName}" berhasil diperbarui!`);
-    } else {
-      // Add mode
-      const newStudent: StudentRecord = {
-        id: Date.now(),
-        name: formName,
-        nim: formNim,
-        email: formEmail,
-        phone: formPhone || "-",
-        university: formUniv,
-        program: formProgram,
-        company: resolvedCompany,
-        role: resolvedRole,
-        status: resolvedStatus,
-        progress: resolvedStatus === "Belum Penempatan" ? 0 : formProgress,
-        period: resolvedPeriod
-      };
-      setStudents([newStudent, ...students]);
-      triggerToast(`Mahasiswa "${formName}" berhasil didaftarkan!`);
+    // Formatting date range for API payload
+    const dateRange = resolvedPeriod !== "-" ? resolvedPeriod.split(" - ") : [];
+    const hasDates = dateRange.length > 1;
+
+    try {
+      if (editingStudent) {
+        // Edit mode
+        await mahasiswaAPI.updateStudent(editingStudent.id, {
+          email: formEmail,
+          nim: formNim,
+          name: formName,
+          gender: formGender,
+          phone: formPhone || "-",
+          university: formUniv,
+          program: formProgram,
+          company: resolvedCompany,
+          role: resolvedRole,
+          status: resolvedStatus,
+          progress: formProgress,
+          period: resolvedPeriod,
+          periode: hasDates ? {
+            tanggalMulai: undefined, // Will be parsed inside api.ts from resolvedPeriod
+            tanggalBerakhir: undefined,
+            status: resolvedStatus === "Selesai" ? "SELESAI" : "AKTIF"
+          } : undefined
+        });
+        await refreshStudents();
+        await refreshStats();
+        triggerToast(`Data mahasiswa "${formName}" berhasil diperbarui!`);
+      } else {
+        // Add mode
+        await addStudent({
+          email: formEmail,
+          password: "SecurePassword123!", // temporary secure default password
+          nim: formNim,
+          name: formName,
+          phone: formPhone || "-",
+          gender: formGender,
+          university: formUniv,
+          program: formProgram,
+          company: resolvedCompany,
+          role: resolvedRole,
+          tanggalMulai: hasDates ? undefined : "2026-02-01", // Default if not filled
+          tanggalBerakhir: hasDates ? undefined : "2026-07-31",
+          periodeStatus: resolvedStatus === "Selesai" ? "selesai" : "aktif",
+          period: resolvedPeriod !== "-" ? resolvedPeriod : undefined
+        });
+        await refreshStats();
+        triggerToast(`Mahasiswa "${formName}" berhasil didaftarkan!`);
+      }
+      setIsModalOpen(false);
+      resetForm();
+    } catch (err: any) {
+      alert(err.message || "Gagal menyimpan data mahasiswa.");
     }
-    setIsModalOpen(false);
-    resetForm();
   };
 
   // Handle Delete Student
-  const handleDeleteStudent = (id: number, name: string) => {
+  const handleDeleteStudent = async (id: number | string, name: string) => {
     if (confirm(`Apakah Anda yakin ingin menghapus data mahasiswa "${name}"? Tindakan ini akan menghapus akun dan rekam presensi akademik.`)) {
-      setStudents(students.filter(s => s.id !== id));
-      triggerToast(`Data mahasiswa "${name}" telah dihapus.`);
+      try {
+        await removeStudent(id);
+        await refreshStats();
+        triggerToast(`Data mahasiswa "${name}" telah dihapus.`);
+      } catch (err: any) {
+        alert(err.message || "Gagal menghapus mahasiswa.");
+      }
     }
   };
 
-  // Dynamic Filtering Logic
-  const filteredStudents = useMemo(() => {
-    return students.filter(student => {
-      const matchSearch = 
-        student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.nim.includes(searchQuery) ||
-        student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.university.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchUniv = selectedUniv === "Semua" || student.university === selectedUniv;
-      const matchStatus = selectedStatus === "Semua" || student.status === selectedStatus;
-
-      return matchSearch && matchUniv && matchStatus;
-    });
-  }, [students, searchQuery, selectedUniv, selectedStatus]);
-
   // Statistics Computations
   const stats = useMemo(() => {
-    const total = students.length;
-    const active = students.filter(s => s.status === "Aktif").length;
-    const review = students.filter(s => s.status === "Dalam Review").length;
-    const completed = students.filter(s => s.status === "Selesai").length;
-    const unplaced = students.filter(s => s.status === "Belum Penempatan").length;
+    const total = rawStudents.length;
+    const active = apiStats ? apiStats.totalAktif : rawStudents.filter(s => s.status === "Aktif").length;
+    const review = rawStudents.filter(s => s.status === "Dalam Review").length;
+    const completed = apiStats ? apiStats.totalSelesai : rawStudents.filter(s => s.status === "Selesai").length;
+    const unplaced = rawStudents.filter(s => s.status === "Belum Penempatan").length;
 
     return { total, active, review, completed, unplaced };
-  }, [students]);
+  }, [rawStudents, apiStats]);
 
   return (
     <div className="space-y-6">
@@ -479,7 +411,15 @@ export default function KelolaMahasiswaPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-150 dark:divide-slate-850 text-xs font-medium text-slate-700 dark:text-slate-300">
-              {filteredStudents.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="px-5 py-16 text-center text-slate-450 dark:text-slate-500">
+                    <Loader2 className="w-10 h-10 mx-auto text-rose-500 mb-3 animate-spin" />
+                    <p className="font-extrabold text-sm text-slate-800 dark:text-slate-200">Menghubungkan ke Spring Boot...</p>
+                    <p className="text-xs mt-1">Silakan tunggu selagi kami mengambil data terbaru dari backend.</p>
+                  </td>
+                </tr>
+              ) : filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-12 text-center text-slate-450 dark:text-slate-500">
                     <AlertCircle className="w-10 h-10 mx-auto text-slate-350 dark:text-slate-650 mb-3" />
@@ -662,17 +602,30 @@ export default function KelolaMahasiswaPage() {
                 </div>
               </div>
 
-              {/* Email */}
-              <div>
-                <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block mb-1.5">Surel Akademik Mahasiswa *</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="Contoh: budi.santoso@student.ui.ac.id"
-                  value={formEmail}
-                  onChange={(e) => setFormEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 focus:bg-white rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                />
+              {/* Email & Gender */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block mb-1.5">Surel Akademik Mahasiswa *</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Contoh: budi.santoso@student.ui.ac.id"
+                    value={formEmail}
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 focus:bg-white rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block mb-1.5">Jenis Kelamin *</label>
+                  <select
+                    value={formGender}
+                    onChange={(e) => setFormGender(e.target.value as "Laki-laki" | "Perempuan")}
+                    className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 focus:bg-white rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
+                  >
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
               </div>
 
               {/* University & Program */}

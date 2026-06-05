@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { studentsData, Student } from "../data-mahasiswa/studentsData";
 import { useStudentAssessments } from "@/modules/penilaian/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 export default function MentorPenilaianPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,6 +25,8 @@ export default function MentorPenilaianPage() {
 
   // Instantiating real assessments hook
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Reactive Effect to fetch assessments from API whenever filters change
   useEffect(() => {
@@ -39,8 +42,7 @@ export default function MentorPenilaianPage() {
   // Map student evaluation list response to view models
   const enrichedStudents = useMemo(() => {
     return assessments.map(item => {
-      const studentIdNum = item.mahasiswaId ? parseInt(item.mahasiswaId.toString(), 10) : 0;
-      const student = studentsData.find(s => s.id === studentIdNum || s.nim === item.nim);
+      const student = studentsList.find(s => String(s.id) === String(item.mahasiswaId) || s.nim === item.nim);
       return {
         id: item.mahasiswaId,
         name: item.namaMahasiswa,

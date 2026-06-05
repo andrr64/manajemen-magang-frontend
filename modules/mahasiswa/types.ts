@@ -30,7 +30,7 @@ export interface Student {
   program: string;
   company: string;
   role: string;
-  status: "Aktif" | "Selesai";
+  status: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan";
   progress: number;
   lastActive: string;
   avatarColor: string;
@@ -70,7 +70,7 @@ export interface StudentStat {
 export interface CreateStudentRequest {
   // Wajib
   email: string;
-  password: string;
+  password?: string;
   nim: string;
   name: string;         // → dikirim ke backend sebagai "nama"
   gender: "Laki-laki" | "Perempuan";
@@ -102,7 +102,7 @@ export interface UpdateStudentRequest {
   program?: string;
   company?: string;
   role?: string;
-  status?: "Aktif" | "Selesai";
+  status?: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan";
   progress?: number;
   grade?: number | null;
   period?: string;      // "DD Bulan YYYY - DD Bulan YYYY"

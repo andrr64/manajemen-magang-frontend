@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -38,6 +39,8 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   
   // Instantiating real reference letters API hook
   const { letters, isLoading, isSubmitting: isHookSubmitting, uploadStudentLetter, refreshLetters } = useStudentReferenceLetters();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Fetch letters on mount
   useEffect(() => {
@@ -52,11 +55,10 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   // Find target mock student
   const mockStudent = useMemo(() => {
     if (!matchedCert) {
-      const idNum = parseInt(unwrappedParams.id, 10);
-      return studentsData.find(s => s.id === idNum);
+      return studentsList.find(s => String(s.id) === String(unwrappedParams.id));
     }
-    return studentsData.find(s => s.nim === matchedCert.nim || s.name === matchedCert.namaMahasiswa);
-  }, [matchedCert, unwrappedParams.id]);
+    return studentsList.find(s => s.nim === matchedCert.nim || s.name === matchedCert.namaMahasiswa);
+  }, [matchedCert, unwrappedParams.id, studentsList]);
 
   // Unified student object
   const student = useMemo(() => {

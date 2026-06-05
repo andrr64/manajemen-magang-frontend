@@ -1,30 +1,5 @@
-export interface Student {
-  id: number;
-  name: string;
-  nim: string;
-  email: string;
-  university: string;
-  phone: string;
-  gender: "Laki-laki" | "Perempuan";
-  program: string;
-  company: string;
-  role: string;
-  status: "Aktif" | "Selesai";
-  progress: number;
-  lastActive: string;
-  avatarColor: string;
-  address: string;
-  period: string;
-  grade: number | null;
-  logbooksCount: number;
-  logbooksPending: number;
-  attendance: {
-    present: number;
-    sick: number;
-    leave: number;
-    absent: number;
-  };
-}
+import { Student } from "@/modules/mahasiswa/types";
+export type { Student };
 
 export const studentsData: Student[] = [
   {

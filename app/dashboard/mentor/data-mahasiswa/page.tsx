@@ -42,7 +42,7 @@ export default function MentorDataMahasiswaPage() {
   const [perPage, setPerPage] = useState(10);
 
   // Local state for student internship periods (initially mapped from dates)
-  const [studentPeriods, setStudentPeriods] = useState<Record<number, { startDate: string; endDate: string }>>({
+  const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({
     1: { startDate: "2026-02-01", endDate: "2026-07-31" },
     2: { startDate: "2026-02-01", endDate: "2026-07-31" },
     3: { startDate: "2026-02-01", endDate: "2026-07-31" },
@@ -54,7 +54,7 @@ export default function MentorDataMahasiswaPage() {
   });
 
   // State for editing period
-  const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
+  const [editingStudentId, setEditingStudentId] = useState<string | number | null>(null);
   const [editStartDate, setEditStartDate] = useState("");
   const [editEndDate, setEditEndDate] = useState("");
   const [isSavingPeriod, setIsSavingPeriod] = useState(false);
@@ -127,7 +127,7 @@ export default function MentorDataMahasiswaPage() {
     periodStart: "",
     periodEnd: "",
     address: "",
-    status: "Aktif" as "Aktif" | "Selesai"
+    status: "Aktif" as Student["status"]
   });
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");

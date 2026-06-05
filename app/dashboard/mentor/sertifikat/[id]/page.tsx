@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -35,6 +36,8 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
   
   // Instantiating real certificates hook
   const { certificates, isLoading, isSubmitting: isHookSubmitting, uploadStudentCertificate, refreshCertificates } = useStudentCertificates();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Fetch certificates once on mount
   useEffect(() => {
@@ -49,11 +52,10 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
   // Find target mock student
   const mockStudent = useMemo(() => {
     if (!matchedCert) {
-      const idNum = parseInt(unwrappedParams.id, 10);
-      return studentsData.find(s => s.id === idNum);
+      return studentsList.find(s => String(s.id) === String(unwrappedParams.id));
     }
-    return studentsData.find(s => s.nim === matchedCert.nim || s.name === matchedCert.namaMahasiswa);
-  }, [matchedCert, unwrappedParams.id]);
+    return studentsList.find(s => s.nim === matchedCert.nim || s.name === matchedCert.namaMahasiswa);
+  }, [matchedCert, unwrappedParams.id, studentsList]);
 
   // Unified student object
   const student = useMemo(() => {

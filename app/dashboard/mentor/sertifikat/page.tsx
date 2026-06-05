@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 export default function MentorCertificatePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,6 +27,8 @@ export default function MentorCertificatePage() {
 
   // Real hook integration
   const { certificates, statistics, isLoading, refreshCertificates } = useStudentCertificates();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Fetch data reactively
   useEffect(() => {
@@ -38,7 +41,7 @@ export default function MentorCertificatePage() {
   const enrichedCertificates = useMemo(() => {
     return certificates.map(cert => {
       // Get numeric student ID fallback based on name or NIM
-      const student = studentsData.find(s => s.nim === cert.nim || s.name === cert.namaMahasiswa);
+      const student = studentsList.find(s => s.nim === cert.nim || s.name === cert.namaMahasiswa);
       const studentId = student ? student.id : 1;
       
       return {
@@ -51,7 +54,7 @@ export default function MentorCertificatePage() {
         studentUniv: student ? student.university : "Universitas Asal"
       };
     });
-  }, [certificates]);
+  }, [certificates, studentsList]);
 
   // Support additional client-side search safeguarding
   const filteredCertificates = enrichedCertificates;

@@ -22,17 +22,24 @@ import {
   Scale
 } from "lucide-react";
 import { studentsData, Student } from "./data-mahasiswa/studentsData";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 export default function DashboardHome() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { rawStudents, isLoading } = useStudents();
+
+  // Combine raw backend students with fallback mock students data
+  const studentsList = useMemo(() => {
+    return rawStudents.length > 0 ? rawStudents : studentsData;
+  }, [rawStudents]);
 
   const activeStudentsCount = useMemo(() => {
-    return studentsData.filter(s => s.status === "Aktif").length;
-  }, []);
+    return studentsList.filter(s => s.status === "Aktif").length;
+  }, [studentsList]);
 
   const completedStudentsCount = useMemo(() => {
-    return studentsData.filter(s => s.status === "Selesai").length;
-  }, []);
+    return studentsList.filter(s => s.status === "Selesai").length;
+  }, [studentsList]);
 
   // Calculate cumulative attendance statistics dynamically
   const attendanceStats = useMemo(() => {
@@ -40,10 +47,12 @@ export default function DashboardHome() {
     let totalSakit = 0;
     let totalIzin = 0;
 
-    studentsData.forEach(s => {
-      totalHadir += s.attendance.present;
-      totalSakit += s.attendance.sick;
-      totalIzin += s.attendance.leave;
+    studentsList.forEach(s => {
+      if (s.attendance) {
+        totalHadir += s.attendance.present || 0;
+        totalSakit += s.attendance.sick || 0;
+        totalIzin += s.attendance.leave || 0;
+      }
     });
 
     const total = totalHadir + totalSakit + totalIzin;
@@ -52,11 +61,11 @@ export default function DashboardHome() {
     const pctIzin = total > 0 ? ((totalIzin / total) * 100).toFixed(1) : "0.0";
 
     return { totalHadir, totalSakit, totalIzin, total, pctHadir, pctSakit, pctIzin };
-  }, []);
+  }, [studentsList]);
 
   // Filter students directory on home page table
   const filteredStudents = useMemo(() => {
-    return studentsData.filter(s => {
+    return studentsList.filter(s => {
       const q = searchQuery.toLowerCase().trim();
       return (
         q === "" ||
@@ -66,7 +75,7 @@ export default function DashboardHome() {
         s.email.toLowerCase().includes(q)
       );
     });
-  }, [searchQuery]);
+  }, [studentsList, searchQuery]);
 
   return (
     <div className="space-y-6">

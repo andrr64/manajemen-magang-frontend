@@ -1,25 +1,36 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Student, CreateStudentRequest, UpdateStudentRequest } from "./types";
+import { Student, CreateStudentRequest, UpdateStudentRequest, StudentStat, StudentFilterParams } from "./types";
 import { mahasiswaAPI } from "./api";
 
-export function useStudents(options?: { searchQuery?: string; statusFilter?: string }) {
+export function useStudents(filters?: StudentFilterParams & { searchQuery?: string }) {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Extract backend-only filters to prevent refetching on search query changes
+  const backendFilters = useMemo(() => {
+    return {
+      gender: filters?.gender,
+      universitas: filters?.universitas,
+      status: filters?.status
+    };
+  }, [filters?.gender, filters?.universitas, filters?.status]);
+
+  const filterKey = JSON.stringify(backendFilters);
+
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await mahasiswaAPI.listStudents();
+      const response = await mahasiswaAPI.listStudents(backendFilters);
       setStudents(response.data);
     } catch (err: any) {
       setError(err.message || "Gagal memuat daftar mahasiswa.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [filterKey]);
 
   useEffect(() => {
     fetchStudents();
@@ -41,12 +52,12 @@ export function useStudents(options?: { searchQuery?: string; statusFilter?: str
     }
   };
 
-  const removeStudent = async (id: number) => {
+  const removeStudent = async (id: number | string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       await mahasiswaAPI.deleteStudent(id);
-      setStudents(prev => prev.filter(s => s.id !== id));
+      setStudents(prev => prev.filter(s => String(s.id) !== String(id)));
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus akun mahasiswa.";
@@ -57,24 +68,23 @@ export function useStudents(options?: { searchQuery?: string; statusFilter?: str
     }
   };
 
-  // Memoized filtered list
+  // Memoized local search filter on top of the backend filter results
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      const query = (options?.searchQuery || "").toLowerCase().trim();
+      const query = (filters?.searchQuery || "").toLowerCase().trim();
       const matchesSearch = 
         query === "" ||
         s.name.toLowerCase().includes(query) ||
         s.nim.includes(query) ||
+        s.email.toLowerCase().includes(query) ||
         s.university.toLowerCase().includes(query) ||
         s.program.toLowerCase().includes(query) ||
-        s.role.toLowerCase().includes(query);
+        s.role.toLowerCase().includes(query) ||
+        s.company.toLowerCase().includes(query);
 
-      const status = options?.statusFilter || "Semua";
-      const matchesStatus = status === "Semua" || s.status === status;
-
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     });
-  }, [students, options?.searchQuery, options?.statusFilter]);
+  }, [students, filters?.searchQuery]);
 
   return {
     students: filteredStudents,
@@ -139,5 +149,37 @@ export function useStudentDetail(id?: number | string) {
     error,
     updateStudentDetail,
     refreshDetail: fetchDetail
+  };
+}
+
+export function useStudentStats(filters?: { gender?: string; universitas?: string }) {
+  const [stats, setStats] = useState<StudentStat | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const filterKey = JSON.stringify(filters);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await mahasiswaAPI.getStudentStatistics(filters);
+      setStats(response.data);
+    } catch (err: any) {
+      setError(err.message || "Gagal memuat statistik mahasiswa.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filterKey]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return {
+    stats,
+    isLoading,
+    error,
+    refreshStats: fetchStats
   };
 }

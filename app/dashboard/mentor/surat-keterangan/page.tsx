@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
 import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
+import { useStudents } from "@/modules/mahasiswa/hooks";
 
 export default function MentorReferenceLetterPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,6 +27,8 @@ export default function MentorReferenceLetterPage() {
 
   // Real hook integration
   const { letters, statistics, isLoading, refreshLetters } = useStudentReferenceLetters();
+  const { rawStudents } = useStudents();
+  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
 
   // Fetch data reactively
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function MentorReferenceLetterPage() {
   // Map student info
   const enrichedLetters = useMemo(() => {
     return letters.map(letLog => {
-      const student = studentsData.find(s => s.nim === letLog.nim || s.name === letLog.namaMahasiswa);
+      const student = studentsList.find(s => s.nim === letLog.nim || s.name === letLog.namaMahasiswa);
       const studentId = student ? student.id : letLog.mahasiswaId;
       
       return {
@@ -50,7 +53,7 @@ export default function MentorReferenceLetterPage() {
         studentUniv: student ? student.university : "Universitas Mitra"
       };
     });
-  }, [letters]);
+  }, [letters, studentsList]);
 
   // Filter logs based on search and status select
   const filteredLetters = enrichedLetters;
