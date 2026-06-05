@@ -90,12 +90,11 @@ export default function MentorPenilaianPage() {
       </div>
 
       {/* METRIC STATISTICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { label: "Total Bimbingan", value: stats.total, desc: "Mahasiswa Terdaftar", icon: User, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/50 dark:border-indigo-900/40" },
           { label: "Sudah Dinilai", value: stats.graded, desc: "Rekomendasi Lulus", icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
-          { label: "Belum Dinilai", value: stats.pending, desc: "Segera Input Nilai", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" },
-          { label: "Penyelesaian", value: `${stats.ratio}%`, desc: "Rasio Evaluasi Akhir", icon: TrendingUp, color: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-900/40" }
+          { label: "Belum Dinilai", value: stats.pending, desc: "Segera Input Nilai", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" }
         ].map((item, index) => {
           const Icon = item.icon;
           return (

@@ -79,7 +79,7 @@ const INITIAL_STUDENTS: Student[] = [
     program: "S1 Desain Komunikasi Visual",
     company: "Gojek Tokopedia (GoTo)",
     role: "UI/UX Designer Intern",
-    status: "Dalam Review",
+    status: "Aktif",
     progress: 40,
     lastActive: "20 Mei 2026",
     avatarColor: "from-purple-500 to-indigo-500",
@@ -128,10 +128,10 @@ function mapBackendStudentToFrontend(item: any): Student {
     }
   };
 
-  const statusMap: Record<string, "Aktif" | "Dalam Review" | "Selesai"> = {
+  const statusMap: Record<string, "Aktif" | "Selesai"> = {
     "AKTIF": "Aktif",
-    "REVIEW": "Dalam Review",
-    "DALAM REVIEW": "Dalam Review",
+    "REVIEW": "Aktif",
+    "DALAM REVIEW": "Aktif",
     "SELESAI": "Selesai"
   };
 
@@ -334,12 +334,14 @@ export const mahasiswaAPI = {
           email: payload.email,
           nim: payload.nim,
           nama: payload.name,
-          gender: "Laki-laki",
+          gender: payload.gender,
+          noHp: payload.phone,
+          address: payload.address,
           universitas: payload.university,
           periode: isPeriodProvided ? {
             tanggalMulai: formatDateObj(dateRange[0]),
             tanggalBerakhir: formatDateObj(dateRange[1]),
-            status: "Aktif"
+            status: payload.status === "Selesai" ? "SELESAI" : "AKTIF"
           } : undefined
         })
       },

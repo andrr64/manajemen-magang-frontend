@@ -9,7 +9,7 @@ export interface Student {
   program: string;
   company: string;
   role: string;
-  status: "Aktif" | "Dalam Review" | "Selesai";
+  status: "Aktif" | "Selesai";
   progress: number;
   lastActive: string;
   avatarColor: string;
@@ -104,7 +104,7 @@ export const studentsData: Student[] = [
     program: "S1 Desain Komunikasi Visual",
     company: "Gojek Tokopedia (GoTo)",
     role: "UI/UX Designer Intern",
-    status: "Dalam Review",
+    status: "Aktif",
     progress: 40,
     lastActive: "20 Mei 2026",
     avatarColor: "from-purple-500 to-indigo-500",
@@ -170,7 +170,7 @@ export const studentsData: Student[] = [
     program: "S1 Teknik Informatika",
     company: "Tokopedia",
     role: "Backend Engineer Intern",
-    status: "Dalam Review",
+    status: "Aktif",
     progress: 55,
     lastActive: "18 Mei 2026",
     avatarColor: "from-violet-500 to-fuchsia-500",

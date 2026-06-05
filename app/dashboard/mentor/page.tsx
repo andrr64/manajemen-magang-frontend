@@ -26,9 +26,8 @@ import { studentsData, Student } from "./data-mahasiswa/studentsData";
 export default function DashboardHome() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Calculate student counts dynamically
   const activeStudentsCount = useMemo(() => {
-    return studentsData.filter(s => s.status === "Aktif" || s.status === "Dalam Review").length;
+    return studentsData.filter(s => s.status === "Aktif").length;
   }, []);
 
   const completedStudentsCount = useMemo(() => {

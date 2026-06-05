@@ -47,7 +47,7 @@ export default function MentorStudentsPage() {
       program: "S1 Desain Komunikasi Visual",
       company: "Gojek Tokopedia (GoTo)",
       progress: 40,
-      status: "Dalam Review",
+      status: "Aktif",
       logbooksPending: 5,
       lastActive: "20 Mei 2026"
     },
@@ -137,9 +137,7 @@ export default function MentorStudentsPage() {
                   <span className={`inline-flex px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider ${
                     student.status === "Selesai" 
                       ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-900/40" 
-                      : student.status === "Dalam Review"
-                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200/40 dark:border-amber-900/40"
-                        : "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/40 dark:border-indigo-900/40"
+                      : "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/40 dark:border-indigo-900/40"
                   }`}>
                     {student.status}
                   </span>

@@ -12,11 +12,12 @@ import {
   AlertCircle,
   FileCheck,
   X,
+  UserX,
   File as FileIcon
 } from "lucide-react";
 
 export default function StudentAttendancePage() {
-  const [status, setStatus] = useState<"hadir" | "izin" | "sakit">("hadir");
+  const [status, setStatus] = useState<"hadir" | "izin" | "sakit" | "alfa">("hadir");
   const [notes, setNotes] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -84,7 +85,7 @@ export default function StudentAttendancePage() {
 
       const newRecord = {
         date: today,
-        type: status === "hadir" ? "Hadir" : status === "izin" ? "Izin" : "Sakit",
+        type: status === "hadir" ? "Hadir" : status === "izin" ? "Izin" : status === "sakit" ? "Sakit" : "Alfa",
         checkIn: status === "hadir" ? new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' }) + " WIB" : "-- : --",
         checkOut: "-- : --",
         document: uploadedFile ? uploadedFile.name : null,
@@ -120,7 +121,7 @@ export default function StudentAttendancePage() {
       )}
 
       {/* TOP STATS DISPLAY */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
         <div className="glass-card p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-[#070e24]/40 flex items-center gap-4 shadow-sm">
           <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
@@ -175,7 +176,7 @@ export default function StudentAttendancePage() {
                 <label className="text-[10px] font-black uppercase text-slate-450 dark:text-slate-500 tracking-wider">
                   Pilih Parameter Kehadiran Hari Ini <span className="text-rose-500">*</span>
                 </label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   
                   {/* Hadir */}
                   <button
@@ -217,6 +218,20 @@ export default function StudentAttendancePage() {
                   >
                     <AlertCircle className={`w-6 h-6 ${status === "sakit" ? "text-amber-500" : "text-slate-400"}`} />
                     <span className="text-xs font-black uppercase tracking-wider">Sakit</span>
+                  </button>
+
+                  {/* Alfa */}
+                  <button
+                    type="button"
+                    onClick={() => { setStatus("alfa"); setUploadedFile(null); }}
+                    className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                      status === "alfa"
+                        ? "bg-rose-50/50 border-rose-500 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 shadow-md shadow-rose-500/5 scale-[1.02]"
+                        : "bg-slate-50/50 border-slate-200 dark:bg-slate-900/30 dark:border-slate-850 text-slate-500 hover:bg-slate-50 hover:border-slate-350 dark:hover:bg-slate-900/60"
+                    }`}
+                  >
+                    <UserX className={`w-6 h-6 ${status === "alfa" ? "text-rose-500" : "text-slate-400"}`} />
+                    <span className="text-xs font-black uppercase tracking-wider">Alfa</span>
                   </button>
 
                 </div>
@@ -288,7 +303,7 @@ export default function StudentAttendancePage() {
               )}
 
               {/* REMARKS TEXTAREA (Conditionally hidden for Hadir) */}
-              {status !== "hadir" && (
+              {(status === "izin" || status === "sakit") && (
                 <div className="space-y-2 animate-fadeIn">
                   <label className="text-[10px] font-black uppercase text-slate-450 dark:text-slate-500 tracking-wider">
                     Keterangan / Alasan (Wajib Diisi)
@@ -340,7 +355,7 @@ export default function StudentAttendancePage() {
         {/* RIGHT PANEL: RECENT ATTENDANCE HISTORY TABLE (5 Cols) */}
         <div className="lg:col-span-5 glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm overflow-hidden flex flex-col bg-white dark:bg-[#070e24]/40 space-y-4">
           <div>
-            <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">Riwayat Kehadiran Terakhir</h4>
+            <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">Riwayat Seluruh Absensi</h4>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">Catatan pelaporan masuk dan persetujuan absensi seminggu terakhir.</p>
           </div>
 
@@ -353,6 +368,8 @@ export default function StudentAttendancePage() {
                       ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600"
                       : item.type === "Izin"
                       ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600"
+                      : item.type === "Alfa"
+                      ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600"
                       : "bg-amber-50 dark:bg-amber-950/40 text-amber-600"
                   }`}>
                     {item.type.substring(0, 3)}
@@ -360,8 +377,10 @@ export default function StudentAttendancePage() {
                   <div>
                     <p className="text-xs font-black text-slate-900 dark:text-white">{item.date}</p>
                     <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {item.type === "Hadir" 
-                        ? `Masuk: ${item.checkIn} • Keluar: ${item.checkOut}` 
+                      {item.type === "Hadir"
+                        ? `Masuk: ${item.checkIn} • Keluar: ${item.checkOut}`
+                        : item.type === "Alfa"
+                        ? "Tidak hadir tanpa keterangan"
                         : item.document ? `Dokumen: ${item.document}` : `Mengajukan ket. ${item.type.toLowerCase()}`}
                     </span>
                   </div>

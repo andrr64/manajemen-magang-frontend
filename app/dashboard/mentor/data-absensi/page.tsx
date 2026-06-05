@@ -318,12 +318,11 @@ export default function MentorAttendancePage() {
       </div>
 
       {/* ATTENDANCE ANALYTICS METRICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { label: "Hadir Hari Ini", value: stats.present, suffix: `/${stats.total}`, desc: "Mahasiswa On-Duty", icon: UserCheck, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
           { label: "Belum Check-Out", value: stats.pendingCheckout, suffix: `/${stats.total}`, desc: "Batas Waktu: 17:00", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" },
-          { label: "Sakit / Izin", value: stats.off, suffix: `/${stats.total}`, desc: "Dengan Dokumen Sah", icon: Coffee, color: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40" },
-          { label: "Rasio Kehadiran", value: `${stats.rate}%`, suffix: "", desc: "Target Fakultas: > 90%", icon: CheckCircle, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/50 dark:border-indigo-900/40" }
+          { label: "Sakit / Izin", value: stats.off, suffix: `/${stats.total}`, desc: "Dengan Dokumen Sah", icon: Coffee, color: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40" }
         ].map((item, index) => {
           const Icon = item.icon;
           return (

@@ -178,9 +178,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
               <span className={`inline-flex px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border ${
                 student.status === "Selesai" 
                   ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200/40 dark:border-emerald-900/40" 
-                  : student.status === "Dalam Review"
-                    ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200/40 dark:border-amber-900/40"
-                    : "bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border-sky-200/40 dark:border-sky-900/40"
+                  : "bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border-sky-200/40 dark:border-sky-900/40"
               }`}>
                 {student.status}
               </span>

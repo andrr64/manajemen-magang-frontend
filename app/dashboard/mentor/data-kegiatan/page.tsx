@@ -40,7 +40,6 @@ export interface ActivityLog {
 
 export default function MentorActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("Semua");
   const [statusFilter, setStatusFilter] = useState("Semua");
   
   // States for live uploads
@@ -81,15 +80,13 @@ export default function MentorActivitiesPage() {
         act.studentName.toLowerCase().includes(q) ||
         act.studentNim.includes(q) ||
         act.activityName.toLowerCase().includes(q) ||
-        act.studentUniv.toLowerCase().includes(q) ||
-        act.category.toLowerCase().includes(q);
+        act.studentUniv.toLowerCase().includes(q);
 
-      const matchesCategory = categoryFilter === "Semua" || act.category === categoryFilter;
       const matchesStatus = statusFilter === "Semua" || act.status === statusFilter;
       
-      return matchesSearch && matchesCategory && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
-  }, [enrichedActivities, searchQuery, categoryFilter, statusFilter]);
+  }, [enrichedActivities, searchQuery, statusFilter]);
 
   // Calculate live stats
   const stats = useMemo(() => {
@@ -248,7 +245,6 @@ export default function MentorActivitiesPage() {
         <button 
           onClick={() => {
             setSearchQuery("");
-            setCategoryFilter("Semua");
             setStatusFilter("Semua");
           }}
           className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-[#070e24]/40 transition-all cursor-pointer active:scale-95 shadow-sm"
@@ -259,12 +255,11 @@ export default function MentorActivitiesPage() {
       </div>
 
       {/* ACTIVITY STATISTICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { label: "Total Kegiatan", value: stats.total, desc: "Tercatat Minggu Ini", icon: Activity, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/50 dark:border-indigo-900/40" },
           { label: "Disetujui Mentor", value: stats.approved, desc: "Ceklis Validasi", icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
-          { label: "Perlu Tinjauan", value: stats.pending, desc: "Menunggu Approval", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" },
-          { label: "Rasio Validasi", value: `${stats.ratio}%`, desc: "Persetujuan Log", icon: Award, color: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-900/40" }
+          { label: "Perlu Tinjauan", value: stats.pending, desc: "Menunggu Approval", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" }
         ].map((item, index) => {
           const Icon = item.icon;
           return (
@@ -293,7 +288,7 @@ export default function MentorActivitiesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* Keyword Search */}
-          <div className="md:col-span-6">
+          <div className="md:col-span-9">
             <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block mb-1.5">
               Cari Berdasarkan Keyword
             </label>
@@ -309,25 +304,6 @@ export default function MentorActivitiesPage() {
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="md:col-span-3">
-            <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block mb-1.5">
-              Kategori Kegiatan
-            </label>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-300"
-            >
-              <option value="Semua">Semua Kategori</option>
-              <option value="Software Engineering">Software Engineering</option>
-              <option value="UI/UX Design">UI/UX Design</option>
-              <option value="Data Analytics">Data Analytics</option>
-              <option value="Business Development">Business Development</option>
-              <option value="Administration">Administration</option>
-            </select>
-          </div>
-
           {/* Status Filter */}
           <div className="md:col-span-3">
             <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block mb-1.5">
@@ -336,7 +312,7 @@ export default function MentorActivitiesPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-300"
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-300"
             >
               <option value="Semua">Semua Status</option>
               <option value="Disetujui">Disetujui</option>
@@ -408,13 +384,10 @@ export default function MentorActivitiesPage() {
  
                   {/* Column 4: Nama Kegiatan */}
                   <td className="py-4 max-w-[240px]">
-                    <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="block space-y-1">
+                    <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="block">
                       <p className="font-bold text-slate-800 dark:text-slate-200 leading-normal hover:text-indigo-600 dark:hover:text-indigo-400">
                         {act.activityName}
                       </p>
-                      <span className="inline-block text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                        {act.category}
-                      </span >
                     </Link>
                   </td>
  
@@ -511,7 +484,7 @@ export default function MentorActivitiesPage() {
                         Coba sesuaikan pencarian Anda atau reset filter untuk kembali menampilkan seluruh data log.
                       </p>
                       <button 
-                        onClick={() => { setSearchQuery(""); setCategoryFilter("Semua"); setStatusFilter("Semua"); }}
+                        onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
                         className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-200/40 dark:border-indigo-900/40 hover:bg-indigo-100 transition-all cursor-pointer mt-1"
                       >
                         Reset Filter
