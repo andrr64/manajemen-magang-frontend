@@ -1,5 +1,5 @@
 import { executeHybridRequest, mockDB } from "../api-client";
-import { Activity, CreateActivityRequest, ActivityStat } from "./types";
+import { Activity, CreateActivityRequest, ActivityStat, ActivityResponse, ActivityStatResponse } from "./types";
 
 export interface MentorActivityLog {
   id: number | string;
@@ -32,7 +32,7 @@ const INITIAL_MENTOR_ACTIVITIES: MentorActivityLog[] = [
   { id: 8, studentId: 8, activityName: "Konfigurasi Terraform Script untuk AWS VPC", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "24", status: "Disetujui", attachment: "aws_vpc_terraform.tf" }
 ];
 
-function mapBackendActivityToFrontend(item: any): Activity {
+function mapBackendActivityToFrontend(item: ActivityResponse): Activity {
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
@@ -53,7 +53,7 @@ function mapBackendActivityToFrontend(item: any): Activity {
   };
 }
 
-function mapBackendActivityToMentorLog(item: any): MentorActivityLog {
+function mapBackendActivityToMentorLog(item: ActivityResponse): MentorActivityLog {
   const parseDay = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
@@ -93,7 +93,7 @@ function mapBackendActivityToMentorLog(item: any): MentorActivityLog {
 
   return {
     id: item.id,
-    studentId: item.mahasiswaId || item.studentId || 1,
+    studentId: item.mahasiswaId || 1,
     activityName: item.judul || "Kegiatan",
     category: "Software Engineering",
     year: parseYear(item.waktu || new Date().toISOString()),
@@ -119,7 +119,7 @@ export const kegiatanAPI = {
       }
     ).then((res) => {
       if (res.message.includes("Real")) {
-        const list = res.data as any[];
+        const list = res.data as unknown as ActivityResponse[];
         return {
           ...res,
           data: list.map(mapBackendActivityToFrontend)
@@ -163,7 +163,7 @@ export const kegiatanAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendActivityToFrontend(res.data)
+          data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
         };
       }
       return res;
@@ -200,7 +200,7 @@ export const kegiatanAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendActivityToFrontend(res.data)
+          data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
         };
       }
       return res;
@@ -237,7 +237,7 @@ export const kegiatanAPI = {
       }
     ).then((res) => {
       if (res.message.includes("Real")) {
-        const list = res.data as any[];
+        const list = res.data as unknown as ActivityResponse[];
         return {
           ...res,
           data: list.map(mapBackendActivityToMentorLog)
@@ -271,7 +271,7 @@ export const kegiatanAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendActivityToMentorLog(res.data)
+          data: mapBackendActivityToMentorLog(res.data as unknown as ActivityResponse)
         };
       }
       return res;
@@ -341,6 +341,19 @@ export const kegiatanAPI = {
           ditolak
         };
       }
-    );
+    ).then((res) => {
+      if (res.message.includes("Real")) {
+        const backend = res.data as unknown as ActivityStatResponse;
+        return {
+          ...res,
+          data: {
+            totalKegiatan: backend.totalKegiatan,
+            disetujui: backend.disetujui,
+            ditolak: backend.ditolak
+          }
+        };
+      }
+      return res;
+    });
   }
 };

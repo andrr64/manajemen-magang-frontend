@@ -22,7 +22,7 @@ import {
   X,
   Loader2
 } from "lucide-react";
-import { studentsData, Student } from "../studentsData";
+import { Student } from "@/modules/mahasiswa/types";
 import { useStudentDetail } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {

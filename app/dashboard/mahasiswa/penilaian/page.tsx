@@ -11,8 +11,11 @@ import {
   Calendar,
   MessageSquare,
   User,
-  Plus
+  Plus,
+  Loader2
 } from "lucide-react";
+import { useAssessment } from "@/modules/penilaian/hooks";
+import { useStudentDetail } from "@/modules/mahasiswa/hooks";
 
 interface AssessmentItem {
   id: string;
@@ -28,72 +31,10 @@ export default function StudentPenilaianPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreFilter, setScoreFilter] = useState<"Semua" | "Sangat Baik" | "Baik" | "Cukup">("Semua");
 
-  // Simulated student assessment criteria (based on Budi Santoso, who scored 88 overall)
-  const [assessments, setAssessments] = useState<AssessmentItem[]>([
-    { 
-      id: "absensi", 
-      name: "Kedisiplinan Absensi", 
-      desc: "Ketepatan waktu kehadiran harian, kepatuhan toleransi keterlambatan, dan pengumpulan izin formal.", 
-      score: 92, 
-      weight: 15, 
-      feedback: "Kehadiran sangat konsisten, selalu check-in tepat waktu sebelum jam 08:00.", 
-      attachment: "bukti_absen_rekap.pdf" 
-    },
-    { 
-      id: "kinerja", 
-      name: "Kinerja", 
-      desc: "Kualitas hasil pengerjaan proyek magang, efisiensi kerja teknis, dan pencapaian target mingguan.", 
-      score: 88, 
-      weight: 20, 
-      feedback: "Kualitas penulisan kode sangat bersih, dokumentasi teratur, dan tanggap menyelesaikan bug backend.", 
-      attachment: "bukti_tugas_laporan.pdf" 
-    },
-    { 
-      id: "tanggungjawab", 
-      name: "Bertanggung Jawab", 
-      desc: "Komitmen menyelesaikan tugas yang diberikan, kesiapan menanggung risiko teknis, dan inisiatif tinggi.", 
-      score: 88, 
-      weight: 15, 
-      feedback: "Menuntaskan tugas backend API sesuai target sprint dengan komitmen yang tinggi.", 
-      attachment: null 
-    },
-    { 
-      id: "kedisiplinan", 
-      name: "Kedisiplinan", 
-      desc: "Kepatuhan terhadap tata tertib industri mitra, SOP perusahaan, dan instruksi mentor akademik.", 
-      score: 90, 
-      weight: 15, 
-      feedback: "Sopan santun dan kepatuhan terhadap peraturan SOP perusahaan sangat luar biasa.", 
-      attachment: null 
-    },
-    { 
-      id: "kerjasama", 
-      name: "Kerja Sama", 
-      desc: "Kemampuan berkolaborasi dalam tim divisi, koordinasi antar departemen, dan kontribusi diskusi.", 
-      score: 85, 
-      weight: 15, 
-      feedback: "Aktif berkoordinasi dalam tim agile daily stand-up meeting.", 
-      attachment: "penilaian_peer_to_peer.docx" 
-    },
-    { 
-      id: "komunikasi", 
-      name: "Komunikasi", 
-      desc: "Kejelasan menyampaikan laporan progres harian, etika berbahasa, serta responsivitas koordinasi.", 
-      score: 85, 
-      weight: 10, 
-      feedback: "Responsif saat dihubungi melalui Slack dan aktif memaparkan progres di depan tim.", 
-      attachment: null 
-    },
-    { 
-      id: "penampilan", 
-      name: "Penampilan", 
-      desc: "Kerapian berpakaian kerja sesuai regulasi mitra, etika profesionalisme sikap, dan presentasi akhir.", 
-      score: 86, 
-      weight: 10, 
-      feedback: "Selalu berpakaian rapi dan profesional saat On-site di kantor mitra.", 
-      attachment: "rubrik_sidang_akhir.pdf" 
-    }
-  ]);
+  // Fetch assessments from API
+  const { assessments, isLoading } = useAssessment();
+  // Fetch real mentor detail
+  const { student } = useStudentDetail(1);
 
   // Dynamic calculations for GPA/Overall Score
   const overallStats = useMemo(() => {
@@ -166,12 +107,16 @@ export default function StudentPenilaianPage() {
             <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
               <div className="text-center">
                 <span className="text-[9px] font-black uppercase tracking-wider text-violet-300">Nilai Akhir</span>
-                <span className="text-3xl font-black text-white block mt-0.5">{overallStats.average}</span>
+                <span className="text-3xl font-black text-white block mt-0.5">
+                  {isLoading ? <Loader2 className="w-8 h-8 animate-spin mx-auto text-white/50" /> : overallStats.average}
+                </span>
               </div>
               <div className="h-10 w-px bg-white/10" />
               <div className="text-center">
                 <span className="text-[9px] font-black uppercase tracking-wider text-violet-300">Grade</span>
-                <span className="text-3xl font-black text-violet-300 block mt-0.5">{overallStats.grade}</span>
+                <span className="text-3xl font-black text-violet-300 block mt-0.5">
+                  {isLoading ? "-" : overallStats.grade}
+                </span>
               </div>
             </div>
 
@@ -209,7 +154,7 @@ export default function StudentPenilaianPage() {
             onClick={() => setScoreFilter("Semua")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               scoreFilter === "Semua"
-                ? "bg-violet-650 text-white shadow-sm"
+                ? "bg-blue-600 text-white shadow-sm"
                 : "bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900"
             }`}
           >
@@ -254,9 +199,25 @@ export default function StudentPenilaianPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredAssessments.map((item, index) => {
-                return (
-                  <tr key={item.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+                      Memuat data penilaian...
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredAssessments.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                    Tidak ada parameter penilaian magang yang cocok dengan kriteria pencarian.
+                  </td>
+                </tr>
+              ) : (
+                filteredAssessments.map((item, index) => {
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
                     
                     {/* NO */}
                     <td className="py-4 pl-4 font-extrabold text-slate-400 dark:text-slate-550">
@@ -295,16 +256,9 @@ export default function StudentPenilaianPage() {
                       </div>
                     </td>
 
-                  </tr>
-                );
-              })}
-
-              {filteredAssessments.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-16 text-center text-slate-400 font-extrabold">
-                    Tidak ada parameter penilaian magang yang cocok dengan kriteria pencarian.
-                  </td>
-                </tr>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -321,9 +275,11 @@ export default function StudentPenilaianPage() {
           </div>
           <div>
             <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">TIM PENILAI INDEPENDEN</span>
-            <h5 className="font-black text-sm text-slate-900 dark:text-white mt-1">Dr. Ahmad Hidayat, M.T.</h5>
+            <h5 className="font-black text-sm text-slate-900 dark:text-white mt-1">
+              {student?.namaMentor || "Belum Ada Mentor"}
+            </h5>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-normal">
-              Dosen Pembimbing Akademik Utama • Universitas Indonesia
+              Dosen Pembimbing Akademik Utama • {student?.university || "Universitas"}
             </p>
           </div>
         </div>

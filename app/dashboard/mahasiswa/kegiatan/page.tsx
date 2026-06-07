@@ -14,33 +14,26 @@ import {
   Download,
   Filter,
   X,
-  FileCheck
+  FileCheck,
+  Loader2
 } from "lucide-react";
-
-interface Activity {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-  fileName: string | null;
-  fileSize: string | null;
-  status: "Belum Unggah" | "Sudah Diunggah";
-}
+import { useActivities } from "@/modules/kegiatan/hooks";
 
 export default function StudentActivitiesPage() {
-  // Simulated initial activities list
-  const [activities, setActivities] = useState<Activity[]>([
-    { id: 1, title: "Slicing Figma UI Dashboard Mahasiswa & Mentor", date: "29 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "dashboard_slicing_v1.zip", fileSize: "12.4 MB", status: "Sudah Diunggah" },
-    { id: 2, title: "Integrasi API Absensi Harian dengan Geofence", date: "28 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "api_integration_docs.pdf", fileSize: "2.1 MB", status: "Sudah Diunggah" },
-    { id: 3, title: "Unit Testing & Security Audit Modul Auth", date: "27 Mei 2026", time: "08:00 - 17:00 WIB", fileName: null, fileSize: null, status: "Belum Unggah" },
-    { id: 4, title: "Refactoring Database Schema & Indexing", date: "26 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "db_refactor_script.sql", fileSize: "450 KB", status: "Sudah Diunggah" },
-    { id: 5, title: "Penyusunan Dokumentasi Laporan Bab 3 Magang", date: "25 Mei 2026", time: "08:00 - 16:30 WIB", fileName: null, fileSize: null, status: "Belum Unggah" }
-  ]);
+  const {
+    activities,
+    isLoading,
+    isSubmitting,
+    addActivity,
+    uploadAttachment,
+    deleteActivity
+  } = useActivities();
 
   // Form states for adding new activity
   const [newTitle, setNewTitle] = useState("");
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("08:00 - 17:00 WIB");
+  const [newFile, setNewFile] = useState<File | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
   // Filter states
@@ -58,71 +51,62 @@ export default function StudentActivitiesPage() {
   };
 
   // Add new activity
-  const handleAddActivity = (e: React.FormEvent) => {
+  const handleAddActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDate) return;
 
-    // Formatting date
-    const formattedDate = new Date(newDate).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
+    try {
+      const newActivity = await addActivity({
+        title: newTitle,
+        date: newDate,
+        time: newTime
+      });
+      
+      if (newFile && newActivity && newActivity.id) {
+        try {
+          const sizeMB = (newFile.size / 1024 / 1024).toFixed(1);
+          await uploadAttachment(newActivity.id, newFile.name, `${sizeMB} MB`);
+        } catch (uploadErr: any) {
+          triggerToast("Kegiatan ditambahkan, tetapi gagal mengunggah berkas.");
+          return; // Stop here if upload fails, though activity is added
+        }
+      }
 
-    const newAct: Activity = {
-      id: Date.now(),
-      title: newTitle,
-      date: formattedDate,
-      time: newTime,
-      fileName: null,
-      fileSize: null,
-      status: "Belum Unggah"
-    };
-
-    setActivities([newAct, ...activities]);
-    setNewTitle("");
-    setNewDate("");
-    setShowAddForm(false);
-    triggerToast("Kegiatan baru berhasil ditambahkan!");
+      setNewTitle("");
+      setNewDate("");
+      setNewTime("08:00 - 17:00 WIB");
+      setNewFile(null);
+      setShowAddForm(false);
+      triggerToast("Kegiatan baru berhasil ditambahkan!");
+    } catch (err: any) {
+      triggerToast(err.message || "Gagal menambahkan kegiatan.");
+    }
   };
 
   // Upload file assignment for a specific activity
-  const handleUploadFile = (activityId: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadFile = async (activityId: number | string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const sizeMB = (file.size / 1024 / 1024).toFixed(1);
       
-      setActivities(prev => prev.map(act => {
-        if (act.id === activityId) {
-          return {
-            ...act,
-            fileName: file.name,
-            fileSize: `${sizeMB} MB`,
-            status: "Sudah Diunggah"
-          };
-        }
-        return act;
-      }));
-
-      triggerToast(`Berkas "${file.name}" berhasil diunggah!`);
+      try {
+        await uploadAttachment(activityId, file.name, `${sizeMB} MB`);
+        triggerToast(`Berkas "${file.name}" berhasil diunggah!`);
+      } catch (err: any) {
+        triggerToast(err.message || "Gagal mengunggah berkas.");
+      }
     }
   };
 
-  // Delete file attachment
-  const handleDeleteAttachment = (activityId: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus berkas lampiran tugas ini?")) {
-      setActivities(prev => prev.map(act => {
-        if (act.id === activityId) {
-          return {
-            ...act,
-            fileName: null,
-            fileSize: null,
-            status: "Belum Unggah"
-          };
-        }
-        return act;
-      }));
-      triggerToast("Lampiran tugas berhasil dihapus.");
+  // Delete activity and its attachment
+  const handleDeleteActivity = async (activityId: number | string) => {
+    if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini beserta lampirannya?")) {
+      try {
+        await deleteActivity(activityId);
+        triggerToast("Kegiatan berhasil dihapus.");
+      } catch (err: any) {
+        triggerToast(err.message || "Gagal menghapus kegiatan.");
+      }
     }
   };
 
@@ -171,7 +155,10 @@ export default function StudentActivitiesPage() {
         <div className="glass-card p-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070e24]/60 shadow-xl max-w-xl animate-fadeIn space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800/80">
             <h4 className="font-extrabold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Form Catat Kegiatan Harian Baru</h4>
-            <button onClick={() => setShowAddForm(false)} className="text-slate-400 hover:text-slate-650 dark:hover:text-white">
+            <button onClick={() => {
+              setShowAddForm(false);
+              setNewFile(null);
+            }} className="text-slate-400 hover:text-slate-650 dark:hover:text-white">
               <X className="w-4.5 h-4.5" />
             </button>
           </div>
@@ -214,11 +201,51 @@ export default function StudentActivitiesPage() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase text-slate-400">Lampiran / Berkas Pendukung (Opsional)</label>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="new-activity-file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setNewFile(e.target.files[0]);
+                    } else {
+                      setNewFile(null);
+                    }
+                  }}
+                  className="hidden"
+                />
+                <label 
+                  htmlFor="new-activity-file"
+                  className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >
+                  <div className="p-2 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-xl">
+                    <Upload className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 truncate">
+                    {newFile ? (
+                      <span className="text-slate-700 dark:text-slate-200 font-semibold">{newFile.name}</span>
+                    ) : (
+                      <span className="text-slate-400 font-medium">Pilih berkas untuk diunggah...</span>
+                    )}
+                  </div>
+                  {newFile && (
+                    <span className="text-xs text-slate-400">
+                      {(newFile.size / 1024 / 1024).toFixed(1)} MB
+                    </span>
+                  )}
+                </label>
+              </div>
+            </div>
+
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-md font-black"
+                disabled={isSubmitting}
+                className={`px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-md font-black flex items-center justify-center gap-2 ${isSubmitting ? "opacity-75 cursor-wait" : ""}`}
               >
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Simpan Kegiatan
               </button>
             </div>
@@ -247,7 +274,7 @@ export default function StudentActivitiesPage() {
             onClick={() => setStatusFilter("Semua")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               statusFilter === "Semua"
-                ? "bg-violet-650 text-white shadow-sm"
+                ? "bg-blue-600 text-white shadow-sm"
                 : "bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900"
             }`}
           >
@@ -293,8 +320,24 @@ export default function StudentActivitiesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredActivities.map((act, index) => (
-                <tr key={act.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+                      Memuat daftar kegiatan...
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredActivities.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                    Tidak ada jurnal kegiatan magang yang cocok dengan kriteria pencarian.
+                  </td>
+                </tr>
+              ) : (
+                filteredActivities.map((act, index) => (
+                  <tr key={act.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
                   
                   {/* Column 1: Nomor */}
                   <td className="py-4 pl-4 font-extrabold text-slate-400 dark:text-slate-550">
@@ -356,32 +399,20 @@ export default function StudentActivitiesPage() {
                     )}
                   </td>
 
-                  {/* Column 5: Attachment Hapus */}
+                  {/* Column 5: Hapus Kegiatan */}
                   <td className="py-4 pr-4 text-center">
-                    {act.fileName ? (
-                      <button
-                        onClick={() => handleDeleteAttachment(act.id)}
-                        className="p-2 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-500 hover:text-white text-rose-600 dark:text-rose-400 rounded-xl border border-rose-100 dark:border-rose-900/30 transition-all cursor-pointer hover:scale-[1.03]"
-                        title="Hapus lampiran berkas"
-                      >
-                        <Trash2 className="w-4.5 h-4.5" />
-                      </button>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 font-bold tracking-wide italic">
-                        Tidak ada berkas
-                      </span>
-                    )}
+                    <button
+                      onClick={() => handleDeleteActivity(act.id)}
+                      disabled={isSubmitting}
+                      className={`p-2 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-500 hover:text-white text-rose-600 dark:text-rose-400 rounded-xl border border-rose-100 dark:border-rose-900/30 transition-all cursor-pointer ${isSubmitting ? "opacity-50 cursor-wait" : "hover:scale-[1.03]"}`}
+                      title="Hapus kegiatan"
+                    >
+                      <Trash2 className="w-4.5 h-4.5" />
+                    </button>
                   </td>
 
                 </tr>
-              ))}
-
-              {filteredActivities.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-slate-400 font-extrabold">
-                    Tidak ada jurnal kegiatan magang yang cocok dengan kriteria pencarian.
-                  </td>
-                </tr>
+                ))
               )}
             </tbody>
           </table>

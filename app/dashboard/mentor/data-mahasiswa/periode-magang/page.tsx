@@ -21,7 +21,6 @@ import {
   ArrowRight,
   Briefcase
 } from "lucide-react";
-import { studentsData, Student } from "../studentsData";
 import { useStudents } from "@/modules/mahasiswa/hooks";
 import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
@@ -167,7 +166,7 @@ export default function MentorInternshipPeriodPage() {
                   Atur Periode Magang
                 </h4>
                 <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5">
-                  Mahasiswa: {studentsData.find(s => s.id === editingStudentId)?.name}
+                  Mahasiswa: {studentsList.find(s => s.id === editingStudentId)?.name}
                 </p>
               </div>
             </div>

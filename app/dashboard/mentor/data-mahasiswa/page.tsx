@@ -26,20 +26,29 @@ import {
   MapPin,
   AlertTriangle
 } from "lucide-react";
-import { studentsData, Student } from "./studentsData";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { Student } from "@/modules/mahasiswa/types";
+import { useStudents, useStudentStats } from "@/modules/mahasiswa/hooks";
 import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 export default function MentorDataMahasiswaPage() {
-  const { rawStudents, isLoading, refreshStudents, removeStudent } = useStudents();
-  const studentsList = rawStudents;
-
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("Semua");
   const [univFilter, setUnivFilter] = useState("Semua");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  const { students: filteredStudents, isLoading, refreshStudents, removeStudent } = useStudents({
+    gender: genderFilter !== "Semua" ? genderFilter : undefined,
+    universitas: univFilter !== "Semua" ? univFilter : undefined,
+    status: statusFilter !== "Semua" ? statusFilter : undefined,
+    searchQuery: searchQuery
+  });
+
+  const { stats: backendStats } = useStudentStats({
+    gender: genderFilter !== "Semua" ? genderFilter : undefined,
+    universitas: univFilter !== "Semua" ? univFilter : undefined
+  });
 
   // Local state for student internship periods (initially mapped from dates)
   const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({});
@@ -92,7 +101,7 @@ export default function MentorDataMahasiswaPage() {
       [editingStudentId!]: { startDate: editStartDate, endDate: editEndDate }
     }));
 
-    const studentName = studentsList.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
+    const studentName = filteredStudents.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
     setIsSavingPeriod(false);
     setEditingStudentId(null);
     setShowPeriodToast(`Periode magang ${studentName} berhasil diperbarui!`);
@@ -258,31 +267,17 @@ export default function MentorDataMahasiswaPage() {
     }
   };
 
-  // Extract unique universities for filter dropdown
-  const uniqueUniversities = useMemo(() => {
-    const univs = studentsList.map((s) => s.university);
-    return ["Semua", ...Array.from(new Set(univs))];
-  }, [studentsList]);
-
-  // Filter students based on all selected criteria
-  const filteredStudents = useMemo(() => {
-    return studentsList.filter((s) => {
-      const q = searchQuery.trim().toLowerCase();
-      const matchesSearch =
-        q === "" ||
-        s.name.toLowerCase().includes(q) ||
-        s.nim.includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.university.toLowerCase().includes(q) ||
-        s.phone.includes(q);
-
-      const matchesGender = genderFilter === "Semua" || s.gender === genderFilter;
-      const matchesUniv = univFilter === "Semua" || s.university === univFilter;
-      const matchesStatus = statusFilter === "Semua" || s.status === statusFilter;
-
-      return matchesSearch && matchesGender && matchesUniv && matchesStatus;
-    });
-  }, [studentsList, searchQuery, genderFilter, univFilter, statusFilter]);
+  // Extract unique universities for filter dropdown (Hardcoded based on typical partners)
+  const uniqueUniversities = [
+    "Semua",
+    "Universitas Indonesia",
+    "Institut Teknologi Bandung",
+    "Universitas Gadjah Mada",
+    "Universitas Bina Nusantara",
+    "Universitas Diponegoro",
+    "Universitas Padjadjaran",
+    "Telkom University"
+  ];
 
   // Pagination logic
   const total = filteredStudents.length;
@@ -295,14 +290,18 @@ export default function MentorDataMahasiswaPage() {
     return filteredStudents.slice(start, start + perPage);
   }, [filteredStudents, page, totalPages, perPage]);
 
-  // Quick stats calculation
+  // Quick stats calculation from Backend Real API
   const stats = useMemo(() => {
-    const totalCount = studentsList.length;
-    const activeCount = studentsList.filter(s => s.status === "Aktif").length;
-    const pendingCount = 0;
-    const completedCount = studentsList.filter(s => s.status === "Selesai").length;
-    return { totalCount, activeCount, pendingCount, completedCount };
-  }, [studentsList]);
+    if (backendStats) {
+      return {
+        totalCount: (backendStats.totalAktif || 0) + (backendStats.totalSelesai || 0) + (backendStats.totalAktifTanpaPenilaian || 0),
+        activeCount: backendStats.totalAktif || 0,
+        pendingCount: backendStats.totalAktifTanpaPenilaian || 0,
+        completedCount: backendStats.totalSelesai || 0
+      };
+    }
+    return { totalCount: 0, activeCount: 0, pendingCount: 0, completedCount: 0 };
+  }, [backendStats]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -670,7 +669,7 @@ export default function MentorDataMahasiswaPage() {
                   Atur Periode Magang
                 </h4>
                 <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5">
-                  Mahasiswa: {studentsList.find(s => s.id === editingStudentId)?.name}
+                  Mahasiswa: {filteredStudents.find(s => s.id === editingStudentId)?.name}
                 </p>
               </div>
             </div>

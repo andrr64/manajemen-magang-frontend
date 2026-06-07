@@ -17,23 +17,10 @@ import {
   Eye,
   Trash2
 } from "lucide-react";
-import { studentsData } from "../data-mahasiswa/studentsData";
 import { useAttendance } from "@/modules/absensi/hooks";
 import { absensiAPI } from "@/modules/absensi/api";
 import { useStudents } from "@/modules/mahasiswa/hooks";
-
-interface AttendanceLog {
-  id: string | number;
-  studentId?: string | number;
-  date: string;
-  checkIn: string;
-  checkOut: string;
-  duration?: string;
-  location?: string;
-  type: "Hadir" | "Izin" | "Sakit" | "Alpha";
-  status: "Diverifikasi" | "Menunggu" | "Ditolak";
-  notes?: string;
-}
+import { AttendanceLog } from "@/modules/absensi/types";
 
 export default function MentorAttendancePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,12 +31,21 @@ export default function MentorAttendancePage() {
   // States for viewing leave document modal
   const [viewingLeaveDoc, setViewingLeaveDoc] = useState<{ studentName: string; type: "Sakit" | "Izin"; notes: string; documentUrl?: string | null } | null>(null);
 
-  const handleViewDocument = (studentName: string, type: "Sakit" | "Izin", notes: string, documentUrl?: string | null) => {
-    setViewingLeaveDoc({ studentName, type, notes, documentUrl });
-  };
+  const todayStr = useMemo(() => new Date().toLocaleDateString("id-ID", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  }), []);
 
   // Real React Hook Integration
-  const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory } = useAttendance();
+  const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory, getSuratKeterangan } = useAttendance();
+
+  const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", notes: string, initialUrl?: string | null) => {
+    try {
+      const url = await getSuratKeterangan(logId);
+      setViewingLeaveDoc({ studentName, type, notes, documentUrl: url });
+    } catch (err) {
+      setViewingLeaveDoc({ studentName, type, notes, documentUrl: initialUrl || null });
+    }
+  };
   const { rawStudents } = useStudents();
   const studentsList = rawStudents;
 
@@ -101,15 +97,16 @@ export default function MentorAttendancePage() {
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate live stats reactively
+  // Calculate live stats reactively for TODAY only
   const stats = useMemo(() => {
-    const total = enrichedLogs.length;
-    const present = enrichedLogs.filter(l => l.status === "Hadir").length;
-    const pendingCheckout = enrichedLogs.filter(l => l.status === "Belum Check-Out").length;
-    const off = enrichedLogs.filter(l => l.status === "Sakit" || l.status === "Izin").length;
+    const todayLogs = enrichedLogs.filter(l => l.date === todayStr);
+    const total = todayLogs.length;
+    const present = todayLogs.filter(l => l.status === "Hadir").length;
+    const pendingCheckout = todayLogs.filter(l => l.status === "Belum Check-Out").length;
+    const off = todayLogs.filter(l => l.status === "Sakit" || l.status === "Izin").length;
     const rate = total > 0 ? ((present + off) / total) * 100 : 0;
     return { total, present, pendingCheckout, off, rate: rate.toFixed(1) };
-  }, [enrichedLogs]);
+  }, [enrichedLogs, todayStr]);
 
   // Real action handlers delegating to the custom hook
   const handleDeleteLog = async (logId: string | number, studentName: string) => {
@@ -201,56 +198,42 @@ export default function MentorAttendancePage() {
               </button>
             </div>
 
-            {/* Document Preview Frame Mock */}
-            <div className="border border-slate-200/60 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-5 md:p-6 shadow-inner font-serif text-slate-800 dark:text-slate-200 relative min-h-[220px] flex flex-col justify-between">
+            {/* Document Preview Area */}
+            <div className="border border-slate-200/60 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 md:p-5 shadow-inner text-slate-800 dark:text-slate-200 relative min-h-[220px] flex flex-col items-center justify-center">
               
-              {/* Seal/Stamp design */}
-              <div className="absolute top-4 right-4 opacity-10 dark:opacity-5 flex flex-col items-center select-none pointer-events-none">
-                <div className="w-20 h-20 rounded-full border-4 border-indigo-500 flex items-center justify-center font-bold text-[8px] uppercase tracking-widest text-center rotate-12">
-                  Klinik Medis Pratama
-                </div>
-              </div>
-
-              {/* Document Header Info */}
-              <div className="space-y-4">
-                <div className="text-center pb-3 border-b border-slate-200 dark:border-slate-800">
-                  <h5 className="font-black text-xs uppercase tracking-wide">
-                    {viewingLeaveDoc.type === "Sakit" ? "SURAT KETERANGAN DOKTER" : "SURAT PERNYATAAN IZIN MAHASISWA"}
-                  </h5>
-                  <p className="text-[8px] font-sans text-slate-450 dark:text-slate-500 font-bold mt-0.5">
-                    No. Ref: {viewingLeaveDoc.type === "Sakit" ? "SKD/2026/05/9821" : "SPM/2026/05/4402"}
-                  </p>
-                </div>
-
-                <div className="text-[10px] space-y-2 leading-relaxed">
-                  <p>Yang bertanda tangan di bawah ini menerangkan bahwa:</p>
-                  <div className="grid grid-cols-3 gap-1 font-sans text-[9px] font-semibold bg-slate-100/50 dark:bg-slate-900/35 p-2 rounded-lg">
-                    <span className="text-slate-400 dark:text-slate-500">Nama Mahasiswa</span>
-                    <span className="col-span-2">: {viewingLeaveDoc.studentName}</span>
-                    <span className="text-slate-400 dark:text-slate-500">Keterangan</span>
-                    <span className="col-span-2">: {viewingLeaveDoc.type === "Sakit" ? "Sakit / Tidak Fit" : "Izin Keperluan Keadaan Darurat"}</span>
-                    <span className="text-slate-400 dark:text-slate-500">Alasan Tertulis</span>
-                    <span className="col-span-2 text-indigo-600 dark:text-indigo-400 font-bold">: &quot;{viewingLeaveDoc.notes}&quot;</span>
-                  </div>
-                  <p>
-                    Diberikan surat keterangan ini untuk dapat dipergunakan sebagaimana mestinya guna pemenuhan perizinan kegiatan program magang industri (MBKM).
-                  </p>
-                </div>
-              </div>
-
-              {/* Document Footer Signature */}
-              <div className="flex justify-end pt-4 font-sans text-[9px] border-t border-slate-200/55 dark:border-slate-800/40">
-                <div className="text-right space-y-7">
-                  <p className="text-[8px] text-slate-450 dark:text-slate-500 font-bold">Jakarta, 28 Mei 2026</p>
-                  <div>
-                    <p className="font-extrabold text-slate-850 dark:text-slate-100">
-                      {viewingLeaveDoc.type === "Sakit" ? "Dr. H. Hermawan, Sp.PD" : viewingLeaveDoc.studentName}
-                    </p>
-                    <p className="text-[8px] text-slate-400 dark:text-slate-500">
-                      {viewingLeaveDoc.type === "Sakit" ? "NIP. 19820412 201012 1 002" : "Mahasiswa Bersangkutan"}
-                    </p>
+              {viewingLeaveDoc.documentUrl ? (
+                <div className="w-full h-full min-h-[200px] flex items-center justify-center bg-slate-200/50 dark:bg-slate-950/50 rounded-xl overflow-hidden">
+                  <img 
+                    src={viewingLeaveDoc.documentUrl} 
+                    alt="Lampiran Surat" 
+                    className="max-w-full max-h-[300px] object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <div className="hidden flex-col items-center justify-center p-4 text-center">
+                    <FileSpreadsheet className="w-8 h-8 text-slate-400 mb-2" />
+                    <p className="text-xs font-semibold text-slate-500">Dokumen dilampirkan (Bukan Format Gambar)</p>
                   </div>
                 </div>
+              ) : (
+                <div className="text-center space-y-3 p-4">
+                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <AlertCircle className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <h5 className="font-bold text-sm text-slate-700 dark:text-slate-300">Tidak ada lampiran dokumen</h5>
+                  <p className="text-[10px] text-slate-500">
+                    Mahasiswa tidak mengunggah bukti surat keterangan.
+                  </p>
+                </div>
+              )}
+
+              <div className="w-full mt-4 p-3 bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-xl">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1">Catatan/Alasan Tambahan:</p>
+                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  {viewingLeaveDoc.notes || "Tidak ada catatan."}
+                </p>
               </div>
 
             </div>
@@ -350,7 +333,7 @@ export default function MentorAttendancePage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
           <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
             <Calendar className="w-4 h-4 text-indigo-500" />
-            Kehadiran Hari Ini: <span className="text-indigo-600 dark:text-indigo-400 font-black">Kamis, 28 Mei 2026</span>
+            Kehadiran Hari Ini: <span className="text-indigo-600 dark:text-indigo-400 font-black">{todayStr}</span>
           </h4>
 
           <div className="flex items-center gap-2 text-xs font-bold text-slate-400 dark:text-slate-500">
@@ -476,7 +459,7 @@ export default function MentorAttendancePage() {
                           {log.notes || "Tidak ada keterangan tambahan."}
                         </span>
                         <button
-                          onClick={() => handleViewDocument(log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document || null)}
+                          onClick={() => handleViewDocument(log.id, log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document || null)}
                           className="inline-flex items-center gap-1 w-max px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 dark:bg-indigo-950/40 hover:text-white dark:hover:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/30 dark:border-indigo-900/30 rounded-xl text-[9px] font-black cursor-pointer transition-all active:scale-95 shadow-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />

@@ -14,9 +14,12 @@ import {
   Sparkles
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
+import { useStudentDetail } from "@/modules/mahasiswa/hooks";
 
 export default function StudentSertifikatPage() {
-  const { certificate, isLoading } = useCertificate();
+  const { certificate, isLoading: isCertLoading } = useCertificate();
+  const { student, isLoading: isStudentLoading } = useStudentDetail(1);
+  const isLoading = isCertLoading || isStudentLoading;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -133,7 +136,9 @@ export default function StudentSertifikatPage() {
                   <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-wide border-b border-slate-200 dark:border-slate-800 pb-2 inline-block px-8 max-w-full truncate">
                     {certificateInfo.recipient}
                   </h2>
-                  <p className="text-[9px] text-slate-450 mt-2 font-semibold">NIM. 2201012001 • UI S1 Teknik Informatika</p>
+                  <p className="text-[9px] text-slate-450 mt-2 font-semibold">
+                    NIM. {student?.nim || "10101010"} • {student?.university || "Universitas"}
+                  </p>
                 </div>
 
                 <div className="max-w-md mx-auto">
@@ -146,11 +151,15 @@ export default function StudentSertifikatPage() {
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/40 text-[9px] font-bold">
                   <div>
                     <span className="text-slate-400 block font-normal">Dosen Pembimbing</span>
-                    <span className="text-slate-850 dark:text-slate-200 block mt-2 font-black italic">Dr. Ahmad Hidayat, M.T.</span>
+                    <span className="text-slate-850 dark:text-slate-200 block mt-2 font-black italic">
+                      {student?.namaMentor || "Belum Ada"}
+                    </span>
                   </div>
                   <div>
                     <span className="text-slate-400 block font-normal">Industry Advisor</span>
-                    <span className="text-slate-850 dark:text-slate-200 block mt-2 font-black italic">Ir. Bambang Wijaya</span>
+                    <span className="text-slate-850 dark:text-slate-200 block mt-2 font-black italic">
+                      Perwakilan {certificateInfo.company}
+                    </span>
                   </div>
                 </div>
               </div>

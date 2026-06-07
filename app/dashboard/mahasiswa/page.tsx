@@ -18,39 +18,52 @@ import {
   BookOpen,
   ArrowUpRight,
   ShieldCheck,
-  Zap
+  Zap,
+  Loader2
 } from "lucide-react";
+import { useDashboardMahasiswaStats } from "@/modules/dashboard-mahasiswa/hooks";
+import { useStudentDetail } from "@/modules/mahasiswa/hooks";
+import { useActivities } from "@/modules/kegiatan/hooks";
 
 export default function StudentDashboardHome() {
   const [isCheckedIn, setIsCheckedIn] = useState(true);
   const [isCheckedOut, setIsCheckedOut] = useState(false);
 
-  // Student dummy data based on Budi Santoso
+  // Hardcode ID 1 as simulation for the logged in student
+  const { stats, isLoading } = useDashboardMahasiswaStats(1);
+
+  // Retrieve student API data
+  const { student: apiStudent, isLoading: isStudentLoading } = useStudentDetail(1);
+  const { activities, isLoading: isActivitiesLoading } = useActivities();
+
+  // Dynamic Profile Object
   const studentProfile = {
-    name: "Budi Santoso",
-    nim: "2201012001",
-    email: "budi.santoso@student.ui.ac.id",
-    university: "Universitas Indonesia",
-    program: "S1 Teknik Informatika",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    period: "1 Februari 2026 - 31 Juli 2026",
-    progress: 85,
-    attendance: { present: 76, sick: 2, leave: 1, absent: 0 },
-    logbooksCount: 8,
-    logbooksPending: 0,
-    grade: 88,
-    mentorName: "Dr. Ahmad Hidayat, M.T.",
-    mentorNIDN: "0423127801",
-    mentorEmail: "ahmad.hidayat@lecturer.ac.id",
+    name: apiStudent?.name || "Memuat...",
+    nim: apiStudent?.nim || "-",
+    email: apiStudent?.email || "-",
+    university: apiStudent?.university || "-",
+    program: apiStudent?.program || "-",
+    company: apiStudent?.company || "Belum Ditempatkan",
+    role: apiStudent?.role || "-",
+    period: apiStudent?.period || "-",
+    progress: apiStudent?.progress || 0,
+    attendance: apiStudent?.attendance || { present: 0, sick: 0, leave: 0, absent: 0 },
+    logbooksCount: apiStudent?.logbooksCount || 0,
+    logbooksPending: apiStudent?.logbooksPending || 0,
+    grade: apiStudent?.grade || 0,
+    mentorName: apiStudent?.namaMentor || "Belum Ada Mentor",
+    mentorNIDN: "-",
+    mentorEmail: "-"
   };
 
-  const recentLogbooks = [
-    { id: 8, week: "Minggu 8", date: "29 Mei 2026", topic: "Implementasi Integration Testing & Next.js Layout Refactoring", hours: 8, status: "Disetujui" },
-    { id: 7, week: "Minggu 7", date: "22 Mei 2026", topic: "Optimalisasi Query SQL & Implementasi Redis Caching", hours: 8, status: "Disetujui" },
-    { id: 6, week: "Minggu 6", date: "15 Mei 2026", topic: "Pengembangan Dashboard UI & Integrasi Antarmuka REST API", hours: 8, status: "Disetujui" },
-    { id: 5, week: "Minggu 5", date: "08 Mei 2026", topic: "Analisis Database Schema & Integrasi ORM Prisma", hours: 8, status: "Disetujui" }
-  ];
+  const recentLogbooks = activities.slice(0, 5).map((act, idx) => ({
+    id: act.id,
+    week: `Aktivitas ${activities.length - idx}`,
+    date: act.date,
+    topic: act.title,
+    hours: 8,
+    status: act.status === "Sudah Diunggah" ? "Disetujui" : "Menunggu"
+  }));
 
   return (
     <div className="space-y-6">
@@ -110,10 +123,14 @@ export default function StudentDashboardHome() {
               Total Kehadiran
             </span>
             <h4 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mt-1">
-              {studentProfile.attendance.present} / 80 Hari
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-emerald-500" />
+              ) : (
+                `${stats?.totalKehadiran ?? studentProfile.attendance.present} / 80 Hari`
+              )}
             </h4>
             <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 block pt-1">
-              Kehadiran Anda 96.2% (Sangat Baik)
+              Kehadiran Anda {isLoading ? "..." : (stats ? ((stats.totalKehadiran / 80) * 100).toFixed(1) : 96.2)}% (Sangat Baik)
             </span>
           </div>
           <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/20 shadow-sm">
@@ -128,10 +145,14 @@ export default function StudentDashboardHome() {
               Sisa Waktu Magang
             </span>
             <h4 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mt-1">
-              64 Hari Lagi
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+              ) : (
+                `${stats?.sisaWaktuMagangDays ?? 64} Hari Lagi`
+              )}
             </h4>
             <span className="text-[9px] font-semibold text-amber-600 dark:text-amber-400 block pt-1">
-              Hingga tanggal 31 Juli 2026
+              {isLoading ? "Menghitung sisa waktu..." : (stats?.sisaWaktuMagangFormatted ?? "Hingga tanggal 31 Juli 2026")}
             </span>
           </div>
           <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200/20 shadow-sm">

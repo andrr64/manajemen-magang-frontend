@@ -17,6 +17,32 @@
 // =====================================================================
 
 // =====================================================================
+// BACKEND SCHEMAS
+// =====================================================================
+export interface StudentResponse {
+  id: string;
+  userId: string;
+  email: string;
+  nim: string;
+  nama: string;
+  noHp: string;
+  gender: string;
+  universitas: string;
+  periodeId: string | null;
+  tanggalMulai: string | null;
+  tanggalBerakhir: string | null;
+  statusPeriode: string | null;
+  mentorId: string | null;
+  namaMentor: string | null;
+}
+
+export interface StudentStatResponse {
+  totalAktif: number;
+  totalSelesai: number;
+  totalAktifTanpaPenilaian: number;
+}
+
+// =====================================================================
 // STUDENT — shape yang dipakai komponen UI
 // =====================================================================
 export interface Student {
