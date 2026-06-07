@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useIam } from "@/modules/iam/hooks";
 import { 
   User, 
   Mail, 
@@ -16,36 +17,52 @@ import {
 } from "lucide-react";
 
 export default function StudentProfilePage() {
-  // Live State with Budi Santoso Dummy Data
+  const { user, updateProfile } = useIam();
+
   const [profile, setProfile] = useState({
-    name: "Budi Santoso",
-    nim: "2201012001",
-    email: "budi.santoso@student.ui.ac.id",
-    phone: "+62 812-9876-5432",
-    university: "Universitas Indonesia",
-    program: "S1 Teknik Informatika",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    address: "Jl. Margonda Raya No. 100, Depok, Jawa Barat",
-    status: "AKTIF"
+    name: "Loading...",
+    nim: "-",
+    email: "Loading...",
+    phone: "-",
+    role: "Loading..."
   });
 
-  // Temporary form state
   const [formData, setFormData] = useState({ ...profile });
   const [showToast, setShowToast] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      const userData = {
+        name: user.nama || "",
+        nim: user.nim || "-",
+        email: user.email || "",
+        phone: user.noHp || "",
+        role: user.role || "Mahasiswa"
+      };
+      setProfile(userData);
+      setFormData(userData);
+    }
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     
-    // Simulate premium API saving
-    setTimeout(() => {
+    try {
+      await updateProfile({
+        nama: formData.name,
+        email: formData.email,
+        noHp: formData.phone
+      });
       setProfile({ ...formData });
-      setIsSaving(false);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4000);
-    }, 1000);
+    } catch (error) {
+      console.error("Failed to save profile:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -92,7 +109,7 @@ export default function StudentProfilePage() {
                 {profile.name}
               </h3>
               <p className="text-xs text-violet-200 leading-normal font-semibold mt-1 opacity-90">
-                NIM. {profile.nim} • {profile.program}
+                NIM. {profile.nim}
               </p>
             </div>
           </div>
@@ -154,36 +171,14 @@ export default function StudentProfilePage() {
                 </div>
               </div>
 
-              {/* Field: UNIVERSITY */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl transition-colors duration-300">
-                  <GraduationCap className="w-4.5 h-4.5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Asal Universitas</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 truncate leading-snug">{profile.university}</p>
-                </div>
-              </div>
-
-              {/* Field: MITRA PERUSAHAAN */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl transition-colors duration-300">
-                  <Building className="w-4.5 h-4.5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Mitra Magang Industri</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 truncate leading-snug">{profile.company}</p>
-                </div>
-              </div>
-
-              {/* Field: STATUS */}
+              {/* Field: ROLE */}
               <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
                 <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl transition-colors duration-300">
                   <Shield className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Status Otorisasi</span>
-                  <p className="font-black text-violet-650 dark:text-violet-400 mt-0.5 leading-snug tracking-wider">{profile.status}</p>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Status Otorisasi (Role)</span>
+                  <p className="font-black text-violet-650 dark:text-violet-400 mt-0.5 leading-snug tracking-wider">{profile.role}</p>
                 </div>
               </div>
 
@@ -262,25 +257,6 @@ export default function StudentProfilePage() {
                 </div>
               </div>
 
-              {/* Form Input: ALAMAT TINGGAL */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                  Alamat Rumah / Tinggal Sekarang <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative group/input">
-                  <textarea
-                    rows={2}
-                    required
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner resize-none"
-                    placeholder="Masukkan alamat domisili lengkap..."
-                  />
-                  <MapPin className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-3.5 group-focus-within/input:text-violet-500 transition-colors" />
-                </div>
-              </div>
-
-              {/* Form Input: LOCKED ACADEMIC METRICS */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* NIM (Locked) */}
                 <div className="space-y-2">
@@ -298,38 +274,21 @@ export default function StudentProfilePage() {
                   </div>
                 </div>
 
-                {/* Program Studi (Locked) */}
+                {/* Role (Locked) */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-550 flex items-center gap-1">
-                    Program Studi & Jurusan (Terkunci)
+                    Status Keanggotaan (Role)
                   </label>
                   <div className="relative">
                     <input 
                       type="text" 
                       disabled
-                      value={formData.program}
+                      value={formData.role}
                       className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-250 dark:border-slate-850 rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold"
                     />
-                    <GraduationCap className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
+                    <Shield className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
                   </div>
                 </div>
-              </div>
-
-              {/* Form Input: STATUS (Locked / Disabled) */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                  Status Keanggotaan Magang (Role)
-                </label>
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    disabled
-                    value={formData.status}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-250 dark:border-slate-850 rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold tracking-wider"
-                  />
-                  <Shield className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
-                </div>
-
               </div>
 
               {/* Actions & Submit */}
