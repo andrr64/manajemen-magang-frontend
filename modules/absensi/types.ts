@@ -1,4 +1,34 @@
 // =====================================================================
+// BACKEND SCHEMAS (Matches Spring Boot records exactly)
+// =====================================================================
+
+export interface AbsensiResponse {
+  id: string; // UUID
+  periodeMagangId: string; // UUID
+  mahasiswaId: string; // UUID
+  nim: string;
+  namaMahasiswa: string;
+  tanggal: string; // LocalDate (YYYY-MM-DD)
+  waktuMasuk: string | null; // OffsetDateTime (ISO-8601 string)
+  waktuKeluar: string | null; // OffsetDateTime (ISO-8601 string)
+  status: "hadir" | "izin" | "sakit" | "alpha";
+  attachmentUrl: string | null;
+  statusVerifikasi: "DISETUJUI" | "PENDING" | "DITOLAK";
+}
+
+export interface AbsensiStatResponse {
+  totalHadir: number;
+  totalIzinSakit: number;
+}
+
+export interface AbsensiMahasiswaStatResponse {
+  totalHadir: number;
+  totalIzin: number;
+  totalSakit: number;
+  totalAlfa: number;
+}
+
+// =====================================================================
 // SHARED / COMMON
 // =====================================================================
 

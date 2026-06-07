@@ -40,7 +40,7 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   // Instantiating real reference letters API hook
   const { letters, isLoading, isSubmitting: isHookSubmitting, uploadStudentLetter, refreshLetters } = useStudentReferenceLetters();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Fetch letters on mount
   useEffect(() => {

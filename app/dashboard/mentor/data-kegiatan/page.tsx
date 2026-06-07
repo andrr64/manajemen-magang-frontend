@@ -60,7 +60,7 @@ export default function MentorActivitiesPage() {
   const { rawStudents } = useStudents();
 
   // Combine raw backend students with fallback mock students data
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Map activities to actual student profile info
   const enrichedActivities = useMemo(() => {

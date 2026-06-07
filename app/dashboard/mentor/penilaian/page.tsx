@@ -27,7 +27,7 @@ export default function MentorPenilaianPage() {
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { stats: apiStats } = usePenilaianStats(searchQuery);
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Reactive Effect to fetch assessments from API whenever filters change
   useEffect(() => {

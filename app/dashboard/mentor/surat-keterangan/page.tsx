@@ -28,7 +28,7 @@ export default function MentorReferenceLetterPage() {
   // Real hook integration
   const { letters, statistics, isLoading, refreshLetters } = useStudentReferenceLetters();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Fetch data reactively
   useEffect(() => {

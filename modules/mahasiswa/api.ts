@@ -1,5 +1,5 @@
 import { executeHybridRequest, mockDB } from "../api-client";
-import { Student, CreateStudentRequest, UpdateStudentRequest } from "./types";
+import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse } from "./types";
 
 const INITIAL_STUDENTS: Student[] = [
   {
@@ -114,7 +114,7 @@ const INITIAL_STUDENTS: Student[] = [
   }
 ];
 
-function mapBackendStudentToFrontend(item: any): Student {
+function mapBackendStudentToFrontend(item: StudentResponse): Student {
   const formatDate = (start: string | null, end: string | null) => {
     if (!start || !end) return "-";
     try {
@@ -144,7 +144,7 @@ function mapBackendStudentToFrontend(item: any): Student {
     email: item.email || "",
     university: item.universitas || "Universitas Indonesia",
     phone: item.noHp || "-",
-    gender: item.gender || "Laki-laki",
+    gender: (item.gender as "Laki-laki" | "Perempuan") || "Laki-laki",
     program: "S1 Teknik Informatika",
     company: isPlaced ? "PT. Global Teknologi Nusantara" : "Belum Ditempatkan",
     role: isPlaced ? "Software Engineering Intern" : "-",
@@ -152,9 +152,9 @@ function mapBackendStudentToFrontend(item: any): Student {
     progress: status === "Selesai" ? 100 : (status === "Belum Penempatan" ? 0 : (status === "Dalam Review" ? 95 : 85)),
     lastActive: "Hari ini, 09:30",
     avatarColor: "from-blue-500 to-indigo-500",
-    address: item.address || "Jakarta, Indonesia",
+    address: "Jakarta, Indonesia",
     period: formatDate(item.tanggalMulai, item.tanggalBerakhir),
-    grade: item.grade || (status === "Selesai" ? 90 : null),
+    grade: status === "Selesai" ? 90 : null,
     logbooksCount: isPlaced ? 8 : 0,
     logbooksPending: isPlaced ? 2 : 0,
     attendance: isPlaced ? { present: 76, sick: 2, leave: 1, absent: 0 } : { present: 0, sick: 0, leave: 0, absent: 0 },
@@ -202,7 +202,7 @@ export const mahasiswaAPI = {
       }
     ).then((res) => {
       if (res.message.includes("Real")) {
-        const list = res.data as any[];
+        const list = res.data as unknown as StudentResponse[];
         return {
           ...res,
           data: list.map(mapBackendStudentToFrontend)
@@ -244,7 +244,20 @@ export const mahasiswaAPI = {
           totalAktifTanpaPenilaian
         };
       }
-    );
+    ).then((res) => {
+      if (res.message.includes("Real")) {
+        const stats = res.data as unknown as StudentStatResponse;
+        return {
+          ...res,
+          data: {
+            totalAktif: stats.totalAktif,
+            totalSelesai: stats.totalSelesai,
+            totalAktifTanpaPenilaian: stats.totalAktifTanpaPenilaian
+          }
+        };
+      }
+      return res;
+    });
   },
 
   getStudentById: async (id: number | string) => {
@@ -266,7 +279,7 @@ export const mahasiswaAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendStudentToFrontend(res.data)
+          data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
         };
       }
       return res;
@@ -326,7 +339,7 @@ export const mahasiswaAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendStudentToFrontend(res.data)
+          data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
         };
       }
       return res;
@@ -437,7 +450,7 @@ export const mahasiswaAPI = {
       if (res.message.includes("Real")) {
         return {
           ...res,
-          data: mapBackendStudentToFrontend(res.data)
+          data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
         };
       }
       return res;

@@ -22,7 +22,7 @@ import {
   X,
   Loader2
 } from "lucide-react";
-import { studentsData, Student } from "../studentsData";
+import { Student } from "@/modules/mahasiswa/types";
 import { useStudentDetail } from "@/modules/mahasiswa/hooks";
 
 interface PageProps {
@@ -38,8 +38,8 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
   
   const { student: apiStudent, isLoading } = useStudentDetail(studentId);
   
-  // Find the student (fallback to mock file if API not yet populated)
-  const student = apiStudent || studentsData.find((s) => s.id === studentId);
+  // Find the student
+  const student = apiStudent;
 
   // States for interactive dummy features
   const [commentInput, setCommentInput] = useState("");

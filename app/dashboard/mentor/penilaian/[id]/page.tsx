@@ -49,7 +49,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { submitGrades } = useAssessment();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Fetch once on mount
   useEffect(() => {

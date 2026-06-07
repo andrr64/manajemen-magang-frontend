@@ -1,3 +1,20 @@
+export interface ActivityResponse {
+  id: string;
+  mahasiswaId: string;
+  namaMahasiswa: string;
+  judul: string;
+  deskripsi: string;
+  waktu: string;
+  fileUrl: string | null;
+  status: string;
+}
+
+export interface ActivityStatResponse {
+  totalKegiatan: number;
+  disetujui: number;
+  ditolak: number;
+}
+
 export interface Activity {
   id: number | string;
   title: string;
