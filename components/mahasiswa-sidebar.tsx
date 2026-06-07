@@ -14,6 +14,7 @@ import {
   X,
   Activity
 } from "lucide-react";
+import { useIam } from "@/modules/iam/hooks";
 
 interface MahasiswaSidebarProps {
   onClose?: () => void;
@@ -21,6 +22,11 @@ interface MahasiswaSidebarProps {
 
 export default function MahasiswaSidebar({ onClose }: MahasiswaSidebarProps) {
   const pathname = usePathname();
+  const { user, logout } = useIam();
+
+  const avatarInitials = user?.nama
+    ? user.nama.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()
+    : "M";
 
   const menuItems = [
     { name: "Dashboard", href: "/dashboard/mahasiswa", icon: LayoutDashboard },
@@ -58,12 +64,12 @@ export default function MahasiswaSidebar({ onClose }: MahasiswaSidebarProps) {
       <div className="p-5 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/20">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-violet-500 to-indigo-500 text-white font-extrabold flex items-center justify-center shadow-inner">
-            BS
+            {avatarInitials}
           </div>
           <div className="overflow-hidden">
-            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">Budi Santoso</h4>
-            <p className="text-xs text-violet-600 dark:text-violet-400 font-semibold truncate mt-0.5">Software Engineer Intern</p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">NIM. 2201012001</p>
+            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">{user?.nama || user?.email || "Mahasiswa"}</h4>
+            <p className="text-xs text-violet-600 dark:text-violet-400 font-semibold truncate mt-0.5">{user?.role === "mahasiswa" ? "Mahasiswa Magang" : "Mahasiswa"}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.nim ? `NIM. ${user.nim}` : "NIM. -"}</p>
           </div>
         </div>
       </div>
@@ -103,8 +109,13 @@ export default function MahasiswaSidebar({ onClose }: MahasiswaSidebarProps) {
           <span>Kembali ke Beranda</span>
         </Link>
         <button
-          onClick={() => {
+          onClick={async () => {
             if (confirm("Apakah Anda yakin ingin keluar?")) {
+              try {
+                await logout();
+              } catch (e) {
+                console.error("Logout failed", e);
+              }
               window.location.href = "/login";
             }
           }}

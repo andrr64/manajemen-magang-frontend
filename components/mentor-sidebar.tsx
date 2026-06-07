@@ -15,6 +15,7 @@ import {
   FileBadge,
   Scroll
 } from "lucide-react";
+import { useIam } from "@/modules/iam/hooks";
 
 interface MentorSidebarProps {
   onClose?: () => void;
@@ -22,6 +23,11 @@ interface MentorSidebarProps {
 
 export default function MentorSidebar({ onClose }: MentorSidebarProps) {
   const pathname = usePathname();
+  const { user, logout } = useIam();
+
+  const avatarInitials = user?.nama
+    ? user.nama.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()
+    : "M";
 
   const menuItems = [
     { name: "Dashboard", href: "/dashboard/mentor", icon: LayoutDashboard },
@@ -60,12 +66,12 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
       <div className="p-5 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/20">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 text-white font-extrabold flex items-center justify-center shadow-inner">
-            AH
+            {avatarInitials}
           </div>
           <div className="overflow-hidden">
-            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">Dr. Ahmad Hidayat, M.T.</h4>
-            <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold truncate mt-0.5">Dosen & Pembimbing</p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">NIDN. 0423127801</p>
+            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">{user?.nama || user?.email || "Mentor"}</h4>
+            <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold truncate mt-0.5">{user?.role === "mentor" ? "Dosen & Pembimbing" : "Mentor"}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.nim ? `NIDN. ${user.nim}` : "NIDN. -"}</p>
           </div>
         </div>
       </div>
@@ -106,8 +112,13 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
           <span>Kembali ke Beranda</span>
         </Link>
         <button
-          onClick={() => {
+          onClick={async () => {
             if (confirm("Apakah Anda yakin ingin keluar?")) {
+              try {
+                await logout();
+              } catch (e) {
+                console.error("Logout failed", e);
+              }
               window.location.href = "/login";
             }
           }}

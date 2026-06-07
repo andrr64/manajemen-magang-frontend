@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { GraduationCap, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
+import { useIam } from "@/modules/iam/hooks";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useIam();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
@@ -28,17 +33,17 @@ export default function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
+    setIsSubmitting(true);
 
-    // Simulasi loading selama 1.5 detik
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await login({ email, password });
       setSuccessMsg("Login berhasil! Mengalihkan ke dashboard...");
-      // Simulasi redirect
-      setTimeout(() => {
-        window.location.href = "/dashboard/mentor";
-      }, 1000);
-    }, 1500);
+      // Kita redirect ke root dispatcher, dispatcher akan me-redirect berdasarkan role
+      router.push("/dashboard");
+    } catch (err: any) {
+      setErrorMsg(err.message || "Email atau password salah.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -103,7 +108,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
-                disabled={isLoading}
+                disabled={isSubmitting}
                 className="block w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 focus:border-indigo-600 dark:focus:border-indigo-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
@@ -132,13 +137,13 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                disabled={isLoading}
+                disabled={isSubmitting}
                 className="block w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 focus:border-indigo-600 dark:focus:border-indigo-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
+                disabled={isSubmitting}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -162,10 +167,10 @@ export default function LoginPage() {
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="flex justify-center items-center w-full py-4 px-6 rounded-2xl text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none disabled:transform-none"
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Memproses Masuk...
@@ -195,7 +200,7 @@ export default function LoginPage() {
           onClick={() => {
             setErrorMsg("Masuk dengan Google sedang disiapkan oleh administrator!");
           }}
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="flex justify-center items-center w-full py-3.5 px-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-bold text-slate-700 dark:text-slate-300 transition-all duration-200"
         >
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -210,7 +215,7 @@ export default function LoginPage() {
         {/* Sign up simulated */}
         <div className="mt-8 text-center text-sm font-semibold text-slate-500">
           Belum terdaftar?{" "}
-          <Link href="/#daftar" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+          <Link href="/register" className="text-indigo-600 dark:text-indigo-400 hover:underline">
             Buat akun program magang
           </Link>
         </div>

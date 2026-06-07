@@ -17,6 +17,7 @@ import {
   ShieldAlert,
   UserCheck
 } from "lucide-react";
+import { useIam } from "@/modules/iam/hooks";
 
 interface SuperAdminSidebarProps {
   onClose?: () => void;
@@ -24,6 +25,11 @@ interface SuperAdminSidebarProps {
 
 export default function SuperAdminSidebar({ onClose }: SuperAdminSidebarProps) {
   const pathname = usePathname();
+  const { user, logout } = useIam();
+
+  const avatarInitials = user?.nama
+    ? user.nama.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()
+    : "SA";
 
   const menuItems = [
     { name: "Dashboard", href: "/dashboard/super-admin", icon: LayoutDashboard },
@@ -59,13 +65,13 @@ export default function SuperAdminSidebar({ onClose }: SuperAdminSidebarProps) {
       <div className="p-5 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/20">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-500 to-violet-500 text-white font-extrabold flex items-center justify-center shadow-inner relative">
-            SA
+            {avatarInitials}
             <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-[#070e24] rounded-full"></span>
           </div>
           <div className="overflow-hidden">
-            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">Administrator Utama</h4>
-            <p className="text-xs text-rose-600 dark:text-rose-450 font-semibold truncate mt-0.5">Super Admin</p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">ID. 99002201</p>
+            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">{user?.nama || user?.email || "Admin"}</h4>
+            <p className="text-xs text-rose-600 dark:text-rose-450 font-semibold truncate mt-0.5">{user?.role === "super-admin" ? "Super Admin" : "Administrator"}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.nim ? `ID. ${user.nim}` : "ID. -"}</p>
           </div>
         </div>
       </div>
@@ -105,8 +111,13 @@ export default function SuperAdminSidebar({ onClose }: SuperAdminSidebarProps) {
           <span>Kembali ke Beranda</span>
         </Link>
         <button
-          onClick={() => {
+          onClick={async () => {
             if (confirm("Apakah Anda yakin ingin keluar?")) {
+              try {
+                await logout();
+              } catch (e) {
+                console.error("Logout failed", e);
+              }
               window.location.href = "/login";
             }
           }}

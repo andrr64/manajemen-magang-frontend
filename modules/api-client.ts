@@ -96,21 +96,24 @@ export async function executeHybridRequest<T>(
 ): Promise<APIResponse<T>> {
   console.log(`[API Dispatch] ${actionName} -> target: ${BASE_URL}${apiPath}`);
   
-  // 1. Prepare request authorization headers
-  const token = typeof window !== "undefined" ? localStorage.getItem("internflow_token") : null;
+  // 1. Prepare request authorization headers (now using cookies primarily)
+  // We keep the logic to read token from mockDB if backend is offline, but real backend uses HttpOnly cookies
+  const mockToken = mockDB.get<string>("token", "");
   const headers = new Headers(fetchOptions.headers || {});
   
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (mockToken && !headers.has("Authorization")) {
+    // Only used as fallback for mock server
+    headers.set("Authorization", `Bearer ${mockToken}`);
   }
   
   if (fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
-  const mergedOptions = {
+  const mergedOptions: RequestInit = {
     ...fetchOptions,
-    headers
+    headers,
+    credentials: "include" // REQUIRED to send and receive HttpOnly cookies
   };
 
   // 2. Attempt real backend network request

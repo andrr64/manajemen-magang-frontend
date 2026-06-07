@@ -23,10 +23,12 @@ import {
 } from "lucide-react";
 import { studentsData, Student } from "./data-mahasiswa/studentsData";
 import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useIam } from "@/modules/iam/hooks";
 
 export default function DashboardHome() {
   const [searchQuery, setSearchQuery] = useState("");
   const { rawStudents, isLoading } = useStudents();
+  const { user } = useIam();
 
   // Combine raw backend students with fallback mock students data
   const studentsList = useMemo(() => {
@@ -88,7 +90,7 @@ export default function DashboardHome() {
             Pemberitahuan
           </span>
           <h3 className="text-xl md:text-2xl font-extrabold tracking-tight leading-tight">
-            Selamat Datang Kembali, Dr. Ahmad Hidayat!
+            Selamat Datang Kembali, {user?.nama || user?.email || "Mentor"}!
           </h3>
           <p className="text-xs text-indigo-200 leading-relaxed font-semibold">
             Semua mahasiswa bimbingan Anda aktif melaksanakan magang industri semester genap. Pantau progres kehadiran, verifikasi absensi manual, dan berikan penilaian akhir secara digital.
