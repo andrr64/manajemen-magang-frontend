@@ -28,7 +28,7 @@ export default function MentorCertificatePage() {
   // Real hook integration
   const { certificates, statistics, isLoading, refreshCertificates } = useStudentCertificates();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Fetch data reactively
   useEffect(() => {

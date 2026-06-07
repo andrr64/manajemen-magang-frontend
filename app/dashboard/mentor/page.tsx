@@ -30,7 +30,7 @@ export default function DashboardHome() {
 
   // Combine raw backend students with fallback mock students data
   const studentsList = useMemo(() => {
-    return rawStudents.length > 0 ? rawStudents : studentsData;
+    return rawStudents;
   }, [rawStudents]);
 
   const activeStudentsCount = useMemo(() => {

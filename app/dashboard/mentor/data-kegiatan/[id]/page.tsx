@@ -66,7 +66,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
   const [localActivityOverride, setLocalActivityOverride] = useState<any | null>(null);
 
   // Combine raw backend students with fallback mock students data
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Find current activity log
   const activity = useMemo(() => {

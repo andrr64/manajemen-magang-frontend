@@ -32,7 +32,7 @@ import { mahasiswaAPI } from "@/modules/mahasiswa/api";
 
 export default function MentorDataMahasiswaPage() {
   const { rawStudents, isLoading, refreshStudents, removeStudent } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("Semua");
@@ -42,16 +42,7 @@ export default function MentorDataMahasiswaPage() {
   const [perPage, setPerPage] = useState(10);
 
   // Local state for student internship periods (initially mapped from dates)
-  const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({
-    1: { startDate: "2026-02-01", endDate: "2026-07-31" },
-    2: { startDate: "2026-02-01", endDate: "2026-07-31" },
-    3: { startDate: "2026-02-01", endDate: "2026-07-31" },
-    4: { startDate: "2026-03-01", endDate: "2026-08-31" },
-    5: { startDate: "2026-01-01", endDate: "2026-06-30" },
-    6: { startDate: "2026-02-01", endDate: "2026-07-31" },
-    7: { startDate: "2026-03-01", endDate: "2026-08-31" },
-    8: { startDate: "2026-02-01", endDate: "2026-07-31" }
-  });
+  const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({});
 
   // State for editing period
   const [editingStudentId, setEditingStudentId] = useState<string | number | null>(null);
@@ -1008,9 +999,9 @@ export default function MentorDataMahasiswaPage() {
                   <td className="py-4">
                     <div className="flex items-center gap-2 group/period">
                       <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || "2026-02-01"}</span>
+                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || student.tanggalMulai || "2026-02-01"}</span>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider my-0.5 text-center">s.d.</span>
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || "2026-07-31"}</span>
+                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || student.tanggalBerakhir || "2026-07-31"}</span>
                       </div>
                     </div>
                   </td>

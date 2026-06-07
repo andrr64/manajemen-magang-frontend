@@ -15,23 +15,18 @@ import {
   UserX,
   File as FileIcon
 } from "lucide-react";
+import { useSubmitAbsensi, useRiwayatAbsensi, useAbsensiMahasiswaStat } from "@/modules/absensi/hooks";
 
 export default function StudentAttendancePage() {
-  const [status, setStatus] = useState<"hadir" | "izin" | "sakit" | "alfa">("hadir");
+  const [status, setStatus] = useState<"hadir" | "izin" | "sakit">("hadir");
   const [notes, setNotes] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Simulated live attendance history
-  const [attendanceHistory, setAttendanceHistory] = useState([
-    { date: "29 Mei 2026", type: "Hadir", checkIn: "07:56 WIB", checkOut: "Pending", document: null, status: "Diverifikasi" },
-    { date: "28 Mei 2026", type: "Hadir", checkIn: "07:45 WIB", checkOut: "17:03 WIB", document: null, status: "Diverifikasi" },
-    { date: "27 Mei 2026", type: "Izin", checkIn: "-- : --", checkOut: "-- : --", document: "surat_izin_semnas.pdf", status: "Diverifikasi" },
-    { date: "26 Mei 2026", type: "Sakit", checkIn: "-- : --", checkOut: "-- : --", document: "surat_dokter_klinik.pdf", status: "Diverifikasi" },
-    { date: "25 Mei 2026", type: "Hadir", checkIn: "07:51 WIB", checkOut: "17:00 WIB", document: null, status: "Diverifikasi" }
-  ]);
+  const { submit, isSubmitting } = useSubmitAbsensi();
+  const { riwayat: attendanceHistory, isLoading: isLoadingRiwayat, refreshRiwayat } = useRiwayatAbsensi();
+  const { stat, refreshStat } = useAbsensiMahasiswaStat();
 
   // File Upload Handlers
   const handleDrag = (e: React.DragEvent) => {
@@ -64,7 +59,7 @@ export default function StudentAttendancePage() {
     setUploadedFile(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -73,35 +68,24 @@ export default function StudentAttendancePage() {
       return;
     }
 
-    setIsSubmitting(true);
-
-    // Simulate API request
-    setTimeout(() => {
-      const today = new Date().toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+    try {
+      await submit({
+        status,
+        keterangan: status === "hadir" ? undefined : notes,
+        file: uploadedFile,
       });
 
-      const newRecord = {
-        date: today,
-        type: status === "hadir" ? "Hadir" : status === "izin" ? "Izin" : status === "sakit" ? "Sakit" : "Alfa",
-        checkIn: status === "hadir" ? new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' }) + " WIB" : "-- : --",
-        checkOut: "-- : --",
-        document: uploadedFile ? uploadedFile.name : null,
-        status: "Menunggu"
-      };
+      // Refetch data on success
+      refreshRiwayat();
+      refreshStat();
 
-      setAttendanceHistory([newRecord, ...attendanceHistory]);
-      setIsSubmitting(false);
       setShowToast(true);
-
-      // Reset form
       setNotes("");
       setUploadedFile(null);
-
       setTimeout(() => setShowToast(false), 4000);
-    }, 1200);
+    } catch (err: any) {
+      alert(err.message || "Gagal mengirimkan laporan presensi.");
+    }
   };
 
   return (
@@ -129,7 +113,7 @@ export default function StudentAttendancePage() {
           </div>
           <div>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider block">Hadir</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">76 Hari</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">{stat?.totalHadir ?? 0} Hari</p>
           </div>
         </div>
 
@@ -139,7 +123,7 @@ export default function StudentAttendancePage() {
           </div>
           <div>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider block">Izin Masuk</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">2 Hari</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">{stat?.totalIzin ?? 0} Hari</p>
           </div>
         </div>
 
@@ -149,7 +133,7 @@ export default function StudentAttendancePage() {
           </div>
           <div>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider block">Sakit</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">1 Hari</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-1">{stat?.totalSakit ?? 0} Hari</p>
           </div>
         </div>
 
@@ -176,7 +160,7 @@ export default function StudentAttendancePage() {
                 <label className="text-[10px] font-black uppercase text-slate-450 dark:text-slate-500 tracking-wider">
                   Pilih Parameter Kehadiran Hari Ini <span className="text-rose-500">*</span>
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   
                   {/* Hadir */}
                   <button
@@ -220,19 +204,7 @@ export default function StudentAttendancePage() {
                     <span className="text-xs font-black uppercase tracking-wider">Sakit</span>
                   </button>
 
-                  {/* Alfa */}
-                  <button
-                    type="button"
-                    onClick={() => { setStatus("alfa"); setUploadedFile(null); }}
-                    className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
-                      status === "alfa"
-                        ? "bg-rose-50/50 border-rose-500 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 shadow-md shadow-rose-500/5 scale-[1.02]"
-                        : "bg-slate-50/50 border-slate-200 dark:bg-slate-900/30 dark:border-slate-850 text-slate-500 hover:bg-slate-50 hover:border-slate-350 dark:hover:bg-slate-900/60"
-                    }`}
-                  >
-                    <UserX className={`w-6 h-6 ${status === "alfa" ? "text-rose-500" : "text-slate-400"}`} />
-                    <span className="text-xs font-black uppercase tracking-wider">Alfa</span>
-                  </button>
+
 
                 </div>
               </div>
@@ -360,43 +332,49 @@ export default function StudentAttendancePage() {
           </div>
 
           <div className="space-y-3.5">
-            {attendanceHistory.map((item, index) => (
-              <div key={index} className="p-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center justify-between gap-3 hover:scale-[1.01] transition-transform">
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${
-                    item.type === "Hadir"
-                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600"
-                      : item.type === "Izin"
-                      ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600"
-                      : item.type === "Alfa"
-                      ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600"
-                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-600"
-                  }`}>
-                    {item.type.substring(0, 3)}
+            {isLoadingRiwayat ? (
+              <p className="text-xs text-slate-450 dark:text-slate-500 font-semibold text-center py-6">Memuat riwayat kehadiran...</p>
+            ) : attendanceHistory.length === 0 ? (
+              <p className="text-xs text-slate-450 dark:text-slate-500 font-semibold text-center py-6">Belum ada riwayat absensi.</p>
+            ) : (
+              attendanceHistory.map((item, index) => (
+                <div key={index} className="p-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center justify-between gap-3 hover:scale-[1.01] transition-transform">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${
+                      item.type === "Hadir"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600"
+                        : item.type === "Izin"
+                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600"
+                        : item.type === "Alpha"
+                        ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600"
+                        : "bg-amber-50 dark:bg-amber-950/40 text-amber-600"
+                    }`}>
+                      {item.type.substring(0, 3)}
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-900 dark:text-white">{item.date}</p>
+                      <span className="text-[9px] text-slate-400 block mt-0.5">
+                        {item.type === "Hadir"
+                          ? `Masuk: ${item.checkIn} • Keluar: ${item.checkOut}`
+                          : item.type === "Alpha"
+                          ? "Tidak hadir tanpa keterangan"
+                          : item.document ? `Dokumen: ${item.document.split("/").pop()}` : `Mengajukan ket. ${item.type.toLowerCase()}`}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-black text-slate-900 dark:text-white">{item.date}</p>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {item.type === "Hadir"
-                        ? `Masuk: ${item.checkIn} • Keluar: ${item.checkOut}`
-                        : item.type === "Alfa"
-                        ? "Tidak hadir tanpa keterangan"
-                        : item.document ? `Dokumen: ${item.document}` : `Mengajukan ket. ${item.type.toLowerCase()}`}
+
+                  <div className="text-right">
+                    <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[8px] font-black uppercase ${
+                      item.status === "Diverifikasi"
+                        ? "bg-emerald-950/20 text-emerald-400 border border-emerald-900/30"
+                        : "bg-amber-950/20 text-amber-400 border border-amber-900/30"
+                    }`}>
+                      {item.status}
                     </span>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[8px] font-black uppercase ${
-                    item.status === "Diverifikasi"
-                      ? "bg-emerald-950/20 text-emerald-400 border border-emerald-900/30"
-                      : "bg-amber-950/20 text-amber-400 border border-amber-900/30"
-                  }`}>
-                    {item.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
         </div>

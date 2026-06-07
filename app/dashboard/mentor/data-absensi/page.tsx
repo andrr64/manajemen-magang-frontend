@@ -51,7 +51,7 @@ export default function MentorAttendancePage() {
   // Real React Hook Integration
   const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory } = useAttendance();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Reactive Effect to fetch logs from API whenever filters change
   useEffect(() => {

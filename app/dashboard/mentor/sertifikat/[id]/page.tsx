@@ -37,7 +37,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
   // Instantiating real certificates hook
   const { certificates, isLoading, isSubmitting: isHookSubmitting, uploadStudentCertificate, refreshCertificates } = useStudentCertificates();
   const { rawStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   // Fetch certificates once on mount
   useEffect(() => {

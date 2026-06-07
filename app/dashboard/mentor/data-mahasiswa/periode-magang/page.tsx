@@ -33,43 +33,32 @@ interface StudentPeriod {
 
 export default function MentorInternshipPeriodPage() {
   const { rawStudents, refreshStudents } = useStudents();
-  const studentsList = rawStudents.length > 0 ? rawStudents : studentsData;
+  const studentsList = rawStudents;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showToast, setShowToast] = useState("");
   
-  // Interactive database of student internship periods (pre-calculated from periods text)
-  const [periods, setPeriods] = useState<StudentPeriod[]>([
-    { studentId: 1, startDate: "2026-02-01", endDate: "2026-07-31" },
-    { studentId: 2, startDate: "2026-02-01", endDate: "2026-07-31" },
-    { studentId: 3, startDate: "2026-02-01", endDate: "2026-07-31" },
-    { studentId: 4, startDate: "2026-03-01", endDate: "2026-08-31" },
-    { studentId: 5, startDate: "2026-01-01", endDate: "2026-06-30" },
-    { studentId: 6, startDate: "2026-02-01", endDate: "2026-07-31" },
-    { studentId: 7, startDate: "2026-03-01", endDate: "2026-08-31" },
-    { studentId: 8, startDate: "2026-02-01", endDate: "2026-07-31" }
-  ]);
+  // Map student info with periods directly from studentsList
+  const enrichedPeriods = useMemo(() => {
+    return studentsList.map(student => {
+      return {
+        studentId: student.id,
+        startDate: student.tanggalMulai || "2026-02-01",
+        endDate: student.tanggalBerakhir || "2026-07-31",
+        studentName: student.name,
+        studentNim: student.nim,
+        studentAvatar: student.avatarColor,
+        studentUniv: student.university,
+        studentCompany: student.company
+      };
+    });
+  }, [studentsList]);
 
   // States for Edit Modal Dialog
-  const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
+  const [editingStudentId, setEditingStudentId] = useState<number | string | null>(null);
   const [editStartDate, setEditStartDate] = useState("");
   const [editEndDate, setEditEndDate] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
-  // Map student info with periods
-  const enrichedPeriods = useMemo(() => {
-    return periods.map(p => {
-      const student = studentsList.find(s => s.id === p.studentId);
-      return {
-        ...p,
-        studentName: student ? student.name : "Mahasiswa Tidak Dikenal",
-        studentNim: student ? student.nim : "-",
-        studentAvatar: student ? student.avatarColor : "from-slate-400 to-slate-500",
-        studentUniv: student ? student.university : "-",
-        studentCompany: student ? student.company : "-"
-      };
-    });
-  }, [periods, studentsList]);
 
   // Filter student periods
   const filteredPeriods = enrichedPeriods.filter(p => {
@@ -104,7 +93,7 @@ export default function MentorInternshipPeriodPage() {
   };
 
   // Open Edit Modal Dialog
-  const handleOpenEditModal = (studentId: number, start: string, end: string) => {
+  const handleOpenEditModal = (studentId: number | string, start: string, end: string) => {
     setEditingStudentId(studentId);
     setEditStartDate(start);
     setEditEndDate(end);
@@ -137,14 +126,6 @@ export default function MentorInternshipPeriodPage() {
         period: periodStr
       });
       await refreshStudents();
-      
-      setPeriods(prev => 
-        prev.map(p => 
-          p.studentId === editingStudentId 
-            ? { ...p, startDate: editStartDate, endDate: editEndDate } 
-            : p
-        )
-      );
 
       const studentName = studentsList.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
       
