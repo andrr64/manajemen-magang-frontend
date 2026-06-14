@@ -471,5 +471,19 @@ export const mahasiswaAPI = {
         return true;
       }
     );
+  },
+
+  getSisaWaktuMagang: async () => {
+    return executeHybridRequest<number>(
+      "Get Sisa Waktu Magang",
+      "/api/mahasiswa/sisa-waktu-magang",
+      {
+        method: "GET"
+      },
+      () => {
+        // Fallback for mock DB
+        return 60;
+      }
+    );
   }
 };

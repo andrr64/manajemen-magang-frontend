@@ -22,12 +22,17 @@ import {
   Loader2
 } from "lucide-react";
 import { useDashboardMahasiswaStats } from "@/modules/dashboard-mahasiswa/hooks";
-import { useStudentDetail } from "@/modules/mahasiswa/hooks";
+import { useStudentDetail, useSisaWaktuMagang } from "@/modules/mahasiswa/hooks";
 import { useActivities } from "@/modules/kegiatan/hooks";
+import { useIam } from "@/modules/iam/hooks";
+import { useTotalKehadiran } from "@/modules/absensi/hooks";
 
 export default function StudentDashboardHome() {
   const [isCheckedIn, setIsCheckedIn] = useState(true);
   const [isCheckedOut, setIsCheckedOut] = useState(false);
+
+  // Get current logged-in user
+  const { user } = useIam();
 
   // Hardcode ID 1 as simulation for the logged in student
   const { stats, isLoading } = useDashboardMahasiswaStats(1);
@@ -36,11 +41,16 @@ export default function StudentDashboardHome() {
   const { student: apiStudent, isLoading: isStudentLoading } = useStudentDetail(1);
   const { activities, isLoading: isActivitiesLoading } = useActivities();
 
+  const { total, isLoading: isTotalKehadiranLoading } = useTotalKehadiran(1);
+  
+  // Ambil sisa waktu magang dari server backend
+  const { sisaWaktu: sisaWaktuServer, isLoading: isSisaWaktuLoading } = useSisaWaktuMagang();
+
   // Dynamic Profile Object
   const studentProfile = {
-    name: apiStudent?.name || "Memuat...",
-    nim: apiStudent?.nim || "-",
-    email: apiStudent?.email || "-",
+    name: user?.nama || apiStudent?.name || "Memuat...",
+    nim: user?.nim || apiStudent?.nim || "-",
+    email: user?.email || apiStudent?.email || "-",
     university: apiStudent?.university || "-",
     program: apiStudent?.program || "-",
     company: apiStudent?.company || "Belum Ditempatkan",
@@ -56,14 +66,19 @@ export default function StudentDashboardHome() {
     mentorEmail: "-"
   };
 
-  const recentLogbooks = activities.slice(0, 5).map((act, idx) => ({
-    id: act.id,
-    week: `Aktivitas ${activities.length - idx}`,
-    date: act.date,
-    topic: act.title,
-    hours: 8,
-    status: act.status === "Sudah Diunggah" ? "Disetujui" : "Menunggu"
-  }));
+  // Sisa Waktu is now strictly from the backend endpoint
+  let sisaWaktuDays = sisaWaktuServer;
+  let sisaWaktuFormatted = "-";
+
+  if (studentProfile.period && studentProfile.period.includes("-")) {
+    const [, endStr] = studentProfile.period.split("-").map(s => s.trim());
+    
+    if (sisaWaktuDays > 0) {
+      sisaWaktuFormatted = `Hingga tanggal ${endStr}`;
+    } else if (!isSisaWaktuLoading && sisaWaktuDays === 0) {
+      sisaWaktuFormatted = "Magang telah selesai";
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -101,15 +116,6 @@ export default function StudentDashboardHome() {
               </span>
             </div>
           </div>
-
-          <div className="flex-shrink-0 flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm text-center min-w-[200px]">
-            <span className="text-[10px] font-black uppercase text-violet-300 tracking-wider">Progres Magang</span>
-            <span className="text-4xl font-black text-white mt-1">{studentProfile.progress}%</span>
-            <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-3.5">
-              <div className="bg-gradient-to-r from-violet-400 to-fuchsia-400 h-full rounded-full" style={{ width: `${studentProfile.progress}%` }} />
-            </div>
-            <span className="text-[9px] font-bold text-violet-200/80 mt-2 block">Minggu ke-8 dari 12 Minggu</span>
-          </div>
         </div>
       </div>
 
@@ -123,14 +129,14 @@ export default function StudentDashboardHome() {
               Total Kehadiran
             </span>
             <h4 className="text-2xl font-black tracking-tight text-[#232F72] dark:text-[#FFFFFF] mt-1">
-              {isLoading ? (
+              {isTotalKehadiranLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin text-emerald-500" />
               ) : (
-                `${stats?.totalKehadiran ?? studentProfile.attendance.present} / 80 Hari`
+                `${total} Hari`
               )}
             </h4>
             <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 block pt-1">
-              Kehadiran Anda {isLoading ? "..." : (stats ? ((stats.totalKehadiran / 80) * 100).toFixed(1) : 96.2)}% (Sangat Baik)
+              Kehadiran Anda {isTotalKehadiranLoading ? "..." : (total ? ((total / 80) * 100).toFixed(1) : 96.2)}% (Sangat Baik)
             </span>
           </div>
           <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/20 shadow-sm">
@@ -145,14 +151,14 @@ export default function StudentDashboardHome() {
               Sisa Waktu Magang
             </span>
             <h4 className="text-2xl font-black tracking-tight text-[#232F72] dark:text-[#FFFFFF] mt-1">
-              {isLoading ? (
+              {isStudentLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
               ) : (
-                `${stats?.sisaWaktuMagangDays ?? 64} Hari Lagi`
+                `${sisaWaktuDays} Hari Lagi`
               )}
             </h4>
             <span className="text-[9px] font-semibold text-amber-600 dark:text-amber-400 block pt-1">
-              {isLoading ? "Menghitung sisa waktu..." : (stats?.sisaWaktuMagangFormatted ?? "Hingga tanggal 31 Juli 2026")}
+              {isStudentLoading ? "Menghitung sisa waktu..." : sisaWaktuFormatted}
             </span>
           </div>
           <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200/20 shadow-sm">
@@ -160,97 +166,7 @@ export default function StudentDashboardHome() {
           </div>
         </div>
 
-      </div>      {/* WEEKLY LOGBOOK CHECKLIST */}
-      <div className="glass-card p-6 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-2">
-          <div className="space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-505 block">
-              Logbook Kegiatan Mingguan
-            </span>
-            <h4 className="text-sm font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-1">
-              Pengisian Aktivitas Harian Minggu Ini
-            </h4>
-          </div>
-          <Link 
-            href="/dashboard/mahasiswa/logbook" 
-            className="text-[10px] text-violet-600 dark:text-violet-400 font-bold hover:underline flex items-center gap-0.5"
-          >
-            Lihat Detail
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* Checklist items representing Mon-Fri */}
-        <div className="space-y-3">
-          {[
-            { day: "Senin", date: "25 Mei 2026", text: "Refactoring layout and sidebar dashboard mahasiswa", status: "Selesai" },
-            { day: "Selasa", date: "26 Mei 2026", text: "Integrasi state manajemen absensi terverifikasi geofence", status: "Selesai" },
-            { day: "Rabu", date: "27 Mei 2026", text: "Testing and bug fixing integration routing Next.js 15", status: "Selesai" },
-            { day: "Kamis", date: "28 Mei 2026", text: "Menyusun dokumentasi skripsi & laporan magang bab 3", status: "Selesai" },
-            { day: "Jumat", date: "29 Mei 2026", text: "Pengembangan modul rekap nilai mahasiswa dan feedback", status: "Sedang Berjalan" }
-          ].map((item, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-slate-900/40 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-slate-850 rounded-xl transition-all">
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-[10px] uppercase ${
-                  item.status === "Selesai" 
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600" 
-                    : "bg-amber-50 dark:bg-amber-950/40 text-amber-600 animate-pulse"
-                }`}>
-                  {item.day.substring(0, 3)}
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[#232F72] dark:text-[#F1F5F9] leading-snug">{item.text}</p>
-                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mt-0.5 block">{item.date}</span>
-                </div>
-              </div>
-              <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${
-                item.status === "Selesai"
-                  ? "bg-emerald-950/20 text-emerald-400 border border-emerald-900/30"
-                  : "bg-amber-950/20 text-amber-400 border border-amber-900/30"
-              }`}>
-                {item.status}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
-      {/* RECENT SUBMISSIONS TABLE */}
-      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm overflow-hidden flex flex-col bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md space-y-4">
-        <div>
-          <h4 className="font-extrabold text-base text-[#232F72] dark:text-[#FFFFFF]">Riwayat Kegiatan</h4>
-        </div>
-
-        <div className="overflow-x-auto w-full">
-          <table className="w-full min-w-[600px] border-collapse">
-            <thead>
-              <tr className="border-b border-[#2F578A]/30 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-widest text-left">
-                <th className="pb-3 pl-2 font-bold">Minggu Ke</th>
-                <th className="pb-3 font-bold">Tanggal Kirim</th>
-                <th className="pb-3 font-bold">Aktivitas Utama</th>
-                <th className="pb-3 font-bold">Durasi Kerja</th>
-                <th className="pb-3 pr-2 font-bold text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
-              {recentLogbooks.map((log) => (
-                <tr key={log.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer">
-                  <td className="py-3.5 pl-2 font-extrabold text-[#232F72] dark:text-[#FFFFFF]">{log.week}</td>
-                  <td className="py-3.5 text-[#2F578A] dark:text-[#F1F5F9]/70 font-medium">{log.date}</td>
-                  <td className="py-3.5 font-bold text-slate-700 dark:text-slate-350 truncate max-w-[220px]">{log.topic}</td>
-                  <td className="py-3.5 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80">{log.hours} Jam Kerja</td>
-                  <td className="py-3.5 pr-2 text-right">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-250 dark:border-emerald-900/30">
-                      <CheckCircle className="w-3 h-3" />
-                      {log.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
   );
 }

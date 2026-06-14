@@ -183,3 +183,24 @@ export function useStudentStats(filters?: { gender?: string; universitas?: strin
     refreshStats: fetchStats
   };
 }
+
+export function useSisaWaktuMagang() {
+  const [sisaWaktu, setSisaWaktu] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchSisaWaktu = async () => {
+      try {
+        const res = await mahasiswaAPI.getSisaWaktuMagang();
+        setSisaWaktu(res.data);
+      } catch (err) {
+        console.error("Gagal mengambil sisa waktu magang", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSisaWaktu();
+  }, []);
+
+  return { sisaWaktu, isLoading };
+}

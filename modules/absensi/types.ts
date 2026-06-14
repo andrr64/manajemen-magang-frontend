@@ -9,11 +9,8 @@ export interface AbsensiResponse {
   nim: string;
   namaMahasiswa: string;
   tanggal: string; // LocalDate (YYYY-MM-DD)
-  waktuMasuk: string | null; // OffsetDateTime (ISO-8601 string)
-  waktuKeluar: string | null; // OffsetDateTime (ISO-8601 string)
   status: "hadir" | "izin" | "sakit" | "alpha";
   attachmentUrl: string | null;
-  statusVerifikasi: "DISETUJUI" | "PENDING" | "DITOLAK";
 }
 
 export interface AbsensiStatResponse {

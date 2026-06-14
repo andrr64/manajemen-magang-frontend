@@ -60,10 +60,10 @@ function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
     id:          item.id,
     date:        formatDate(item.tanggal),
     type:        typeMap[item.status?.toLowerCase()] ?? "Hadir",
-    checkIn:     formatTime(item.waktuMasuk),
-    checkOut:    formatTime(item.waktuKeluar),
+    checkIn:     "-- : --",
+    checkOut:    "-- : --",
     document:    item.attachmentUrl ?? null,
-    status:      statusMap[item.statusVerifikasi?.toUpperCase()] ?? "Menunggu",
+    status:      "Diverifikasi",
     studentId:   item.mahasiswaId,
     studentName: item.namaMahasiswa,
     studentNim:  item.nim,
@@ -125,11 +125,8 @@ export const absensiAPI = {
           nim: h.studentNim || "",
           namaMahasiswa: h.studentName || "",
           tanggal: new Date().toISOString().split("T")[0],
-          waktuMasuk: h.checkIn.includes("WIB") ? `2026-06-07T${h.checkIn.replace(" WIB", "")}:00Z` : null,
-          waktuKeluar: h.checkOut.includes("WIB") ? `2026-06-07T${h.checkOut.replace(" WIB", "")}:00Z` : null,
           status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document,
-          statusVerifikasi: revStatusMap[h.status] || "PENDING"
+          attachmentUrl: h.document
         } satisfies AbsensiResponse));
       }
     ).then(res => {
@@ -203,11 +200,8 @@ export const absensiAPI = {
           nim: h.studentNim || "",
           namaMahasiswa: h.studentName || "",
           tanggal: new Date().toISOString().split("T")[0],
-          waktuMasuk: h.checkIn.includes("WIB") ? `2026-06-07T${h.checkIn.replace(" WIB", "")}:00Z` : null,
-          waktuKeluar: h.checkOut.includes("WIB") ? `2026-06-07T${h.checkOut.replace(" WIB", "")}:00Z` : null,
           status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document,
-          statusVerifikasi: revStatusMap[h.status] || "PENDING"
+          attachmentUrl: h.document
         } satisfies AbsensiResponse;
       }
     ).then(res => {
@@ -346,11 +340,8 @@ export const absensiAPI = {
           nim: "12229999",
           namaMahasiswa: "Mahasiswa Mock",
           tanggal: new Date().toISOString().split("T")[0],
-          waktuMasuk: newRecord.checkIn.includes("WIB") ? `2026-06-07T${newRecord.checkIn.replace(" WIB", "")}:00Z` : null,
-          waktuKeluar: null,
           status: payload.status,
-          attachmentUrl: newRecord.document,
-          statusVerifikasi: payload.status === "hadir" ? "DISETUJUI" : "PENDING"
+          attachmentUrl: newRecord.document
         } satisfies AbsensiResponse;
       }
     ).then(res => {
@@ -388,11 +379,8 @@ export const absensiAPI = {
           nim: h.studentNim || "",
           namaMahasiswa: h.studentName || "",
           tanggal: new Date().toISOString().split("T")[0],
-          waktuMasuk: h.checkIn.includes("WIB") ? `2026-06-07T${h.checkIn.replace(" WIB", "")}:00Z` : null,
-          waktuKeluar: h.checkOut.includes("WIB") ? `2026-06-07T${h.checkOut.replace(" WIB", "")}:00Z` : null,
           status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document,
-          statusVerifikasi: revStatusMap[h.status] || "PENDING"
+          attachmentUrl: h.document
         } satisfies AbsensiResponse));
       }
     ).then(res => {
@@ -430,6 +418,43 @@ export const absensiAPI = {
         data: mapBackendStatMahasiswa(res.data)
       };
     });
+  },
+
+  // -------------------------------------------------------------------
+  // 9.5. Total Kehadiran
+  // -------------------------------------------------------------------
+  getTotalKehadiran: async (overrideUserId?: string | number) => {
+    const userId = overrideUserId ? String(overrideUserId) : getCurrentUserId();
+    if (!userId) throw new Error("Sesi tidak ditemukan. Silakan login ulang.");
+
+    return executeHybridRequest<number>(
+      "Get total kehadiran",
+      "/api/absensi/total-kehadiran",
+      { method: "GET" },
+      () => {
+        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
+        return history.filter(h => h.type === "Hadir" && h.studentId === Number(userId)).length;
+      }
+    );
+  },
+
+  // -------------------------------------------------------------------
+  // 9.6. Statistik Kehadiran Harian (Hadir, Izin, Sakit)
+  // -------------------------------------------------------------------
+  getStatistikKehadiran: async () => {
+    return executeHybridRequest<{ totalHadir: number; totalIzin: number; totalSakit: number }>(
+      "Get statistik kehadiran harian",
+      "/api/absensi/statistik-kehadiran",
+      { method: "GET" },
+      () => {
+        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
+        return {
+          totalHadir: history.filter(h => h.type === "Hadir").length,
+          totalIzin:  history.filter(h => h.type === "Izin").length,
+          totalSakit: history.filter(h => h.type === "Sakit").length,
+        };
+      }
+    );
   },
 
   // -------------------------------------------------------------------

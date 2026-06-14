@@ -15,7 +15,7 @@ import {
   UserX,
   File as FileIcon
 } from "lucide-react";
-import { useSubmitAbsensi, useRiwayatAbsensi, useAbsensiMahasiswaStat } from "@/modules/absensi/hooks";
+import { useSubmitAbsensi, useRiwayatAbsensi, useStatistikKehadiran } from "@/modules/absensi/hooks";
 
 export default function StudentAttendancePage() {
   const [status, setStatus] = useState<"hadir" | "izin" | "sakit">("hadir");
@@ -26,7 +26,7 @@ export default function StudentAttendancePage() {
 
   const { submit, isSubmitting } = useSubmitAbsensi();
   const { riwayat: attendanceHistory, isLoading: isLoadingRiwayat, refreshRiwayat } = useRiwayatAbsensi();
-  const { stat, refreshStat } = useAbsensiMahasiswaStat();
+  const { stat, refreshStat } = useStatistikKehadiran();
 
   // File Upload Handlers
   const handleDrag = (e: React.DragEvent) => {

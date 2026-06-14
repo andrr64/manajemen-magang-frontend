@@ -274,6 +274,59 @@ export function useAbsensiMahasiswaStat() {
 }
 
 // =====================================================================
+// useTotalKehadiran — MAHASISWA: total kehadiran
+// =====================================================================
+
+export function useTotalKehadiran(overrideUserId?: string | number) {
+  const [total, setTotal] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchTotal = async () => {
+      try {
+        const res = await absensiAPI.getTotalKehadiran(overrideUserId);
+        setTotal(res.data);
+      } catch (err) {
+        console.error("Gagal mendapatkan total kehadiran", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTotal();
+  }, [overrideUserId]);
+
+  return { total, isLoading };
+}
+
+// =====================================================================
+// useStatistikKehadiran — MAHASISWA: statistik harian kehadiran
+// =====================================================================
+
+export function useStatistikKehadiran() {
+  const [stat, setStat] = useState<{ totalHadir: number; totalIzin: number; totalSakit: number } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStat = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await absensiAPI.getStatistikKehadiran();
+      setStat(res.data);
+    } catch (err: any) {
+      setError(err.message || "Gagal memuat statistik kehadiran harian.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchStat(); }, [fetchStat]);
+
+  return { stat, isLoading, error, refreshStat: fetchStat };
+}
+
+
+// =====================================================================
 // Legacy export — kompatibilitas komponen yang sudah ada
 // =====================================================================
 
