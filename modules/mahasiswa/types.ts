@@ -52,7 +52,7 @@ export interface Student {
   email: string;
   university: string;
   phone: string;
-  gender: "Laki-laki" | "Perempuan";
+  gender: "Laki-laki" | "Perempuan" | "-";
   program: string;
   company: string;
   role: string;

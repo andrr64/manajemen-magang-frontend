@@ -987,7 +987,9 @@ export default function MentorDataMahasiswaPage() {
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wide border ${
                       student.gender === "Laki-laki" 
                         ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/40" 
-                        : "bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border-pink-200/50 dark:border-pink-900/40"
+                        : student.gender === "Perempuan"
+                          ? "bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border-pink-200/50 dark:border-pink-900/40"
+                          : "bg-slate-50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 border-slate-200/50 dark:border-slate-800/40"
                     }`}>
                       <User className="w-3 h-3" />
                       {student.gender}
@@ -998,9 +1000,9 @@ export default function MentorDataMahasiswaPage() {
                   <td className="py-4">
                     <div className="flex items-center gap-2 group/period">
                       <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || student.tanggalMulai || "2026-02-01"}</span>
+                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || student.tanggalMulai || "-"}</span>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider my-0.5 text-center">s.d.</span>
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || student.tanggalBerakhir || "2026-07-31"}</span>
+                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || student.tanggalBerakhir || "-"}</span>
                       </div>
                     </div>
                   </td>
