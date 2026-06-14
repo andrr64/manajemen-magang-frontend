@@ -134,20 +134,20 @@ export default function MentorActivitiesPage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-55 flex items-center justify-center p-4" onClick={() => setViewingActivityFile(null)}>
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 animate-float relative overflow-hidden"
+            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 animate-float relative overflow-hidden"
           >
             {/* Background design elements */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#F1F5F9]0/10 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
 
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2F578A]">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/30 text-indigo-600 rounded-xl">
+                <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-[#FFFFFF] rounded-xl">
                   <Activity className="w-5.5 h-5.5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-slate-900 dark:text-white leading-tight">
+                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] leading-tight">
                     Berkas Tugas Kegiatan
                   </h4>
                   <p className="text-[10px] text-slate-455 dark:text-slate-500 font-semibold mt-0.5">
@@ -158,33 +158,33 @@ export default function MentorActivitiesPage() {
               
               <button 
                 onClick={() => setViewingActivityFile(null)}
-                className="p-1.5 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] rounded-xl text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
               >
                 <XCircle className="w-5.5 h-5.5" />
               </button>
             </div>
 
             {/* Task Document Preview Frame Mock */}
-            <div className="border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 shadow-sm font-sans text-slate-800 dark:text-slate-200 relative min-h-[220px] flex flex-col justify-between">
+            <div className="border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 shadow-sm font-sans text-[#232F72] dark:text-[#F1F5F9] relative min-h-[220px] flex flex-col justify-between">
               
               {/* Document Header */}
               <div className="space-y-4">
-                <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="pb-3 border-b border-slate-100 dark:border-[#2F578A]">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-md">
+                    <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 bg-[#F8FAFC] dark:bg-[#232F72] text-[#232F72] dark:text-[#FFFFFF] rounded-md">
                       Laporan Pekerjaan
                     </span>
-                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold font-mono">
+                    <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-bold font-mono">
                       {viewingActivityFile.attachmentName}
                     </span>
                   </div>
-                  <h5 className="font-extrabold text-xs text-slate-900 dark:text-white mt-2 leading-snug">
+                  <h5 className="font-extrabold text-xs text-[#232F72] dark:text-[#FFFFFF] mt-2 leading-snug">
                     {viewingActivityFile.activityName}
                   </h5>
                 </div>
 
                 {/* Simulated Document content */}
-                <div className="text-[10px] space-y-3 text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
+                <div className="text-[10px] space-y-3 text-[#2F578A] dark:text-[#F1F5F9]/80 leading-relaxed font-normal">
                   <p>
                     Berikut merupakan hasil rangkuman, implementasi, dan pengujian teknis yang telah dikerjakan untuk target minggu ini. Pekerjaan mencakup konfigurasi lingkungan kerja, analisis dependensi, penyusunan rancangan logika program, penanganan kasus kegagalan transaksi, hingga integrasi backend dengan antarmuka klien.
                   </p>
@@ -201,13 +201,13 @@ export default function MentorActivitiesPage() {
               </div>
 
               {/* Document Sign and Stamp */}
-              <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 mt-2 text-[9px]">
-                <div className="text-slate-400 dark:text-slate-500">
+              <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-[#2F578A] mt-2 text-[9px]">
+                <div className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
                   ID Kegiatan Ref: ACT-00{activities.findIndex(a => a.activityName === viewingActivityFile.activityName) + 1}
                 </div>
                 <div className="text-right">
-                  <p className="font-extrabold text-slate-800 dark:text-slate-200">{viewingActivityFile.studentName}</p>
-                  <p className="text-[8px] text-slate-400 dark:text-slate-500">Pelaksana Program Magang</p>
+                  <p className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]">{viewingActivityFile.studentName}</p>
+                  <p className="text-[8px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50">Pelaksana Program Magang</p>
                 </div>
               </div>
 
@@ -217,7 +217,7 @@ export default function MentorActivitiesPage() {
             <div className="flex items-center justify-end gap-3 pt-2 text-xs">
               <button
                 onClick={() => setViewingActivityFile(null)}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
+                className="px-5 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 Selesai Membaca
               </button>
@@ -238,10 +238,10 @@ export default function MentorActivitiesPage() {
       {/* HEADER BAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
             Log Kegiatan & Laporan Mahasiswa
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-1">
             Validasi pekerjaan harian mahasiswa bimbingan Anda, kelola lampiran file, dan lakukan tindakan persetujuan atau penghapusan log.
           </p>
         </div>
@@ -252,7 +252,7 @@ export default function MentorActivitiesPage() {
             setSearchQuery("");
             setStatusFilter("Semua");
           }}
-          className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-[#070e24]/40 transition-all cursor-pointer active:scale-95 shadow-sm"
+          className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Reset Filter
@@ -262,7 +262,7 @@ export default function MentorActivitiesPage() {
       {/* ACTIVITY STATISTICS */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: "Total Kegiatan", value: stats.total, desc: "Tercatat Minggu Ini", icon: Activity, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/50 dark:border-indigo-900/40" },
+          { label: "Total Kegiatan", value: stats.total, desc: "Tercatat Minggu Ini", icon: Activity, color: "text-[#232F72] dark:text-[#FFFFFF] bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/30" },
           { label: "Disetujui Mentor", value: stats.approved, desc: "Ceklis Validasi", icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
           { label: "Perlu Tinjauan", value: stats.pending, desc: "Menunggu Approval", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" }
         ].map((item, index) => {
@@ -285,16 +285,16 @@ export default function MentorActivitiesPage() {
       </div>
 
       {/* FILTER & SEARCH PANEL */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#070e24]/40 space-y-4">
+      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-indigo-500" />
-          <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">Panel Penyaringan Laporan Kegiatan</h4>
+          <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
+          <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF]">Panel Penyaringan Laporan Kegiatan</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* Keyword Search */}
           <div className="md:col-span-9">
-            <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block mb-1.5">
+            <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mb-1.5">
               Cari Berdasarkan Keyword
             </label>
             <div className="relative">
@@ -303,21 +303,21 @@ export default function MentorActivitiesPage() {
                 placeholder="Cari nama mahasiswa, NIM, nama kegiatan, atau universitas..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
+                className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
             </div>
           </div>
 
           {/* Status Filter */}
           <div className="md:col-span-3">
-            <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block mb-1.5">
+            <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mb-1.5">
               Status Validasi
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 text-slate-700 dark:text-slate-300"
+              className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-slate-850 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] text-[#232F72]/80 dark:text-[#F1F5F9]"
             >
               <option value="Semua">Semua Status</option>
               <option value="Disetujui">Disetujui</option>
@@ -328,11 +328,11 @@ export default function MentorActivitiesPage() {
       </div>
 
       {/* MAIN DATA TABLE */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#070e24]/40 flex flex-col">
+      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md flex flex-col">
         <div className="overflow-x-auto w-full">
           <table className="w-full min-w-[1000px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800/80 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-left">
+              <tr className="border-b border-slate-100 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 uppercase tracking-widest text-left">
                 <th className="pb-3.5 pl-4 font-bold">No.</th>
                 <th className="pb-3.5 font-bold">Nama</th>
                 <th className="pb-3.5 font-bold">ID Mahasiswa</th>
@@ -343,20 +343,20 @@ export default function MentorActivitiesPage() {
                 <th className="pb-3.5 pr-4 font-bold text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-16 text-center">
                     <div className="max-w-md mx-auto space-y-2">
-                      <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto" />
-                      <p className="text-slate-400 dark:text-slate-550 font-extrabold text-xs">
+                      <Loader2 className="w-8 h-8 animate-spin text-[#232F72] dark:text-[#FFFFFF] mx-auto" />
+                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 font-extrabold text-xs">
                         Memuat Laporan Kegiatan...
                       </p>
                     </div>
                   </td>
                 </tr>
               ) : filteredActivities.map((act, index) => (
-                <tr key={act.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
+                <tr key={act.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group">
                   
                   {/* Column 1: No. */}
                   <td className="py-4 pl-4 font-bold text-slate-550 dark:text-slate-450">
@@ -366,14 +366,14 @@ export default function MentorActivitiesPage() {
                   {/* Column 2: Nama (Interactive click to detail) */}
                   <td className="py-4">
                     <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${act.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10 group-hover:scale-105 transition-transform`}>
+                      <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${act.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
                         {act.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
-                        <p className="font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+                        <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">
                           {act.studentName}
                         </p>
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block mt-0.5">
+                        <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5">
                           {act.studentUniv}
                         </span>
                       </div>
@@ -381,7 +381,7 @@ export default function MentorActivitiesPage() {
                   </td>
  
                   {/* Column 3: ID Mahasiswa (NIM) */}
-                  <td className="py-4 font-bold text-slate-700 dark:text-slate-300">
+                  <td className="py-4 font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">
                     <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="block w-full py-1">
                       {act.studentNim}
                     </Link>
@@ -390,20 +390,20 @@ export default function MentorActivitiesPage() {
                   {/* Column 4: Nama Kegiatan */}
                   <td className="py-4 max-w-[240px]">
                     <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="block">
-                      <p className="font-bold text-slate-800 dark:text-slate-200 leading-normal hover:text-indigo-600 dark:hover:text-indigo-400">
+                      <p className="font-bold text-[#232F72] dark:text-[#F1F5F9] leading-normal hover:text-[#232F72] dark:text-[#FFFFFF] dark:hover:text-[#232F72] dark:text-[#FFFFFF]">
                         {act.activityName}
                       </p>
                     </Link>
                   </td>
  
                   {/* Column 5: Waktu */}
-                  <td className="py-4 text-slate-600 dark:text-slate-400 font-bold">
+                  <td className="py-4 text-[#2F578A] dark:text-[#F1F5F9]/80 font-bold">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                        <Calendar className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF]" />
                         <span>Thn: {act.year}</span>
                       </div>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold pl-5">
+                      <p className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold pl-5">
                         Bln: {act.month} • Hari: {act.day}
                       </p>
                     </div>
@@ -413,7 +413,7 @@ export default function MentorActivitiesPage() {
                       {act.attachment ? (
                         <button
                           onClick={() => handleViewActivityFile(act.studentName, act.activityName, act.attachment || "tugas_kegiatan.pdf")}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-600 dark:bg-indigo-950/40 hover:text-white dark:hover:bg-indigo-950 text-indigo-650 dark:text-indigo-400 border border-indigo-200/30 dark:border-indigo-900/30 rounded-xl font-bold transition-all text-[10px] hover:scale-[1.02] active:scale-95 shadow-sm cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#232F72] dark:bg-[#232F72] dark:bg-[#232F72]/40 hover:text-white dark:hover:bg-[#121358] text-[#232F72] dark:text-[#FFFFFF] border border-[#2F578A]/30 rounded-xl font-bold transition-all text-[10px] hover:scale-[1.02] active:scale-95 shadow-sm cursor-pointer"
                           title="Lihat Tugas Mahasiswa"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -438,7 +438,7 @@ export default function MentorActivitiesPage() {
                         className={`p-1.5 border rounded-xl transition-all cursor-pointer ${
                           act.status === "Disetujui"
                             ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-500 border-emerald-200/40 dark:border-emerald-900/40 opacity-70 cursor-not-allowed"
-                            : "bg-white hover:bg-emerald-50 border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-300 hover:scale-105 active:scale-95 shadow-sm"
+                            : "bg-white hover:bg-emerald-50 border-[#2F578A]/50 dark:bg-slate-900 dark:border-[#2F578A] text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-300 hover:scale-105 active:scale-95 shadow-sm"
                         }`}
                         title={act.status === "Disetujui" ? "Sudah disetujui" : "Setujui Kegiatan (Ceklis)"}
                       >
@@ -448,7 +448,7 @@ export default function MentorActivitiesPage() {
                       {/* Trash / Delete Button */}
                       <button
                         onClick={() => handleHapusActivity(act.id, act.studentName)}
-                        className="p-1.5 bg-white hover:bg-rose-50 border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
+                        className="p-1.5 bg-white hover:bg-rose-50 border border-[#2F578A]/50 dark:bg-slate-900 dark:border-[#2F578A] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
                         title="Hapus Log Kegiatan (Hapus)"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -468,7 +468,7 @@ export default function MentorActivitiesPage() {
                       </span>
                       
                       {/* Arrow link indicator */}
-                      <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="p-1 text-slate-400 hover:text-indigo-600 transition-colors ml-1">
+                      <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="p-1 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors ml-1">
                         <ChevronRight className="w-4 h-4" />
                       </Link>
                     </div>
@@ -481,16 +481,16 @@ export default function MentorActivitiesPage() {
                 <tr>
                   <td colSpan={8} className="px-4 py-16 text-center">
                     <div className="max-w-md mx-auto space-y-2">
-                      <AlertCircle className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
-                      <p className="text-slate-400 dark:text-slate-500 font-extrabold text-xs">
+                      <AlertCircle className="w-8 h-8 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mx-auto" />
+                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold text-xs">
                         Tidak ada log kegiatan yang cocok
                       </p>
-                      <p className="text-slate-400 dark:text-slate-500 text-[10px] leading-relaxed">
+                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 text-[10px] leading-relaxed">
                         Coba sesuaikan pencarian Anda atau reset filter untuk kembali menampilkan seluruh data log.
                       </p>
                       <button 
                         onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
-                        className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-200/40 dark:border-indigo-900/40 hover:bg-indigo-100 transition-all cursor-pointer mt-1"
+                        className="px-3 py-1.5 bg-[#F8FAFC] dark:bg-[#232F72] text-[#232F72] dark:text-[#FFFFFF] text-[10px] font-bold rounded-lg border border-[#2F578A]/30 hover:bg-[#F1F5F9] transition-all cursor-pointer mt-1"
                       >
                         Reset Filter
                       </button>
@@ -504,9 +504,9 @@ export default function MentorActivitiesPage() {
       </div>
       
       {/* GEOLOCATION NOTES */}
-      <div className="p-4 bg-slate-50 dark:bg-[#070e24]/40 border border-slate-200/40 dark:border-slate-800/80 rounded-2xl flex items-start gap-3">
-        <AlertCircle className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
-        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold leading-relaxed">
+      <div className="p-4 bg-slate-50 dark:bg-[#121358]/40 dark:backdrop-blur-md border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-start gap-3">
+        <AlertCircle className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0 mt-0.5" />
+        <div className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold leading-relaxed">
           <strong>Petunjuk Penggunaan Verifikasi Kegiatan:</strong> Gunakan tombol tindakan pada kolom <strong>AKSI</strong> untuk memverifikasi kesesuaian tugas mahasiswa bimbingan secara cepat tanpa membuka detail, atau menolak log kegiatan yang tidak sesuai dengan kurikulum magang akademik.
         </div>
       </div>

@@ -69,7 +69,7 @@ export default function StudentDashboardHome() {
     <div className="space-y-6">
       
       {/* WELCOME BANNER CARD */}
-      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-violet-900 via-indigo-900 to-indigo-950 text-white relative overflow-hidden shadow-xl shadow-indigo-950/20">
+      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#0d1637] via-[#102058] to-[#091129] text-white relative overflow-hidden shadow-xl shadow-[#232F72]/20">
         {/* Dynamic Spheres */}
         <div className="absolute -right-10 -top-10 w-72 h-72 bg-violet-600/20 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute left-1/3 -bottom-20 w-60 h-60 bg-cyan-600/10 rounded-full blur-[70px] pointer-events-none" />
@@ -117,12 +117,12 @@ export default function StudentDashboardHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         
         {/* Metric 1: Kehadiran */}
-        <div className="glass-card p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-[#070e24]/40 flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+        <div className="glass-card p-5 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-wider block">
               Total Kehadiran
             </span>
-            <h4 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mt-1">
+            <h4 className="text-2xl font-black tracking-tight text-[#232F72] dark:text-[#FFFFFF] mt-1">
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin text-emerald-500" />
               ) : (
@@ -139,12 +139,12 @@ export default function StudentDashboardHome() {
         </div>
 
         {/* Metric 2: Sisa Waktu */}
-        <div className="glass-card p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-[#070e24]/40 flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+        <div className="glass-card p-5 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-wider block">
               Sisa Waktu Magang
             </span>
-            <h4 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mt-1">
+            <h4 className="text-2xl font-black tracking-tight text-[#232F72] dark:text-[#FFFFFF] mt-1">
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
               ) : (
@@ -161,13 +161,13 @@ export default function StudentDashboardHome() {
         </div>
 
       </div>      {/* WEEKLY LOGBOOK CHECKLIST */}
-      <div className="glass-card p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-[#070e24]/40 shadow-sm space-y-4">
+      <div className="glass-card p-6 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-2">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-505 block">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-505 block">
               Logbook Kegiatan Mingguan
             </span>
-            <h4 className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+            <h4 className="text-sm font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-1">
               Pengisian Aktivitas Harian Minggu Ini
             </h4>
           </div>
@@ -189,7 +189,7 @@ export default function StudentDashboardHome() {
             { day: "Kamis", date: "28 Mei 2026", text: "Menyusun dokumentasi skripsi & laporan magang bab 3", status: "Selesai" },
             { day: "Jumat", date: "29 Mei 2026", text: "Pengembangan modul rekap nilai mahasiswa dan feedback", status: "Sedang Berjalan" }
           ].map((item, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-slate-900/40 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-xl transition-all">
+            <div key={index} className="flex items-center justify-between p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-slate-900/40 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-slate-850 rounded-xl transition-all">
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-[10px] uppercase ${
                   item.status === "Selesai" 
@@ -199,8 +199,8 @@ export default function StudentDashboardHome() {
                   {item.day.substring(0, 3)}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">{item.text}</p>
-                  <span className="text-[9px] text-slate-400 mt-0.5 block">{item.date}</span>
+                  <p className="text-xs font-bold text-[#232F72] dark:text-[#F1F5F9] leading-snug">{item.text}</p>
+                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mt-0.5 block">{item.date}</span>
                 </div>
               </div>
               <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${
@@ -215,15 +215,15 @@ export default function StudentDashboardHome() {
         </div>
       </div>
       {/* RECENT SUBMISSIONS TABLE */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm overflow-hidden flex flex-col bg-white dark:bg-[#070e24]/40 space-y-4">
+      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm overflow-hidden flex flex-col bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md space-y-4">
         <div>
-          <h4 className="font-extrabold text-base text-slate-900 dark:text-white">Riwayat Kegiatan</h4>
+          <h4 className="font-extrabold text-base text-[#232F72] dark:text-[#FFFFFF]">Riwayat Kegiatan</h4>
         </div>
 
         <div className="overflow-x-auto w-full">
           <table className="w-full min-w-[600px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800/80 text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-widest text-left">
+              <tr className="border-b border-[#2F578A]/30 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-widest text-left">
                 <th className="pb-3 pl-2 font-bold">Minggu Ke</th>
                 <th className="pb-3 font-bold">Tanggal Kirim</th>
                 <th className="pb-3 font-bold">Aktivitas Utama</th>
@@ -231,13 +231,13 @@ export default function StudentDashboardHome() {
                 <th className="pb-3 pr-2 font-bold text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
               {recentLogbooks.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group cursor-pointer">
-                  <td className="py-3.5 pl-2 font-extrabold text-slate-900 dark:text-white">{log.week}</td>
-                  <td className="py-3.5 text-slate-500 dark:text-slate-400 font-medium">{log.date}</td>
+                <tr key={log.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer">
+                  <td className="py-3.5 pl-2 font-extrabold text-[#232F72] dark:text-[#FFFFFF]">{log.week}</td>
+                  <td className="py-3.5 text-[#2F578A] dark:text-[#F1F5F9]/70 font-medium">{log.date}</td>
                   <td className="py-3.5 font-bold text-slate-700 dark:text-slate-350 truncate max-w-[220px]">{log.topic}</td>
-                  <td className="py-3.5 font-semibold text-slate-600 dark:text-slate-400">{log.hours} Jam Kerja</td>
+                  <td className="py-3.5 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80">{log.hours} Jam Kerja</td>
                   <td className="py-3.5 pr-2 text-right">
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-250 dark:border-emerald-900/30">
                       <CheckCircle className="w-3 h-3" />

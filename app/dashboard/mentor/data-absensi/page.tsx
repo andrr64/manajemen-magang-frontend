@@ -164,14 +164,14 @@ export default function MentorAttendancePage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-55 flex items-center justify-center p-4" onClick={() => setViewingLeaveDoc(null)}>
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 animate-float relative overflow-hidden"
+            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 animate-float relative overflow-hidden"
           >
             {/* Background design elements */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#F1F5F9]0/10 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
 
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2F578A]">
               <div className="flex items-center gap-3">
                 <div className={`p-2.5 rounded-xl ${
                   viewingLeaveDoc.type === "Sakit" 
@@ -181,7 +181,7 @@ export default function MentorAttendancePage() {
                   <FileSpreadsheet className="w-5.5 h-5.5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-slate-900 dark:text-white leading-tight">
+                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] leading-tight">
                     Surat Keterangan {viewingLeaveDoc.type}
                   </h4>
                   <p className="text-[10px] text-slate-455 dark:text-slate-500 font-semibold mt-0.5">
@@ -192,14 +192,14 @@ export default function MentorAttendancePage() {
               
               <button 
                 onClick={() => setViewingLeaveDoc(null)}
-                className="p-1.5 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] rounded-xl text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
               >
                 <XCircle className="w-5.5 h-5.5" />
               </button>
             </div>
 
             {/* Document Preview Area */}
-            <div className="border border-slate-200/60 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 md:p-5 shadow-inner text-slate-800 dark:text-slate-200 relative min-h-[220px] flex flex-col items-center justify-center">
+            <div className="border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9] dark:bg-[#232F72] rounded-2xl p-4 md:p-5 shadow-inner text-[#232F72] dark:text-[#F1F5F9] relative min-h-[220px] flex flex-col items-center justify-center">
               
               {viewingLeaveDoc.documentUrl ? (
                 <div className="w-full h-full min-h-[200px] flex items-center justify-center bg-slate-200/50 dark:bg-slate-950/50 rounded-xl overflow-hidden">
@@ -213,25 +213,25 @@ export default function MentorAttendancePage() {
                     }}
                   />
                   <div className="hidden flex-col items-center justify-center p-4 text-center">
-                    <FileSpreadsheet className="w-8 h-8 text-slate-400 mb-2" />
+                    <FileSpreadsheet className="w-8 h-8 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mb-2" />
                     <p className="text-xs font-semibold text-slate-500">Dokumen dilampirkan (Bukan Format Gambar)</p>
                   </div>
                 </div>
               ) : (
                 <div className="text-center space-y-3 p-4">
-                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <AlertCircle className="w-6 h-6 text-slate-400" />
+                  <div className="w-12 h-12 bg-[#F1F5F9] dark:bg-[#232F72] rounded-full flex items-center justify-center mx-auto mb-2">
+                    <AlertCircle className="w-6 h-6 text-[#2F578A]/80 dark:text-[#F1F5F9]/50" />
                   </div>
-                  <h5 className="font-bold text-sm text-slate-700 dark:text-slate-300">Tidak ada lampiran dokumen</h5>
+                  <h5 className="font-bold text-sm text-[#232F72]/80 dark:text-[#F1F5F9]">Tidak ada lampiran dokumen</h5>
                   <p className="text-[10px] text-slate-500">
                     Mahasiswa tidak mengunggah bukti surat keterangan.
                   </p>
                 </div>
               )}
 
-              <div className="w-full mt-4 p-3 bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-xl">
-                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1">Catatan/Alasan Tambahan:</p>
-                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+              <div className="w-full mt-4 p-3 bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl">
+                <p className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mb-1">Catatan/Alasan Tambahan:</p>
+                <p className="text-xs font-medium text-[#232F72]/80 dark:text-[#F1F5F9]">
                   {viewingLeaveDoc.notes || "Tidak ada catatan."}
                 </p>
               </div>
@@ -245,7 +245,7 @@ export default function MentorAttendancePage() {
                   href={viewingLeaveDoc.documentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold rounded-xl transition-all cursor-pointer inline-flex items-center gap-1"
+                  className="px-4 py-2 border border-[#2F578A]/50 hover:bg-slate-50 dark:border-[#2F578A] dark:hover:bg-slate-900 text-[#232F72]/80 dark:text-[#F1F5F9] font-extrabold rounded-xl transition-all cursor-pointer inline-flex items-center gap-1"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   Buka Lampiran Asli
@@ -253,7 +253,7 @@ export default function MentorAttendancePage() {
               )}
               <button
                 onClick={() => setViewingLeaveDoc(null)}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
+                className="px-5 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 Selesai Meninjau
               </button>
@@ -274,10 +274,10 @@ export default function MentorAttendancePage() {
       {/* HEADER BAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
             Monitoring Absensi Harian Mahasiswa
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-1">
             Pantau kehadiran real-time, waktu check-in/out, durasi kerja, dan koordinat GPS penempatan magang mahasiswa.
           </p>
         </div>
@@ -286,7 +286,7 @@ export default function MentorAttendancePage() {
         <button 
           onClick={handleExport}
           disabled={isExporting}
-          className="flex items-center gap-1.5 px-4.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/70 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/20"
+          className="flex items-center gap-1.5 px-4.5 py-2.5 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md disabled:bg-[#F1F5F9]0/70 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30"
         >
           {isExporting ? (
             <>
@@ -329,14 +329,14 @@ export default function MentorAttendancePage() {
       </div>
 
       {/* FILTER PANEL */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#070e24]/40 space-y-4">
+      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-          <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-indigo-500" />
-            Kehadiran Hari Ini: <span className="text-indigo-600 dark:text-indigo-400 font-black">{todayStr}</span>
+          <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
+            Kehadiran Hari Ini: <span className="text-[#232F72] dark:text-[#FFFFFF] font-black">{todayStr}</span>
           </h4>
 
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 dark:text-slate-500">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
             <span>Filter Presensi:</span>
             <div className="flex gap-1">
               {["Semua", "Hadir", "Sakit", "Izin", "Alfa"].map((status) => (
@@ -345,8 +345,8 @@ export default function MentorAttendancePage() {
                   onClick={() => setStatusFilter(status)}
                   className={`px-3 py-1 rounded-lg border text-[10px] uppercase tracking-wide transition-all cursor-pointer ${
                     statusFilter === status
-                      ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                      : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-[#232F72] dark:bg-[#232F72] border-[#232F72] dark:border-[#121358] text-white shadow-md shadow-[#232F72]/20"
+                      : "bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/50 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
                   {status === "Semua" ? "Semua Status" : status}
@@ -362,18 +362,18 @@ export default function MentorAttendancePage() {
             placeholder="Cari nama mahasiswa, NIM, universitas, atau lokasi penempatan..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
         </div>
       </div>
 
       {/* ATTENDANCE DATA TABLE */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#070e24]/40 flex flex-col">
+      <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md flex flex-col">
         <div className="overflow-x-auto w-full">
           <table className="w-full min-w-[900px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800/80 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-left">
+              <tr className="border-b border-slate-100 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 uppercase tracking-widest text-left">
                 <th className="pb-3.5 pl-4 font-bold">Mahasiswa</th>
                 <th className="pb-3.5 font-bold">NIM / Kampus</th>
                 <th className="pb-3.5 font-bold">Status Absen</th>
@@ -381,30 +381,30 @@ export default function MentorAttendancePage() {
                 <th className="pb-3.5 pr-4 font-bold text-right">Verifikasi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
-                      <RefreshCw className="w-8 h-8 animate-spin text-indigo-500" />
+                    <div className="flex flex-col items-center justify-center gap-2 text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
+                      <RefreshCw className="w-8 h-8 animate-spin text-[#232F72] dark:text-[#FFFFFF]" />
                       <span className="text-xs font-bold">Memuat data absensi harian...</span>
                     </div>
                   </td>
                 </tr>
               ) : filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
+                <tr key={log.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group">
                   
                   {/* Student Name */}
                   <td className="py-4 pl-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${log.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10`}>
+                      <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${log.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10`}>
                         {log.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
-                        <p className="font-extrabold text-slate-900 dark:text-white leading-tight">
+                        <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] leading-tight">
                           {log.studentName}
                         </p>
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block mt-0.5">
+                        <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5">
                           {log.date}
                         </span>
                       </div>
@@ -412,9 +412,9 @@ export default function MentorAttendancePage() {
                   </td>
 
                   {/* NIM / University */}
-                  <td className="py-4 font-bold text-slate-700 dark:text-slate-300">
+                  <td className="py-4 font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">
                     <p>{log.studentNim}</p>
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 block mt-0.5 truncate max-w-[150px]">
+                    <span className="text-[10px] font-semibold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5 truncate max-w-[150px]">
                       {log.studentUniv}
                     </span>
                   </td>
@@ -452,7 +452,7 @@ export default function MentorAttendancePage() {
                   </td>
 
                   {/* Column: Keterangan Surat Izin/Sakit */}
-                  <td className="py-4 text-slate-650 dark:text-slate-400 font-semibold" onClick={(e) => e.stopPropagation()}>
+                  <td className="py-4 text-slate-650 dark:text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold" onClick={(e) => e.stopPropagation()}>
                     {(log.status === "Sakit" || log.status === "Izin") ? (
                       <div className="flex flex-col gap-1.5 max-w-[200px]">
                         <span className="text-[10px] leading-tight text-slate-600 dark:text-slate-450 truncate font-bold" title={log.notes}>
@@ -460,14 +460,14 @@ export default function MentorAttendancePage() {
                         </span>
                         <button
                           onClick={() => handleViewDocument(log.id, log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document || null)}
-                          className="inline-flex items-center gap-1 w-max px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 dark:bg-indigo-950/40 hover:text-white dark:hover:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/30 dark:border-indigo-900/30 rounded-xl text-[9px] font-black cursor-pointer transition-all active:scale-95 shadow-sm"
+                          className="inline-flex items-center gap-1 w-max px-2.5 py-1.5 bg-[#F1F5F9] hover:bg-[#232F72] dark:bg-[#232F72] dark:bg-[#232F72]/40 hover:text-white dark:hover:bg-[#121358] text-[#232F72] dark:text-[#FFFFFF] border border-[#2F578A]/30 rounded-xl text-[9px] font-black cursor-pointer transition-all active:scale-95 shadow-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           Lihat Surat
                         </button>
                       </div>
                     ) : (
-                      <span className="text-slate-400 font-normal">-</span>
+                      <span className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-normal">-</span>
                     )}
                   </td>
 
@@ -506,16 +506,16 @@ export default function MentorAttendancePage() {
                 <tr>
                   <td colSpan={5} className="px-4 py-16 text-center">
                     <div className="max-w-md mx-auto space-y-2">
-                      <AlertCircle className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
-                      <p className="text-slate-400 dark:text-slate-500 font-extrabold text-xs">
+                      <AlertCircle className="w-8 h-8 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mx-auto" />
+                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold text-xs">
                         Tidak ada log absensi hari ini yang cocok
                       </p>
-                      <p className="text-slate-400 dark:text-slate-500 text-[10px] leading-relaxed">
+                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 text-[10px] leading-relaxed">
                         Coba sesuaikan pencarian Anda atau kembalikan filter status ke &quot;Semua Status&quot;.
                       </p>
                       <button 
                         onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
-                        className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-200/40 dark:border-indigo-900/40 hover:bg-indigo-100 transition-all cursor-pointer mt-1"
+                        className="px-3 py-1.5 bg-[#F8FAFC] dark:bg-[#232F72] text-[#232F72] dark:text-[#FFFFFF] text-[10px] font-bold rounded-lg border border-[#2F578A]/30 hover:bg-[#F1F5F9] transition-all cursor-pointer mt-1"
                       >
                         Reset Filter
                       </button>
@@ -529,9 +529,9 @@ export default function MentorAttendancePage() {
       </div>
       
       {/* GEOLOCATION NOTES */}
-      <div className="p-4 bg-slate-50 dark:bg-[#070e24]/40 border border-slate-200/40 dark:border-slate-800/80 rounded-2xl flex items-start gap-3">
-        <AlertCircle className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
-        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold leading-relaxed">
+      <div className="p-4 bg-slate-50 dark:bg-[#121358]/40 dark:backdrop-blur-md border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-start gap-3">
+        <AlertCircle className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0 mt-0.5" />
+        <div className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold leading-relaxed">
           <strong>Catatan Sistem Geolocation:</strong> Setiap check-in absensi divalidasi silang menggunakan koordinat GPS (batas toleransi 100m dari kantor koordinat mitra magang) dan otentikasi wajah biometrik. Ketidakhadiran di luar area resmi magang ditandai sebagai Alfa secara otomatis oleh sistem pada pukul 09:00 WIB kecuali melampirkan izin surat resmi yang disetujui Dosen Pembimbing.
         </div>
       </div>

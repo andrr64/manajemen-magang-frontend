@@ -62,16 +62,16 @@ export default function MentorProfilePage() {
       )}
  
       {/* STUNNING TOP PROFILE HERO BANNER */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-[#0d1637] via-[#102058] to-[#091129] border border-slate-200/20 dark:border-slate-800/40 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-indigo-950/10">
+      <div className="relative rounded-3xl bg-gradient-to-r from-[#0d1637] via-[#102058] to-[#091129] border border-[#2F578A]/50/20 dark:border-[#2F578A]/40 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#232F72]/10">
         {/* Abstract Glowing Spheres */}
-        <div className="absolute right-0 top-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#F1F5F9]0/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute left-1/3 -bottom-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-[70px] pointer-events-none" />
  
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-tr from-indigo-500 to-cyan-400 rounded-2xl blur-sm opacity-60 animate-pulse" />
-              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-[#2F578A] to-cyan-400 rounded-2xl blur-sm opacity-60 animate-pulse" />
+              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#121358] border border-[#2F578A]/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
                 {profile.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
               </div>
             </div>
@@ -97,14 +97,14 @@ export default function MentorProfilePage() {
         {/* LEFT CARD: HIGH-END PREVIEW CARD (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
           
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 relative overflow-hidden space-y-6">
+          <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md relative overflow-hidden space-y-6">
             
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
  
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-              <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <Bookmark className="w-4 h-4 text-indigo-500" />
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/30 dark:border-[#2F578A]">
+              <span className="text-xs font-black text-[#232F72] dark:text-[#FFFFFF] uppercase tracking-wider flex items-center gap-1.5">
+                <Bookmark className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
                 Kartu Identitas Mentor
               </span>
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/20" title="Koneksi Aman" />
@@ -114,46 +114,46 @@ export default function MentorProfilePage() {
             <div className="space-y-4">
               
               {/* Field: NAMA */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors duration-300">
+              <div className="group relative p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-[#121358]/60 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72]/60 text-[#232F72] dark:text-[#FFFFFF] rounded-xl transition-colors duration-300">
                   <User className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-extrabold block uppercase tracking-wider">Nama Lengkap</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 leading-snug">{profile.name}</p>
+                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold block uppercase tracking-wider">Nama Lengkap</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-0.5 leading-snug">{profile.name}</p>
                 </div>
               </div>
  
               {/* Field: EMAIL */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+              <div className="group relative p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-[#121358]/60 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
                 <div className="p-2.5 bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 rounded-xl transition-colors duration-300">
                   <Mail className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-extrabold block uppercase tracking-wider">Alamat Email</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 truncate leading-snug">{profile.email}</p>
+                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold block uppercase tracking-wider">Alamat Email</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-0.5 truncate leading-snug">{profile.email}</p>
                 </div>
               </div>
  
               {/* Field: NO TELP */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+              <div className="group relative p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-[#121358]/60 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
                 <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl transition-colors duration-300">
                   <Phone className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-extrabold block uppercase tracking-wider">Nomor Telepon</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 leading-snug">{profile.phone}</p>
+                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold block uppercase tracking-wider">Nomor Telepon</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-0.5 leading-snug">{profile.phone}</p>
                 </div>
               </div>
  
               {/* Field: STATUS */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+              <div className="group relative p-3 bg-slate-50 hover:bg-[#F1F5F9]/50 dark:bg-[#121358]/60 dark:hover:bg-[#0a1538]/60 border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
                 <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl transition-colors duration-300">
                   <Shield className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-extrabold block uppercase tracking-wider">STATUS</span>
-                  <p className="font-black text-indigo-650 dark:text-indigo-400 mt-0.5 leading-snug tracking-wider">{profile.status}</p>
+                  <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold block uppercase tracking-wider">STATUS</span>
+                  <p className="font-black text-[#232F72] dark:text-[#FFFFFF] mt-0.5 leading-snug tracking-wider">{profile.status}</p>
                 </div>
               </div>
  
@@ -165,20 +165,20 @@ export default function MentorProfilePage() {
  
         {/* RIGHT CARD: POLISHED INTERACTIVE FORM (7 Cols) */}
         <div className="lg:col-span-7">
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 space-y-6">
+          <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-6">
             
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-              <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-500" />
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/30 dark:border-[#2F578A]">
+              <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
                 Ubah Profil Mentor
               </h4>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-5 text-xs font-bold text-slate-600 dark:text-slate-400">
+            <form onSubmit={handleSubmit} className="space-y-5 text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/80">
               
               {/* Form Input: NAMA */}
               <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
                   Nama Lengkap & Gelar Akademik <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group/input">
@@ -187,16 +187,16 @@ export default function MentorProfilePage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F1F5F9] focus:bg-white dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] focus:ring-1 focus:ring-[#232F72] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                     placeholder="Masukkan nama lengkap beserta gelar..."
                   />
-                  <User className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-indigo-500 transition-colors" />
+                  <User className="w-4.5 h-4.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#232F72] dark:text-[#FFFFFF] transition-colors" />
                 </div>
               </div>
  
               {/* Form Input: EMAIL */}
               <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
                   Alamat Email Kampus Resmi <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group/input">
@@ -205,16 +205,16 @@ export default function MentorProfilePage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F1F5F9] focus:bg-white dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] focus:ring-1 focus:ring-[#232F72] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                     placeholder="Masukkan alamat email resmi..."
                   />
-                  <Mail className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-indigo-500 transition-colors" />
+                  <Mail className="w-4.5 h-4.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#232F72] dark:text-[#FFFFFF] transition-colors" />
                 </div>
               </div>
  
               {/* Form Input: NO TELP */}
               <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
                   Nomor Handphone / WhatsApp Aktif <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group/input">
@@ -223,16 +223,16 @@ export default function MentorProfilePage() {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F1F5F9] focus:bg-white dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] focus:ring-1 focus:ring-[#232F72] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                     placeholder="Masukkan nomor handphone..."
                   />
-                  <Phone className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-indigo-500 transition-colors" />
+                  <Phone className="w-4.5 h-4.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#232F72] dark:text-[#FFFFFF] transition-colors" />
                 </div>
               </div>
  
               {/* Form Input: STATUS (Locked / Disabled) */}
               <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
                   Status Pengguna Pembimbing (Role)
                 </label>
                 <div className="relative">
@@ -240,24 +240,24 @@ export default function MentorProfilePage() {
                     type="text" 
                     disabled
                     value={formData.status}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-250 dark:border-slate-850 rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold tracking-wider"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F1F5F9] dark:bg-[#232F72]/60 border border-slate-250 dark:border-[#2F578A] rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold tracking-wider"
                   />
-                  <Shield className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
+                  <Shield className="w-4.5 h-4.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-4 top-4" />
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/80 rounded-2xl flex items-start gap-2.5">
+                <div className="p-3 bg-[#F1F5F9] dark:bg-[#232F72]/80 border border-[#2F578A]/50/40 dark:border-[#2F578A] rounded-2xl flex items-start gap-2.5">
                   <Lock className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-[9.5px] text-slate-400 dark:text-slate-500 font-semibold leading-relaxed">
+                  <p className="text-[9.5px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold leading-relaxed">
                     Kolom status otorisasi dikunci demi keamanan otentikasi. Silakan ajukan permohonan ke Admin Fakultas apabila ingin merubah hak akses pembimbing Anda.
                   </p>
                 </div>
               </div>
  
               {/* Actions & Submit */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex justify-end">
+              <div className="pt-4 border-t border-[#2F578A]/30 dark:border-[#2F578A] flex justify-end">
                 <button 
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/70 text-white font-black rounded-2xl shadow-lg shadow-indigo-650/15 hover:shadow-indigo-650/25 transition-all text-xs flex items-center gap-2 cursor-pointer active:scale-95 hover:scale-[1.01]"
+                  className="px-6 py-3.5 bg-[#232F72] dark:bg-[#232F72] hover:opacity-90 shadow-md disabled:bg-[#F1F5F9]0/70 text-white font-black rounded-2xl shadow-lg shadow-[#232F72]/15 hover:shadow-[#232F72]/25 transition-all text-xs flex items-center gap-2 cursor-pointer active:scale-95 hover:scale-[1.01]"
                 >
                   {isSaving ? (
                     <>
