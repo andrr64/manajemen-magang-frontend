@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
+import { Shield, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { useIam } from "@/modules/iam/hooks";
 
 export default function LoginPage() {
@@ -15,21 +15,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-    setSuccessMsg("");
 
-    // Validasi sederhana
     if (!email || !password) {
-      setErrorMsg("Email dan password wajib diisi!");
-      return;
-    }
-
-    if (password.length < 6) {
-      setErrorMsg("Password minimal terdiri dari 6 karakter!");
+      setErrorMsg("Identitas login (Email dan Sandi) wajib diisi.");
       return;
     }
 
@@ -37,189 +29,176 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      setSuccessMsg("Login berhasil! Mengalihkan ke dashboard...");
-      // Kita redirect ke root dispatcher, dispatcher akan me-redirect berdasarkan role
       router.push("/dashboard");
     } catch (err: any) {
-      setErrorMsg(err.message || "Email atau password salah.");
+      setErrorMsg(err.message || "Akses ditolak. Kredensial tidak valid.");
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-grid-pattern relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
-      {/* Tombol Kembali ke Beranda */}
-      <div className="absolute top-6 left-6 z-10">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-[#050505] text-slate-50 font-sans relative px-4 overflow-hidden selection:bg-cyan-500/30">
+      
+      {/* Dynamic Background Elements */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
+        
+        {/* Orbs */}
+        <div className="absolute top-0 right-[10%] w-[500px] h-[500px] rounded-full bg-cyan-900/20 blur-[150px] mix-blend-screen" />
+        <div className="absolute bottom-0 left-[10%] w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[150px] mix-blend-screen" />
+      </div>
+
+      {/* Back Button */}
+      <div className="absolute top-8 left-8 z-20">
         <Link
           href="/"
-          className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900"
+          className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Kembali ke Beranda
+          <div className="p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md group-hover:bg-white/[0.1] transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          Kembali
         </Link>
       </div>
 
-      {/* Decorative Blur Backgrounds */}
-      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/3 translate-x-1/2 translate-y-1/2 w-80 h-80 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* Login Card (Centered) */}
-      <div className="w-full max-w-md glass-card rounded-3xl p-8 md:p-10 shadow-2xl relative border border-slate-200/60 dark:border-slate-800/80 z-10 transition-all duration-300">
+      {/* Login Card */}
+      <div className="w-full max-w-sm z-10 animate-fade-in-up">
         
-        {/* Header Logo */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-lg shadow-indigo-500/20 mb-4 animate-float">
-            <GraduationCap className="w-8 h-8" />
+        {/* Header */}
+        <div className="flex flex-col items-center text-center mb-10">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-6 animate-float">
+            <Shield className="w-6 h-6 text-white" />
           </div>
-          <h1 className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-1">
-            Intern<span className="text-indigo-600 dark:text-indigo-400">Flow</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-4 backdrop-blur-md">
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300">Portal Keamanan</span>
+          </div>
+          <h1 className="text-2xl font-black tracking-widest text-white mb-2">
+            DIRWIL<span className="text-cyan-400">1</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Masuk untuk mengakses sistem magang terpadu
+          <p className="text-xs text-slate-500 font-medium">Masuk untuk mengakses sistem terpadu</p>
+        </div>
+
+        {/* Form Container */}
+        <div className="bg-white/[0.02] border border-white/[0.05] backdrop-blur-2xl rounded-3xl p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
+          
+          {errorMsg && (
+            <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+              <p className="text-[11px] font-bold text-red-400">{errorMsg}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
+                Identitas / Email
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+                </div>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@dirwil1.go.id"
+                  disabled={isSubmitting}
+                  className="w-full pl-11 pr-4 py-3.5 bg-[#0a0a0a] border border-white/[0.05] rounded-2xl text-xs font-medium text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.02] transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
+                Kata Sandi
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  disabled={isSubmitting}
+                  className="w-full pl-11 pr-11 py-3.5 bg-[#0a0a0a] border border-white/[0.05] rounded-2xl text-xs font-medium text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.02] transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative flex items-center justify-center w-4 h-4 rounded border border-white/10 bg-[#0a0a0a] group-hover:border-cyan-500/50 transition-colors">
+                  <input type="checkbox" className="peer opacity-0 absolute inset-0 cursor-pointer" />
+                  <div className="w-2 h-2 rounded-sm bg-cyan-400 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                </div>
+                <span className="text-[10px] font-medium text-slate-400 group-hover:text-slate-300">Ingat Saya</span>
+              </label>
+              <a href="#" className="text-[10px] font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
+                Lupa Sandi?
+              </a>
+            </div>
+
+            {/* Submit */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="relative flex items-center justify-center w-full py-4 rounded-2xl bg-white text-black font-bold text-xs overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Masuk Ke Sistem"
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700" />
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-[10px] font-medium text-slate-500">
+            Akses terbatas untuk personil DIREKTORAT WILAYAH 1. <br className="mt-1" />
+            <Link href="/register" className="text-cyan-400 hover:text-white font-bold transition-colors">
+              Permohonan Akses Baru
+            </Link>
           </p>
         </div>
 
-        {/* Feedback Messages */}
-        {errorMsg && (
-          <div className="mb-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200/50 dark:border-red-900/50 text-xs font-semibold text-red-600 dark:text-red-400">
-            {errorMsg}
-          </div>
-        )}
-        {successMsg && (
-          <div className="mb-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-900/50 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-            {successMsg}
-          </div>
-        )}
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email field */}
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
-              Alamat Email
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                <Mail className="w-5 h-5" />
-              </div>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
-                disabled={isSubmitting}
-                className="block w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 focus:border-indigo-600 dark:focus:border-indigo-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
-              />
-            </div>
-          </div>
-
-          {/* Password field */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                Kata Sandi
-              </label>
-              <a
-                href="#forgot"
-                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
-                Lupa Password?
-              </a>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-5 h-5" />
-              </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                disabled={isSubmitting}
-                className="block w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 focus:border-indigo-600 dark:focus:border-indigo-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isSubmitting}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Remember Me checkbox */}
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              type="checkbox"
-              className="h-4.5 w-4.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-slate-900 dark:border-slate-800"
-            />
-            <label htmlFor="remember-me" className="ml-2.5 block text-sm font-semibold text-slate-600 dark:text-slate-400 cursor-pointer">
-              Ingat saya di perangkat ini
-            </label>
-          </div>
-
-          {/* Submit button */}
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex justify-center items-center w-full py-4 px-6 rounded-2xl text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none disabled:transform-none"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Memproses Masuk...
-                </>
-              ) : (
-                "Masuk ke Dashboard"
-              )}
-            </button>
-          </div>
-        </form>
-
-        {/* Separator */}
-        <div className="relative my-7">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200 dark:border-slate-800/80"></div>
-          </div>
-          <div className="relative flex justify-center text-xs font-semibold uppercase">
-            <span className="bg-white dark:bg-[#060b26] px-3 text-slate-400 dark:text-slate-500">
-              Atau masuk dengan
-            </span>
-          </div>
-        </div>
-
-        {/* Google SSO simulated */}
-        <button
-          type="button"
-          onClick={() => {
-            setErrorMsg("Masuk dengan Google sedang disiapkan oleh administrator!");
-          }}
-          disabled={isSubmitting}
-          className="flex justify-center items-center w-full py-3.5 px-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-bold text-slate-700 dark:text-slate-300 transition-all duration-200"
-        >
-          <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-            <path
-              fill="#EA4335"
-              d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.41 0-6.19-2.78-6.19-6.19s2.78-6.19 6.19-6.19c1.54 0 2.94.57 4.03 1.505l3.07-3.07C19.1 2.215 15.89 1 12.24 1 5.48 1 0 6.48 0 13.24s5.48 12.24 12.24 12.24c6.82 0 12.24-5.42 12.24-12.24 0-.79-.08-1.57-.23-2.325l-12.01.37z"
-            />
-          </svg>
-          Google Workspace
-        </button>
-
-        {/* Sign up simulated */}
-        <div className="mt-8 text-center text-sm font-semibold text-slate-500">
-          Belum terdaftar?{" "}
-          <Link href="/register" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-            Buat akun program magang
-          </Link>
-        </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}} />
     </div>
   );
 }
