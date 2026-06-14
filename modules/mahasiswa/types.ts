@@ -12,8 +12,8 @@
 //   tanggalMulai, tanggalBerakhir, periodeStatus
 //
 // Backend update (UpdateStudentRequest.java):
-//   email, nim, nama, noHp, gender, universitas,
-//   periode: { tanggalMulai, tanggalBerakhir, status }
+//   email, nim, nama, noHp, gender, idUniversity,
+//   periode: { tanggalMulai, tanggalBerakhir, status } // status: "aktif" | "selesai" | "batal"
 // =====================================================================
 
 // =====================================================================
@@ -27,6 +27,7 @@ export interface StudentResponse {
   nama: string;
   noHp: string;
   gender: string;
+  idUniversity: number | null;
   universitas: string;
   periodeId: string | null;
   tanggalMulai: string | null;
@@ -100,7 +101,8 @@ export interface CreateStudentRequest {
   nim: string;
   name: string;         // → dikirim ke backend sebagai "nama"
   gender: "Laki-laki" | "Perempuan" | "-";
-  university: string;   // → "universitas"
+  university: string;   // → untuk UI (legacy string name)
+  idUniversity?: number; // → dikirim ke backend sebagai id_university
   // Opsional
   phone?: string;       // → "noHp"
   program?: string;     // (hanya UI, tidak ada di backend)
@@ -116,29 +118,23 @@ export interface CreateStudentRequest {
 
 // =====================================================================
 // REQUEST — update mahasiswa (PUT /api/mahasiswa/:id)
+// Mengikuti backend UpdateStudentRequest.java:
+//   email, nim, nama, noHp, gender, idUniversity
+//   periode: { tanggalMulai, tanggalBerakhir, status }
 // =====================================================================
 export interface UpdateStudentRequest {
   email?: string;
   nim?: string;
-  name?: string;        // → "nama"
-  phone?: string;       // → "noHp"
-  gender?: "Laki-laki" | "Perempuan" | "-";
-  university?: string;  // → "universitas"
-  // UI-only fields
-  program?: string;
-  company?: string;
-  role?: string;
-  status?: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan";
-  progress?: number;
-  grade?: number | null;
-  period?: string;      // "DD Bulan YYYY - DD Bulan YYYY"
-  address?: string;
-  // Nested periode update
+  nama?: string;
+  noHp?: string;
+  gender?: string;
+  idUniversity?: number;
+  // Nested periode update (sesuai UpdatePeriodRequest backend)
   periode?: {
     tanggalMulai?: string;    // "YYYY-MM-DD"
     tanggalBerakhir?: string; // "YYYY-MM-DD"
     status?: string;          // "aktif" | "selesai" | "batal"
-  };
+  }; 
 }
 
 // =====================================================================
@@ -170,6 +166,9 @@ export interface StudentRecord {
   nim: string;
   email: string;
   university: string;
+  gender: String; 
+  // Check constraints:
+  //   "mahasiswa_gender_check" CHECK (gender::text = ANY (ARRAY['Laki-laki'::character varying, 'Perempuan'::character varying]::text[]))
   program: string;
   company: string;
   role: string;

@@ -143,6 +143,7 @@ function mapBackendStudentToFrontend(item: StudentResponse): Student {
     nim: item.nim || "2201012001",
     email: item.email || "",
     university: item.universitas || "-",
+    idUniversity: item.idUniversity || undefined,
     phone: item.noHp || "-",
     gender: (item.gender as "Laki-laki" | "Perempuan" | "-") || "-",
     program: "S1 Teknik Informatika",
@@ -299,7 +300,7 @@ export const mahasiswaAPI = {
           nama: payload.name,
           noHp: payload.phone || "-",
           gender: payload.gender,
-          universitas: payload.university,
+          idUniversity: payload.idUniversity || 1, // Defaulting to 1 if not provided, assuming frontend provides it
           tanggalMulai: payload.tanggalMulai || "2026-02-01",
           tanggalBerakhir: payload.tanggalBerakhir || "2026-07-31",
           periodeStatus: payload.periodeStatus || "aktif"
@@ -328,7 +329,8 @@ export const mahasiswaAPI = {
           grade: null,
           logbooksCount: 0,
           logbooksPending: 0,
-          attendance: { present: 0, sick: 0, leave: 0, absent: 0 }
+          attendance: { present: 0, sick: 0, leave: 0, absent: 0 },
+          idUniversity: payload.idUniversity
         };
 
         students.unshift(newStudent);
@@ -414,17 +416,16 @@ export const mahasiswaAPI = {
 
     return executeHybridRequest<Student>(
       `Update student details for ID: ${id}`,
-      `/api/mahasiswa/${id}`,
+      `/api/mahasiswa/edit-by-mentor/${id}`,
       {
         method: "PUT",
         body: JSON.stringify({
           email: payload.email,
           nim: payload.nim,
-          nama: payload.name,
-          gender: payload.gender,
-          noHp: payload.phone,
-          address: payload.address,
-          universitas: payload.university,
+          nama: payload.nama,
+          gender: (payload.gender && payload.gender !== "-") ? payload.gender : undefined,
+          noHp: payload.noHp,
+          idUniversity: payload.idUniversity,
           periode: resolvedPeriode
         })
       },
@@ -439,6 +440,8 @@ export const mahasiswaAPI = {
         const updatedStudent: Student = {
           ...students[index],
           ...payload,
+          name: payload.nama || students[index].name,
+          phone: payload.noHp || students[index].phone,
           id: students[index].id
         };
 

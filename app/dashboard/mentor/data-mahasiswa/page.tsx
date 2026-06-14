@@ -21,14 +21,13 @@ import {
   Check,
   Pencil,
   Trash2,
-  Briefcase,
   GraduationCap,
-  MapPin,
   AlertTriangle
 } from "lucide-react";
 import { Student } from "@/modules/mahasiswa/types";
 import { useStudents, useStudentStats } from "@/modules/mahasiswa/hooks";
 import { mahasiswaAPI } from "@/modules/mahasiswa/api";
+import { useUniversitas } from "@/modules/universitas/hooks";
 
 export default function MentorDataMahasiswaPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +48,8 @@ export default function MentorDataMahasiswaPage() {
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
     universitas: univFilter !== "Semua" ? univFilter : undefined
   });
+
+  const { universitasList } = useUniversitas();
 
   // Local state for student internship periods (initially mapped from dates)
   const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({});
@@ -119,15 +120,12 @@ export default function MentorDataMahasiswaPage() {
     nim: "",
     email: "",
     university: "",
+    idUniversity: 0,
     phone: "",
     gender: "Laki-laki" as "Laki-laki" | "Perempuan" | "-",
-    program: "",
-    company: "",
-    role: "",
     periodStart: "",
     periodEnd: "",
-    address: "",
-    status: "Aktif" as Student["status"]
+    periodStatus: "aktif" as "aktif" | "selesai" | "batal"
   });
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
@@ -177,15 +175,13 @@ export default function MentorDataMahasiswaPage() {
       nim: student.nim,
       email: student.email,
       university: student.university,
+      idUniversity: student.idUniversity || 0,
       phone: student.phone,
-      gender: student.gender,
-      program: student.program || "",
-      company: student.company || "",
-      role: student.role || "",
+      gender: (student.gender === "-" || !student.gender) ? "Laki-laki" : student.gender as "Laki-laki" | "Perempuan",
       periodStart: parsedDates.start,
       periodEnd: parsedDates.end,
-      address: student.address || "",
-      status: student.status
+      periodStatus: student.statusPeriode?.toLowerCase() === "selesai" ? "selesai" 
+        : student.statusPeriode?.toLowerCase() === "batal" ? "batal" : "aktif"
     });
     setEditError("");
   };
@@ -214,11 +210,8 @@ export default function MentorDataMahasiswaPage() {
     if (!/^\d+$/.test(editForm.nim.trim())) return setEditError("NIM harus berupa angka saja.");
     if (!editForm.email.trim()) return setEditError("Alamat Email wajib diisi.");
     if (!/\S+@\S+\.\S+/.test(editForm.email)) return setEditError("Format email tidak valid.");
-    if (!editForm.university.trim()) return setEditError("Universitas wajib diisi.");
+    if (editForm.idUniversity === 0) return setEditError("Universitas wajib dipilih.");
     if (!editForm.phone.trim()) return setEditError("Nomor HP wajib diisi.");
-    if (!editForm.company.trim()) return setEditError("Nama Perusahaan Mitra wajib diisi.");
-    if (!editForm.role.trim()) return setEditError("Posisi/Peran Magang wajib diisi.");
-    if (!editForm.program.trim()) return setEditError("Program Studi wajib diisi.");
 
     if (!editForm.periodStart || !editForm.periodEnd) {
       return setEditError("Harap lengkapi tanggal awal dan akhir kegiatan.");
@@ -227,28 +220,22 @@ export default function MentorDataMahasiswaPage() {
       return setEditError("Tanggal awal tidak boleh melampaui tanggal akhir.");
     }
 
-    setIsSavingEdit(true);
 
-    const formatIndoDate = (dateStr: string) => {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-    };
-    const periodStr = `${formatIndoDate(editForm.periodStart)} - ${formatIndoDate(editForm.periodEnd)}`;
+    setIsSavingEdit(true);
 
     try {
       await mahasiswaAPI.updateStudent(editingStudent!.id, {
-        name: editForm.name,
+        nama: editForm.name,
         nim: editForm.nim,
         email: editForm.email,
-        university: editForm.university,
-        phone: editForm.phone,
-        gender: editForm.gender,
-        program: editForm.program,
-        company: editForm.company,
-        role: editForm.role,
-        period: periodStr,
-        address: editForm.address,
-        status: editForm.status
+        idUniversity: editForm.idUniversity,
+        noHp: editForm.phone,
+        gender: editForm.gender === "-" ? undefined : editForm.gender,
+        periode: {
+          tanggalMulai: editForm.periodStart,
+          tanggalBerakhir: editForm.periodEnd,
+          status: editForm.periodStatus
+        }
       });
 
       setStudentPeriods((prev) => ({
@@ -267,17 +254,10 @@ export default function MentorDataMahasiswaPage() {
     }
   };
 
-  // Extract unique universities for filter dropdown (Hardcoded based on typical partners)
-  const uniqueUniversities = [
-    "Semua",
-    "Universitas Indonesia",
-    "Institut Teknologi Bandung",
-    "Universitas Gadjah Mada",
-    "Universitas Bina Nusantara",
-    "Universitas Diponegoro",
-    "Universitas Padjadjaran",
-    "Telkom University"
-  ];
+  // Extract unique universities for filter dropdown (Dynamic from universitas module)
+  const uniqueUniversities = useMemo(() => {
+    return ["Semua", ...universitasList.map(u => u.nameUniversity)];
+  }, [universitasList]);
 
   // Pagination logic
   const total = filteredStudents.length;
@@ -474,31 +454,25 @@ export default function MentorDataMahasiswaPage() {
                   Universitas Asal <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.university}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, university: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <School className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Program Studi */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Program Studi <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.program}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, program: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <GraduationCap className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
+                  <select
+                    value={editForm.idUniversity}
+                    onChange={(e) => {
+                      const selectedId = Number(e.target.value);
+                      const selectedUniv = universitasList.find(u => u.id === selectedId);
+                      setEditForm(prev => ({ 
+                        ...prev, 
+                        idUniversity: selectedId,
+                        university: selectedUniv ? selectedUniv.nameUniversity : prev.university
+                      }));
+                    }}
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white appearance-none"
+                  >
+                    <option value={0} disabled>Pilih Universitas...</option>
+                    {universitasList.map(u => (
+                      <option key={u.id} value={u.id}>{u.nameUniversity}</option>
+                    ))}
+                  </select>
+                  <School className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3 pointer-events-none" />
                 </div>
               </div>
 
@@ -515,55 +489,6 @@ export default function MentorDataMahasiswaPage() {
                   <option value="Laki-laki">Laki-laki</option>
                   <option value="Perempuan">Perempuan</option>
                 </select>
-              </div>
-
-              {/* Status Magang */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block">
-                  Status Magang <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={editForm.status}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as "Aktif" | "Selesai" }))}
-                  className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] dark:text-white"
-                >
-                  <option value="Aktif">Aktif</option>
-                  <option value="Selesai">Selesai</option>
-                </select>
-              </div>
-
-              {/* Perusahaan Mitra */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Perusahaan Mitra <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.company}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, company: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Briefcase className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Posisi/Peran Magang */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Posisi Magang <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.role}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, role: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <GraduationCap className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
               </div>
 
               {/* Tanggal Mulai Magang */}
@@ -600,20 +525,20 @@ export default function MentorDataMahasiswaPage() {
                 </div>
               </div>
 
-              {/* Alamat Domisili */}
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Alamat Domisili
+              {/* Status Periode */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block">
+                  Status Periode <span className="text-rose-500">*</span>
                 </label>
-                <div className="relative">
-                  <textarea
-                    value={editForm.address}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
-                    rows={2}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white resize-none"
-                  />
-                  <MapPin className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3.5" />
-                </div>
+                <select
+                  value={editForm.periodStatus}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, periodStatus: e.target.value as "aktif" | "selesai" | "batal" }))}
+                  className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] dark:text-white"
+                >
+                  <option value="aktif">Aktif</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="batal">Batal</option>
+                </select>
               </div>
 
             </div>
