@@ -65,7 +65,7 @@ export default function KelolaMahasiswaPage() {
   const [formNim, setFormNim] = useState("");
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
-  const [formGender, setFormGender] = useState<"Laki-laki" | "Perempuan">("Laki-laki");
+  const [formGender, setFormGender] = useState<"Laki-laki" | "Perempuan" | "-">("Laki-laki");
   const [formUniv, setFormUniv] = useState("Universitas Indonesia");
   const [formProgram, setFormProgram] = useState("");
   const [formCompany, setFormCompany] = useState("");
@@ -619,7 +619,7 @@ export default function KelolaMahasiswaPage() {
                   <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block mb-1.5">Jenis Kelamin *</label>
                   <select
                     value={formGender}
-                    onChange={(e) => setFormGender(e.target.value as "Laki-laki" | "Perempuan")}
+                    onChange={(e) => setFormGender(e.target.value as "Laki-laki" | "Perempuan" | "-")}
                     className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 focus:bg-white rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
                   >
                     <option value="Laki-laki">Laki-laki</option>

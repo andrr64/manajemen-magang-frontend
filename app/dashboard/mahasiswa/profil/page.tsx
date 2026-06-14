@@ -82,22 +82,22 @@ export default function StudentProfilePage() {
       )}
 
       {/* STUNNING TOP PROFILE HERO BANNER */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-violet-950 via-indigo-900 to-[#091129] border border-slate-200/20 dark:border-slate-800/40 p-6 md:p-8 text-white overflow-hidden shadow-xl">
+      <div className="relative rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#121358]/20">
         {/* Abstract Glowing Spheres */}
-        <div className="absolute right-0 top-0 w-80 h-80 bg-violet-500/10 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute left-1/3 -bottom-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-[70px] pointer-events-none" />
+        <div className="absolute right-0 top-0 w-80 h-80 bg-[#36ADA3]/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute left-1/3 -bottom-20 w-64 h-64 bg-[#2F578A]/20 rounded-full blur-[70px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-tr from-violet-500 to-indigo-400 rounded-2xl blur-sm opacity-60 animate-pulse" />
-              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-[#36ADA3] to-[#2F578A] rounded-2xl blur-sm opacity-60 animate-pulse" />
+              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#232F72] border border-[#36ADA3]/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
                 {profile.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[9px] uppercase font-black tracking-widest text-violet-300 bg-violet-900/60 border border-violet-750 px-2.5 py-1 rounded-lg">
+                <span className="text-[9px] uppercase font-black tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 border border-[#36ADA3]/20 px-2.5 py-1 rounded-lg">
                   Mahasiswa Magang
                 </span>
                 <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/30">
@@ -105,10 +105,10 @@ export default function StudentProfilePage() {
                   Verified Intern
                 </span>
               </div>
-              <h3 className="text-lg md:text-2xl font-black tracking-tight mt-2 leading-tight">
+              <h3 className="text-lg md:text-2xl font-black tracking-tight mt-2 leading-tight text-white">
                 {profile.name}
               </h3>
-              <p className="text-xs text-violet-200 leading-normal font-semibold mt-1 opacity-90">
+              <p className="text-xs text-[#F1F5F9]/80 leading-normal font-semibold mt-1">
                 NIM. {profile.nim}
               </p>
             </div>
@@ -122,14 +122,14 @@ export default function StudentProfilePage() {
         {/* LEFT CARD: HIGH-END PREVIEW CARD (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
           
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 relative overflow-hidden space-y-6">
+          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] relative overflow-hidden space-y-6">
             
-            <div className="absolute -top-10 -right-10 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#36ADA3]/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-[#2F578A]/10 rounded-full blur-2xl pointer-events-none" />
 
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-              <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <Bookmark className="w-4 h-4 text-violet-500" />
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
+              <span className="text-xs font-black text-[#232F72] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Bookmark className="w-4 h-4 text-[#36ADA3]" />
                 Kartu Identitas Mahasiswa
               </span>
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/20" title="Koneksi Aman" />
@@ -139,46 +139,46 @@ export default function StudentProfilePage() {
             <div className="space-y-4">
               
               {/* Field: NAMA */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 rounded-xl transition-colors duration-300">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
                   <User className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Nama Lengkap</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 leading-snug truncate">{profile.name}</p>
+                  <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-extrabold block uppercase tracking-wider">Nama Lengkap</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-white mt-0.5 leading-snug truncate">{profile.name}</p>
                 </div>
               </div>
 
               {/* Field: EMAIL */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 rounded-xl transition-colors duration-300">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
                   <Mail className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Alamat Email</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 truncate leading-snug">{profile.email}</p>
+                  <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-extrabold block uppercase tracking-wider">Alamat Email</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-white mt-0.5 truncate leading-snug">{profile.email}</p>
                 </div>
               </div>
 
               {/* Field: NO TELP */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl transition-colors duration-300">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
                   <Phone className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Nomor Telepon</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white mt-0.5 leading-snug">{profile.phone}</p>
+                  <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-extrabold block uppercase tracking-wider">Nomor Telepon</span>
+                  <p className="font-extrabold text-[#232F72] dark:text-white mt-0.5 leading-snug">{profile.phone}</p>
                 </div>
               </div>
 
               {/* Field: ROLE */}
-              <div className="group relative p-3 bg-slate-50 hover:bg-slate-100/50 dark:bg-[#070e24]/60 dark:hover:bg-[#0a1538]/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-xl transition-colors duration-300">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
                   <Shield className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold block uppercase tracking-wider">Status Otorisasi (Role)</span>
-                  <p className="font-black text-violet-650 dark:text-violet-400 mt-0.5 leading-snug tracking-wider">{profile.role}</p>
+                  <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-extrabold block uppercase tracking-wider">Status Otorisasi (Role)</span>
+                  <p className="font-black text-[#36ADA3] mt-0.5 leading-snug tracking-wider">{profile.role}</p>
                 </div>
               </div>
 
@@ -190,20 +190,20 @@ export default function StudentProfilePage() {
 
         {/* RIGHT CARD: POLISHED INTERACTIVE FORM (7 Cols) */}
         <div className="lg:col-span-7">
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 space-y-6">
+          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6">
             
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-              <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-violet-500" />
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
+              <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#36ADA3]" />
                 Ubah Profil Mahasiswa
               </h4>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-5 text-xs font-bold text-slate-600 dark:text-slate-400">
+            <form onSubmit={handleSubmit} className="space-y-5 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]/80">
               
               {/* Form Input: NAMA */}
               <div className="space-y-2">
-                <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1">
                   Nama Lengkap Mahasiswa <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative group/input">
@@ -212,17 +212,17 @@ export default function StudentProfilePage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                     placeholder="Masukkan nama lengkap Anda..."
                   />
-                  <User className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-violet-500 transition-colors" />
+                  <User className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Form Input: EMAIL */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1">
                     Alamat Email Mahasiswa <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative group/input">
@@ -231,16 +231,16 @@ export default function StudentProfilePage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                       placeholder="Masukkan alamat email resmi..."
                     />
-                    <Mail className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-violet-500 transition-colors" />
+                    <Mail className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
                   </div>
                 </div>
 
                 {/* Form Input: NO TELP */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1">
                     Nomor Telepon Aktif (WhatsApp) <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative group/input">
@@ -249,10 +249,10 @@ export default function StudentProfilePage() {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-50 focus:bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                       placeholder="Masukkan nomor handphone..."
                     />
-                    <Phone className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4 group-focus-within/input:text-violet-500 transition-colors" />
+                    <Phone className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
                   </div>
                 </div>
               </div>
@@ -260,7 +260,7 @@ export default function StudentProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* NIM (Locked) */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-550 flex items-center gap-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1">
                     NIM Mahasiswa (Terkunci)
                   </label>
                   <div className="relative">
@@ -268,15 +268,15 @@ export default function StudentProfilePage() {
                       type="text" 
                       disabled
                       value={formData.nim}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-250 dark:border-slate-850 rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold tracking-wider"
+                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold tracking-wider"
                     />
-                    <BookOpen className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
+                    <BookOpen className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/40 absolute left-4 top-4" />
                   </div>
                 </div>
 
                 {/* Role (Locked) */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-550 flex items-center gap-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1">
                     Status Keanggotaan (Role)
                   </label>
                   <div className="relative">
@@ -284,19 +284,19 @@ export default function StudentProfilePage() {
                       type="text" 
                       disabled
                       value={formData.role}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-250 dark:border-slate-850 rounded-2xl text-xs focus:outline-none dark:text-slate-450 cursor-not-allowed font-extrabold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold"
                     />
-                    <Shield className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-4" />
+                    <Shield className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/40 absolute left-4 top-4" />
                   </div>
                 </div>
               </div>
 
               {/* Actions & Submit */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex justify-end">
+              <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end">
                 <button 
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-3.5 bg-violet-600 hover:bg-violet-500 disabled:bg-violet-500/70 text-white font-black rounded-2xl shadow-lg shadow-violet-650/15 hover:shadow-violet-650/25 transition-all text-xs flex items-center gap-2 cursor-pointer active:scale-95 hover:scale-[1.01]"
+                  className="px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white font-black rounded-2xl shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] transition-all text-xs flex items-center gap-2 cursor-pointer active:scale-95 hover:scale-[1.01]"
                 >
                   {isSaving ? (
                     <>

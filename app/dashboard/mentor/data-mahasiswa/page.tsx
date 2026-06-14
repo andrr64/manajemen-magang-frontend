@@ -120,7 +120,7 @@ export default function MentorDataMahasiswaPage() {
     email: "",
     university: "",
     phone: "",
-    gender: "Laki-laki" as "Laki-laki" | "Perempuan",
+    gender: "Laki-laki" as "Laki-laki" | "Perempuan" | "-",
     program: "",
     company: "",
     role: "",
@@ -509,7 +509,7 @@ export default function MentorDataMahasiswaPage() {
                 </label>
                 <select
                   value={editForm.gender}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, gender: e.target.value as "Laki-laki" | "Perempuan" }))}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, gender: e.target.value as "Laki-laki" | "Perempuan" | "-" }))}
                   className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] dark:text-white"
                 >
                   <option value="Laki-laki">Laki-laki</option>

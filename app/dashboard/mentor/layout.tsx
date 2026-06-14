@@ -54,7 +54,7 @@ export default function MentorLayout({
 
   return (
     <RoleGuard allowedRoles={["mentor"]}>
-      <div className="min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-800 dark:text-slate-100 flex relative overflow-hidden">
+      <div className="h-screen w-full bg-slate-50 dark:bg-[#030712] text-slate-800 dark:text-slate-100 flex relative overflow-hidden">
         
         {/* BACKGROUND DECORATIONS (GLOWING EFFECTS) */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -78,7 +78,7 @@ export default function MentorLayout({
         </aside>
 
         {/* MAIN CONTAINER */}
-        <div className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10">
+        <div className="flex-1 flex flex-col min-w-0 h-screen relative z-10 overflow-y-auto">
           
           {/* HEADER BAR */}
           <header className="sticky top-0 bg-white/80 dark:bg-[#030712]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 px-6 py-4 flex items-center justify-between z-30">
@@ -153,7 +153,7 @@ export default function MentorLayout({
           </header>
 
           {/* PAGE CONTENT */}
-          <main className="flex-1 p-6 space-y-6 overflow-y-auto">
+          <main className="flex-1 p-6 space-y-6">
             {children}
           </main>
         </div>

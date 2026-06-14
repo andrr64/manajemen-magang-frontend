@@ -99,7 +99,7 @@ export interface CreateStudentRequest {
   password?: string;
   nim: string;
   name: string;         // → dikirim ke backend sebagai "nama"
-  gender: "Laki-laki" | "Perempuan";
+  gender: "Laki-laki" | "Perempuan" | "-";
   university: string;   // → "universitas"
   // Opsional
   phone?: string;       // → "noHp"
@@ -122,7 +122,7 @@ export interface UpdateStudentRequest {
   nim?: string;
   name?: string;        // → "nama"
   phone?: string;       // → "noHp"
-  gender?: "Laki-laki" | "Perempuan";
+  gender?: "Laki-laki" | "Perempuan" | "-";
   university?: string;  // → "universitas"
   // UI-only fields
   program?: string;

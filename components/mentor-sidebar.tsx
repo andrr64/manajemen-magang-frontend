@@ -41,7 +41,7 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
   ];
 
   return (
-    <div className="w-full h-full flex flex-col bg-white dark:bg-[#121358]">
+    <div className="sticky top-0 h-screen w-full flex flex-col bg-white dark:bg-[#121358]">
       {/* Sidebar Brand Header */}
       <div className="p-6 border-b border-slate-200 dark:border-[#2F578A] flex items-center justify-between">
         <div className="flex items-center gap-2.5">

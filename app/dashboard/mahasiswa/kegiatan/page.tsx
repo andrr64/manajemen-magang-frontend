@@ -139,11 +139,11 @@ export default function StudentActivitiesPage() {
       {/* TOP HEADER & ACTION BANNER */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Kegiatan Harian Dan Lampiran Tugas</h3>
+          <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Kegiatan Harian Dan Lampiran Tugas</h3>
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-black shadow-md shadow-violet-650/10 hover:shadow-violet-650/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-2.5 rounded-xl bg-[#36ADA3] hover:bg-[#2eb1a6] text-white text-xs font-black shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Catat Kegiatan Baru
@@ -152,57 +152,57 @@ export default function StudentActivitiesPage() {
 
       {/* CONDITIONAL ADD ACTIVITY CARD */}
       {showAddForm && (
-        <div className="glass-card p-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070e24]/60 shadow-xl max-w-xl animate-fadeIn space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800/80">
-            <h4 className="font-extrabold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Form Catat Kegiatan Harian Baru</h4>
+        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 bg-white dark:bg-[#121358] shadow-xl max-w-xl animate-fadeIn space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
+            <h4 className="font-extrabold text-xs uppercase tracking-wider text-[#232F72] dark:text-[#F1F5F9]">Form Catat Kegiatan Harian Baru</h4>
             <button onClick={() => {
               setShowAddForm(false);
               setNewFile(null);
-            }} className="text-slate-400 hover:text-slate-650 dark:hover:text-white">
+            }} className="text-[#2F578A] dark:text-[#F1F5F9]/50 hover:text-[#36ADA3] dark:hover:text-[#36ADA3]">
               <X className="w-4.5 h-4.5" />
             </button>
           </div>
 
-          <form onSubmit={handleAddActivity} className="space-y-4 text-xs font-bold text-slate-600 dark:text-slate-400">
+          <form onSubmit={handleAddActivity} className="space-y-4 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]">
             <div className="space-y-2">
-              <label className="text-[10px] uppercase text-slate-400">Nama / Judul Kegiatan <span className="text-rose-500">*</span></label>
+              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Nama / Judul Kegiatan <span className="text-[#36ADA3]">*</span></label>
               <input
                 type="text"
                 required
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Contoh: Membuat API Endpoint Get data-mahasiswa..."
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl focus:outline-none focus:border-violet-500 dark:text-white"
+                className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase text-slate-400">Tanggal Kegiatan <span className="text-rose-500">*</span></label>
+                <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Tanggal Kegiatan <span className="text-[#36ADA3]">*</span></label>
                 <input
                   type="date"
                   required
                   value={newDate}
                   onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl focus:outline-none focus:border-violet-500 dark:text-white"
+                  className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] uppercase text-slate-400">Durasi / Waktu <span className="text-rose-500">*</span></label>
+                <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Durasi / Waktu <span className="text-[#36ADA3]">*</span></label>
                 <input
                   type="text"
                   required
                   value={newTime}
                   onChange={(e) => setNewTime(e.target.value)}
                   placeholder="Contoh: 08:00 - 17:00 WIB"
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl focus:outline-none focus:border-violet-500 dark:text-white"
+                  className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase text-slate-400">Lampiran / Berkas Pendukung (Opsional)</label>
+              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Lampiran / Berkas Pendukung (Opsional)</label>
               <div className="relative">
                 <input
                   type="file"
@@ -218,20 +218,20 @@ export default function StudentActivitiesPage() {
                 />
                 <label 
                   htmlFor="new-activity-file"
-                  className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl cursor-pointer hover:border-[#36ADA3] dark:hover:border-[#36ADA3] transition-colors"
                 >
-                  <div className="p-2 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-xl">
+                  <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl">
                     <Upload className="w-4 h-4" />
                   </div>
                   <div className="flex-1 truncate">
                     {newFile ? (
-                      <span className="text-slate-700 dark:text-slate-200 font-semibold">{newFile.name}</span>
+                      <span className="text-[#232F72] dark:text-[#F1F5F9] font-semibold">{newFile.name}</span>
                     ) : (
-                      <span className="text-slate-400 font-medium">Pilih berkas untuk diunggah...</span>
+                      <span className="text-[#2F578A] dark:text-[#F1F5F9]/50 font-medium">Pilih berkas untuk diunggah...</span>
                     )}
                   </div>
                   {newFile && (
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/50">
                       {(newFile.size / 1024 / 1024).toFixed(1)} MB
                     </span>
                   )}
@@ -243,7 +243,7 @@ export default function StudentActivitiesPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-md font-black flex items-center justify-center gap-2 ${isSubmitting ? "opacity-75 cursor-wait" : ""}`}
+                className={`px-5 py-2.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-xl shadow-[0_0_10px_rgba(54,173,163,0.3)] font-black flex items-center justify-center gap-2 ${isSubmitting ? "opacity-75 cursor-wait" : ""}`}
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Simpan Kegiatan
@@ -254,7 +254,7 @@ export default function StudentActivitiesPage() {
       )}
 
       {/* FILTER PANEL */}
-      <div className="glass-card p-4 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white dark:bg-[#070e24]/40 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-4 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
@@ -263,9 +263,9 @@ export default function StudentActivitiesPage() {
             placeholder="Cari kegiatan, tanggal..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-900 border border-transparent focus:border-violet-500 rounded-2xl text-xs font-semibold focus:outline-none transition-all dark:text-white shadow-inner"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-transparent focus:border-[#36ADA3] rounded-2xl text-xs font-semibold focus:outline-none transition-all dark:text-white shadow-inner"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
         </div>
 
         {/* Tab Filters */}
@@ -274,8 +274,8 @@ export default function StudentActivitiesPage() {
             onClick={() => setStatusFilter("Semua")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               statusFilter === "Semua"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900"
+                ? "bg-[#36ADA3] text-white shadow-sm"
+                : "bg-[#F8FAFC] dark:bg-[#232F72]/30 text-[#2F578A] dark:text-[#F1F5F9]/60 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/60"
             }`}
           >
             Semua ({activities.length})
@@ -285,8 +285,8 @@ export default function StudentActivitiesPage() {
             onClick={() => setStatusFilter("Sudah Diunggah")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               statusFilter === "Sudah Diunggah"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900"
+                ? "bg-[#36ADA3] text-white shadow-sm"
+                : "bg-[#F8FAFC] dark:bg-[#232F72]/30 text-[#2F578A] dark:text-[#F1F5F9]/60 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/60"
             }`}
           >
             Sudah Diunggah ({activities.filter(a => a.status === "Sudah Diunggah").length})
@@ -296,8 +296,8 @@ export default function StudentActivitiesPage() {
             onClick={() => setStatusFilter("Belum Unggah")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               statusFilter === "Belum Unggah"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "bg-slate-50 dark:bg-slate-900/50 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900"
+                ? "bg-[#36ADA3] text-white shadow-sm"
+                : "bg-[#F8FAFC] dark:bg-[#232F72]/30 text-[#2F578A] dark:text-[#F1F5F9]/60 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/60"
             }`}
           >
             Belum Diunggah ({activities.filter(a => a.status === "Belum Unggah").length})
@@ -307,11 +307,11 @@ export default function StudentActivitiesPage() {
       </div>
 
       {/* CORE DATA TABLE */}
-      <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#070e24]/40 overflow-hidden">
+      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358] overflow-hidden">
         <div className="overflow-x-auto w-full">
           <table className="w-full min-w-[800px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800/80 text-[10px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-widest text-left">
+              <tr className="border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[10px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/60 uppercase tracking-widest text-left">
                 <th className="pb-3.5 pl-4 font-bold w-16">NO</th>
                 <th className="pb-3.5 font-bold">Nama Kegiatan</th>
                 <th className="pb-3.5 font-bold">Waktu</th>
@@ -319,35 +319,35 @@ export default function StudentActivitiesPage() {
                 <th className="pb-3.5 pr-4 font-bold text-center w-28">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+            <tbody className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/30 text-xs">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+                      <Loader2 className="w-8 h-8 animate-spin text-[#36ADA3]" />
                       Memuat daftar kegiatan...
                     </div>
                   </td>
                 </tr>
               ) : filteredActivities.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-slate-400 font-extrabold">
+                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     Tidak ada jurnal kegiatan magang yang cocok dengan kriteria pencarian.
                   </td>
                 </tr>
               ) : (
                 filteredActivities.map((act, index) => (
-                  <tr key={act.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors group">
+                  <tr key={act.id} className="hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-colors group">
                   
                   {/* Column 1: Nomor */}
-                  <td className="py-4 pl-4 font-extrabold text-slate-400 dark:text-slate-550">
+                  <td className="py-4 pl-4 font-extrabold text-[#2F578A] dark:text-[#F1F5F9]/60">
                     {index + 1}
                   </td>
 
                   {/* Column 2: Nama Kegiatan */}
                   <td className="py-4 max-w-[320px]">
                     <div className="pr-4">
-                      <p className="font-extrabold text-slate-900 dark:text-white leading-normal">
+                      <p className="font-extrabold text-[#232F72] dark:text-white leading-normal">
                         {act.title}
                       </p>
                     </div>
@@ -356,11 +356,11 @@ export default function StudentActivitiesPage() {
                   {/* Column 3: Waktu */}
                   <td className="py-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-slate-750 dark:text-slate-350 font-bold">
-                        <Calendar className="w-3.5 h-3.5 text-violet-500" />
+                      <div className="flex items-center gap-1 text-[#232F72] dark:text-[#F1F5F9] font-bold">
+                        <Calendar className="w-3.5 h-3.5 text-[#36ADA3]" />
                         <span>{act.date}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                      <div className="flex items-center gap-1 text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60">
                         <Clock className="w-3 h-3" />
                         <span>{act.time}</span>
                       </div>
@@ -371,16 +371,16 @@ export default function StudentActivitiesPage() {
                   <td className="py-4 text-center">
                     {act.fileName ? (
                       /* File already uploaded block */
-                      <div className="inline-flex items-center gap-2.5 p-2 bg-emerald-50 dark:bg-[#062419] border border-emerald-250 dark:border-emerald-900/40 rounded-2xl max-w-xs text-left">
-                        <div className="p-2 bg-emerald-500 text-white rounded-xl">
+                      <div className="inline-flex items-center gap-2.5 p-2 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 rounded-2xl max-w-xs text-left">
+                        <div className="p-2 bg-[#36ADA3] text-white rounded-xl">
                           <FileText className="w-4 h-4" />
                         </div>
                         <div className="min-w-0 pr-1">
-                          <p className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 truncate max-w-[150px]">{act.fileName}</p>
-                          <span className="text-[9px] text-emerald-600 dark:text-emerald-500 block">{act.fileSize} • Terlampir</span>
+                          <p className="text-[11px] font-extrabold text-[#36ADA3] dark:text-[#36ADA3] truncate max-w-[150px]">{act.fileName}</p>
+                          <span className="text-[9px] text-[#36ADA3]/80 block">{act.fileSize} • Terlampir</span>
                         </div>
-                        <div className="p-1 bg-white/40 dark:bg-emerald-950 rounded-lg">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <div className="p-1 bg-white/40 dark:bg-[#36ADA3]/30 rounded-lg">
+                          <CheckCircle2 className="w-4 h-4 text-[#36ADA3]" />
                         </div>
                       </div>
                     ) : (
@@ -391,7 +391,7 @@ export default function StudentActivitiesPage() {
                           onChange={(e) => handleUploadFile(act.id, e)}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
-                        <button className="px-4 py-2.5 bg-slate-100 hover:bg-violet-650 hover:text-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase text-slate-600 dark:text-slate-300 flex items-center gap-1.5 transition-all">
+                        <button className="px-4 py-2.5 bg-[#F8FAFC] hover:bg-[#36ADA3] hover:border-[#36ADA3] hover:text-white dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl text-[10px] font-black uppercase text-[#2F578A] dark:text-[#F1F5F9]/80 flex items-center gap-1.5 transition-all">
                           <Upload className="w-3.5 h-3.5" />
                           Unggah File Tugas
                         </button>

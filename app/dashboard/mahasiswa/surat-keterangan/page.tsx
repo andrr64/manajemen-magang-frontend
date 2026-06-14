@@ -67,8 +67,8 @@ export default function StudentSuratKeteranganPage() {
 
       {/* HEADER PAGE */}
       <div>
-        <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Surat Keterangan Magang</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Unduh atau tinjau surat keterangan resmi penyelesaian praktikum kerja magang dari mitra industri.</p>
+        <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Surat Keterangan Magang</h3>
+        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau surat keterangan resmi penyelesaian praktikum kerja magang dari mitra industri.</p>
       </div>
 
       {/* MAIN TWO-COLUMN SPLIT */}
@@ -76,42 +76,42 @@ export default function StudentSuratKeteranganPage() {
         
         {/* LEFT COLUMN: LETTER MOCKUP & ACTIONS (7 Cols) */}
         <div className="lg:col-span-7 flex flex-col justify-between">
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 flex flex-col justify-between space-y-6 h-full relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] flex flex-col justify-between space-y-6 h-full relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#36ADA3]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#2F578A]/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Visual Letter Mockup Container */}
-            <div className="relative border-2 border-slate-200 dark:border-slate-850 bg-gradient-to-tr from-slate-50 to-white dark:from-[#080f28] dark:to-[#040817] p-8 rounded-2xl shadow-inner text-left select-none overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="relative border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 bg-gradient-to-tr from-[#F8FAFC] to-white dark:from-[#232F72] dark:to-[#121358] p-8 rounded-2xl shadow-inner text-left select-none overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#36ADA3]/5 rounded-full blur-xl pointer-events-none" />
               
-              <div className="space-y-6 text-xs text-slate-700 dark:text-slate-350">
+              <div className="space-y-6 text-xs text-[#232F72] dark:text-[#F1F5F9]/90">
                 {/* Letter Header / Kop Surat */}
-                <div className="pb-4 border-b-2 border-slate-300 dark:border-slate-800 flex items-center justify-between">
+                <div className="pb-4 border-b-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-indigo-650 text-white rounded-xl">
+                    <div className="p-2 bg-[#36ADA3] text-white rounded-xl shadow-md">
                       <Building className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 dark:text-white uppercase leading-none">{letterInfo.company}</h4>
-                      <span className="text-[7.5px] text-slate-400 block mt-0.5">Corporate HRD Department • Jakarta, Indonesia</span>
+                      <h4 className="font-black text-[#232F72] dark:text-white uppercase leading-none">{letterInfo.company}</h4>
+                      <span className="text-[7.5px] text-[#2F578A] dark:text-[#F1F5F9]/60 block mt-0.5">Corporate HRD Department • Jakarta, Indonesia</span>
                     </div>
                   </div>
-                  <span className="text-[8px] text-slate-400 font-extrabold uppercase tracking-widest">Digital Copy</span>
+                  <span className="text-[8px] text-[#36ADA3] font-extrabold uppercase tracking-widest">Digital Copy</span>
                 </div>
 
                 {/* Letter Title */}
                 <div className="text-center space-y-1 py-1">
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider underline">SURAT KETERANGAN MAGANG</h3>
-                  <p className="text-[9px] text-slate-400 leading-none">Nomor: {letterInfo.number}</p>
+                  <h3 className="text-sm font-black text-[#232F72] dark:text-white uppercase tracking-wider underline">SURAT KETERANGAN MAGANG</h3>
+                  <p className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 leading-none">Nomor: {letterInfo.number}</p>
                 </div>
 
                 {/* Letter Body */}
-                <div className="space-y-3 font-semibold leading-relaxed text-[11px] text-slate-600 dark:text-slate-400 text-justify">
+                <div className="space-y-3 font-semibold leading-relaxed text-[11px] text-[#2F578A] dark:text-[#F1F5F9]/80 text-justify">
                   <p>
                     Yang bertanda tangan di bawah ini menerangkan bahwa Mahasiswa berikut:
                   </p>
                   
-                  <div className="pl-4 space-y-1 text-slate-850 dark:text-slate-200 font-extrabold text-[10.5px]">
+                  <div className="pl-4 space-y-1 text-[#232F72] dark:text-white font-extrabold text-[10.5px]">
                     <div className="grid grid-cols-3">
                       <span>Nama Lengkap</span>
                       <span className="col-span-2">: {letterInfo.recipient}</span>
@@ -127,16 +127,16 @@ export default function StudentSuratKeteranganPage() {
                   </div>
 
                   <p>
-                    Telah melaksanakan kegiatan Praktek Kerja Lapangan (Magang) Industri pada divisi <strong className="text-slate-800 dark:text-slate-200">{letterInfo.role}</strong> terhitung sejak tanggal 1 Februari 2026 sampai dengan 31 Juli 2026. Selama magang yang bersangkutan menunjukkan kinerja yang memuaskan dan berdedikasi tinggi.
+                    Telah melaksanakan kegiatan Praktek Kerja Lapangan (Magang) Industri pada divisi <strong className="text-[#232F72] dark:text-white">{letterInfo.role}</strong> terhitung sejak tanggal 1 Februari 2026 sampai dengan 31 Juli 2026. Selama magang yang bersangkutan menunjukkan kinerja yang memuaskan dan berdedikasi tinggi.
                   </p>
                 </div>
 
                 {/* Signature Block */}
-                <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/40 flex justify-end text-[9.5px] font-bold">
+                <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end text-[9.5px] font-bold">
                   <div className="text-right">
-                    <span className="text-slate-400 block font-normal">Jakarta, {letterInfo.issueDate}</span>
-                    <span className="text-slate-400 block font-normal mt-0.5">Human Resources Director</span>
-                    <span className="text-slate-850 dark:text-slate-200 block mt-8 font-black italic">Ir. Bambang Wijaya</span>
+                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal">Jakarta, {letterInfo.issueDate}</span>
+                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal mt-0.5">Human Resources Director</span>
+                    <span className="text-[#232F72] dark:text-white block mt-8 font-black italic">Ir. Bambang Wijaya</span>
                   </div>
                 </div>
               </div>
@@ -148,9 +148,9 @@ export default function StudentSuratKeteranganPage() {
               {/* Action 1: Melihat / Review */}
               <button
                 onClick={() => setIsPreviewOpen(true)}
-                className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-850 text-slate-800 dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:scale-95 border border-slate-200/40 dark:border-slate-800/60"
+                className="px-5 py-3.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/60 text-[#232F72] dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:scale-95 border border-[#2F578A]/30 dark:border-[#2F578A]/50"
               >
-                <Eye className="w-4 h-4 text-violet-500" />
+                <Eye className="w-4 h-4 text-[#36ADA3]" />
                 Melihat / Review
               </button>
 
@@ -158,7 +158,7 @@ export default function StudentSuratKeteranganPage() {
               <button
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="px-5 py-3.5 bg-violet-600 hover:bg-violet-500 disabled:bg-violet-500/70 text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg shadow-violet-650/15 hover:shadow-violet-650/25 active:scale-95"
+                className="px-5 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95"
               >
                 {isDownloading ? (
                   <>
@@ -180,12 +180,12 @@ export default function StudentSuratKeteranganPage() {
 
         {/* RIGHT COLUMN: DOCUMENT DETAILS (5 Cols) */}
         <div className="lg:col-span-5">
-          <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#070e24]/40 space-y-6 h-full flex flex-col justify-between">
+          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6 h-full flex flex-col justify-between">
             
             <div className="space-y-4">
-              <div className="pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-violet-500" />
+              <div className="pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
+                <span className="text-xs font-black text-[#232F72] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#36ADA3]" />
                   Spesifikasi Surat Keterangan
                 </span>
               </div>
@@ -197,21 +197,19 @@ export default function StudentSuratKeteranganPage() {
                 ].map((item, index) => {
                   const Icon = item.icon;
                   return (
-                    <div key={index} className="p-3.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl flex items-center justify-between gap-4">
+                    <div key={index} className="p-3.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 bg-violet-50 dark:bg-violet-950/60 text-violet-500 rounded-xl">
+                        <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl border border-[#36ADA3]/20">
                           <Icon className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-550 font-black uppercase tracking-wider">{item.label}</span>
+                        <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-black uppercase tracking-wider">{item.label}</span>
                       </div>
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-100 text-right truncate max-w-[180px]">{item.value}</span>
+                      <span className="text-xs font-black text-[#232F72] dark:text-white text-right truncate max-w-[180px]">{item.value}</span>
                     </div>
                   );
                 })}
               </div>
             </div>
-
-
 
           </div>
         </div>
@@ -220,45 +218,45 @@ export default function StudentSuratKeteranganPage() {
 
       {/* FULLSCREEN REVIEW / PREVIEW MODAL */}
       {isPreviewOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 w-full max-w-4xl shadow-2xl relative animate-fadeIn scale-[1.01] flex flex-col justify-between max-h-[90vh]">
+        <div className="fixed inset-0 z-50 bg-[#121358]/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 w-full max-w-4xl shadow-2xl relative animate-fadeIn scale-[1.01] flex flex-col justify-between max-h-[90vh]">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
+            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-500 animate-spin" />
-                <h4 className="font-extrabold text-sm text-slate-900 dark:text-white uppercase tracking-wider">Pratinjau Surat Keterangan Magang</h4>
+                <Sparkles className="w-5 h-5 text-[#36ADA3] animate-spin" />
+                <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white uppercase tracking-wider">Pratinjau Surat Keterangan Magang</h4>
               </div>
               <button 
                 onClick={() => setIsPreviewOpen(false)}
-                className="p-1.5 hover:bg-rose-500 hover:text-white text-slate-400 dark:text-slate-550 rounded-xl transition-colors cursor-pointer"
+                className="p-1.5 hover:bg-rose-500 hover:text-white text-[#2F578A] dark:text-[#F1F5F9]/60 rounded-xl transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Simulated Live preview iframe area */}
-            <div className="my-6 border border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-100 dark:bg-slate-950 flex-1 overflow-y-auto min-h-[300px] flex flex-col items-center justify-center p-6 text-center relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/5 via-transparent to-cyan-500/5 pointer-events-none" />
+            <div className="my-6 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl bg-[#F8FAFC] dark:bg-[#232F72]/30 flex-1 overflow-y-auto min-h-[300px] flex flex-col items-center justify-center p-6 text-center relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#36ADA3]/5 via-transparent to-[#2F578A]/5 pointer-events-none" />
               
               <div className="max-w-md space-y-4">
-                <FileText className="w-16 h-16 text-indigo-650 mx-auto animate-bounce" />
-                <h3 className="text-base font-black text-slate-800 dark:text-white">REVIEW DOKUMEN DIGITAL</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+                <FileText className="w-16 h-16 text-[#36ADA3] mx-auto animate-bounce" />
+                <h3 className="text-base font-black text-[#232F72] dark:text-white">REVIEW DOKUMEN DIGITAL</h3>
+                <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 leading-relaxed font-semibold">
                   Tampilan di atas mensimulasikan file surat keterangan magang. Berkas Anda sah dan diterbitkan dengan kode unik GTN-0892.
                 </p>
                 
                 <div className="pt-2 flex justify-center gap-2">
                   <button 
                     onClick={handleDownload}
-                    className="px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer"
+                    className="px-4 py-2.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer shadow-[0_0_10px_rgba(54,173,163,0.3)]"
                   >
                     <Download className="w-3.5 h-3.5" />
                     Unduh Sekarang
                   </button>
                   <button 
                     onClick={() => setIsPreviewOpen(false)}
-                    className="px-4 py-2.5 bg-slate-250 hover:bg-slate-350 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer"
+                    className="px-4 py-2.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/50 dark:hover:bg-[#232F72] text-[#232F72] dark:text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer border border-[#2F578A]/30"
                   >
                     Tutup Review
                   </button>
@@ -267,7 +265,7 @@ export default function StudentSuratKeteranganPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-[10.5px] text-slate-400 dark:text-slate-550 font-bold flex-shrink-0 flex items-center gap-1">
+            <div className="pt-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[10.5px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-bold flex-shrink-0 flex items-center gap-1">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               <span>Verifikasi Keabsahan: Dokumen ini telah diverifikasi secara digital oleh Divisi HRD PT. Global Teknologi Nusantara.</span>
             </div>
