@@ -68,8 +68,8 @@ export interface SubmitAbsensiRequest {
   status: "hadir" | "izin" | "sakit";
   /** Keterangan/alasan (wajib untuk izin & sakit) */
   keterangan?: string;
-  /** File PDF atau gambar maks 10MB (untuk izin & sakit) */
-  file?: File | null;
+  /** Key media hasil upload modul media (untuk izin & sakit) */
+  attachmentUrl?: string | null;
 }
 
 /** Statistik absensi pribadi mahasiswa */

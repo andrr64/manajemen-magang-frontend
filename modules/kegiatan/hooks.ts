@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Activity, CreateActivityRequest, ActivityStat } from "./types";
 import { kegiatanAPI, MentorActivityLog } from "./api";
+import { mediaAPI } from "../media/api";
 
 export function useActivities() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -41,11 +42,11 @@ export function useActivities() {
     }
   };
 
-  const uploadAttachment = async (activityId: number | string, fileName: string, fileSize: string) => {
+  const uploadAttachment = async (activityId: number | string, fileKey: string, fileName: string, fileSize: string) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      const response = await kegiatanAPI.uploadStudentAttachment(activityId, fileName, fileSize);
+      const response = await kegiatanAPI.uploadStudentAttachment(activityId, fileKey, fileName, fileSize);
       setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? response.data : a));
       return response.data;
     } catch (err: any) {
@@ -143,7 +144,7 @@ export function useMentorActivities() {
   const fetchFileUrl = async (activityId: number | string) => {
     try {
       const response = await kegiatanAPI.getActivityFileUrl(activityId);
-      return response.data.url;
+      return mediaAPI.getFileUrl(response.data.url);
     } catch (err: any) {
       throw new Error(err.message || "Gagal mendapatkan tautan berkas.");
     }

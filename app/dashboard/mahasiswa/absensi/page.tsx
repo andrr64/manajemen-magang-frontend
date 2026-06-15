@@ -16,17 +16,23 @@ import {
   File as FileIcon
 } from "lucide-react";
 import { useSubmitAbsensi, useRiwayatAbsensi, useStatistikKehadiran } from "@/modules/absensi/hooks";
+import { useFileUpload } from "@/modules/media/hooks";
 
 export default function StudentAttendancePage() {
   const [status, setStatus] = useState<"hadir" | "izin" | "sakit">("hadir");
   const [notes, setNotes] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [attachmentKey, setAttachmentKey] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const { submit, isSubmitting } = useSubmitAbsensi();
   const { riwayat: attendanceHistory, isLoading: isLoadingRiwayat, refreshRiwayat } = useRiwayatAbsensi();
   const { stat, refreshStat } = useStatistikKehadiran();
+  const { upload, isUploading, error: uploadError } = useFileUpload({
+    maxSizeMB: 10,
+    allowedTypes: ["application/pdf", "image/jpeg", "image/png"],
+  });
 
   // File Upload Handlers
   const handleDrag = (e: React.DragEvent) => {
@@ -39,31 +45,44 @@ export default function StudentAttendancePage() {
     }
   };
 
+  const handleFile = async (file: File) => {
+    setUploadedFile(file);
+    setAttachmentKey(null);
+    try {
+      const result = await upload(file);
+      setAttachmentKey(result.key);
+    } catch (err: any) {
+      setUploadedFile(null);
+      alert(err.message || "Gagal mengunggah berkas.");
+    }
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setUploadedFile(e.dataTransfer.files[0]);
+      handleFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0]);
+      handleFile(e.target.files[0]);
     }
   };
 
   const removeFile = () => {
     setUploadedFile(null);
+    setAttachmentKey(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
-    if ((status === "izin" || status === "sakit") && !uploadedFile) {
+    if ((status === "izin" || status === "sakit") && !attachmentKey) {
       alert("Silakan unggah dokumen pendukung (Surat Dokter/Izin) terlebih dahulu.");
       return;
     }
@@ -72,7 +91,7 @@ export default function StudentAttendancePage() {
       await submit({
         status,
         keterangan: status === "hadir" ? undefined : notes,
-        file: uploadedFile,
+        attachmentUrl: attachmentKey,
       });
 
       // Refetch data on success
@@ -82,6 +101,7 @@ export default function StudentAttendancePage() {
       setShowToast(true);
       setNotes("");
       setUploadedFile(null);
+      setAttachmentKey(null);
       setTimeout(() => setShowToast(false), 4000);
     } catch (err: any) {
       alert(err.message || "Gagal mengirimkan laporan presensi.");
@@ -255,7 +275,10 @@ export default function StudentAttendancePage() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-black text-[#232F72] dark:text-white truncate">{uploadedFile.name}</p>
-                          <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50 block mt-0.5">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB • Berkas Terpilih</span>
+                          <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50 block mt-0.5">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB •{" "}
+                            {isUploading ? "Mengunggah..." : attachmentKey ? "Berhasil Diunggah" : "Berkas Terpilih"}
+                          </span>
                         </div>
                       </div>
                       <button
@@ -266,6 +289,9 @@ export default function StudentAttendancePage() {
                         <X className="w-4 h-4" />
                       </button>
                     </div>
+                  )}
+                  {uploadError && (
+                    <p className="text-[10px] text-rose-500 font-bold">{uploadError}</p>
                   )}
                 </div>
               )}
@@ -293,9 +319,9 @@ export default function StudentAttendancePage() {
 
               {/* SUBMIT BUTTON */}
               <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end">
-                <button 
+                <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="w-full sm:w-auto px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white font-black rounded-2xl shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] transition-all text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95 hover:scale-[1.01]"
                 >
                   {isSubmitting ? (

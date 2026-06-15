@@ -279,31 +279,28 @@ export const absensiAPI = {
   // =====================================================================
 
   // -------------------------------------------------------------------
-  // 7. Submit absensi harian mahasiswa  (POST multipart/form-data)
+  // 7. Submit absensi harian mahasiswa  (POST JSON)
   //    POST /api/absensi/mahasiswa/submit?userId=...
   // -------------------------------------------------------------------
   submitAbsensi: async (payload: SubmitAbsensiRequest) => {
     const userId = getCurrentUserId();
     if (!userId) throw new Error("Sesi tidak ditemukan. Silakan login ulang.");
 
-    // Kirim parameter request (userId, status, keterangan) via query param
+    // Kirim userId via query param
     const q = new URLSearchParams();
     q.append("userId", userId);
-    q.append("status", payload.status);
-    if (payload.keterangan) q.append("keterangan", payload.keterangan);
-
-    // File dikirim lewat multipart/form-data
-    const formData = new FormData();
-    if (payload.file) {
-      formData.append("file", payload.file);
-    }
 
     return executeHybridRequest<AbsensiResponse>(
       "Submit absensi harian mahasiswa",
       `/api/absensi/mahasiswa/submit?${q.toString()}`,
       {
         method: "POST",
-        body:   formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: payload.status,
+          keterangan: payload.keterangan,
+          attachmentUrl: payload.attachmentUrl ?? null,
+        }),
       },
       () => {
         // ---- MOCK FALLBACK ----
@@ -324,8 +321,7 @@ export const absensiAPI = {
           type:         typeMap[payload.status],
           checkIn:      payload.status === "hadir" ? `${now} WIB` : "-- : --",
           checkOut:     "Pending",
-          document:     payload.file ? payload.file.name : null,
-          documentSize: payload.file ? `${(payload.file.size / 1024).toFixed(0)} KB` : undefined,
+          document:     payload.attachmentUrl ?? null,
           notes:        payload.keterangan,
           status:       payload.status === "hadir" ? "Diverifikasi" : "Menunggu",
         };
@@ -464,7 +460,7 @@ export const absensiAPI = {
     return absensiAPI.submitAbsensi({
       status:     payload.status,
       keterangan: payload.notes,
-      file:       null,
+      attachmentUrl: null,
     });
   },
 

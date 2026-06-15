@@ -153,25 +153,9 @@ export function useSubmitAbsensi() {
 
   /**
    * Submit absensi harian.
-   * @param payload - { status, keterangan?, file? }
+   * @param payload - { status, keterangan?, attachmentUrl? }
    */
   const submit = async (payload: SubmitAbsensiRequest): Promise<AttendanceLog> => {
-    // Validasi file di sisi klien sebelum kirim ke backend
-    if (payload.file) {
-      const MAX_MB = 10;
-      const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
-      if (!allowedTypes.includes(payload.file.type)) {
-        const msg = "Tipe file tidak didukung. Gunakan PDF, JPEG, atau PNG.";
-        setError(msg);
-        throw new Error(msg);
-      }
-      if (payload.file.size > MAX_MB * 1024 * 1024) {
-        const msg = `Ukuran file melebihi ${MAX_MB}MB. Kompres file Anda terlebih dahulu.`;
-        setError(msg);
-        throw new Error(msg);
-      }
-    }
-
     setIsSubmitting(true);
     setError(null);
     try {

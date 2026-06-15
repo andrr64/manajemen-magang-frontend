@@ -139,7 +139,7 @@ export const kegiatanAPI = {
           judul: payload.title,
           deskripsi: "Aktivitas magang harian mahasiswa.",
           waktu: new Date().toISOString(),
-          fileUrl: payload.fileName || null
+          fileUrl: payload.fileKey || null
         })
       },
       () => {
@@ -170,7 +170,7 @@ export const kegiatanAPI = {
     });
   },
 
-  uploadStudentAttachment: async (activityId: number | string, fileName: string, fileSize: string) => {
+  uploadStudentAttachment: async (activityId: number | string, fileKey: string, fileName: string, fileSize: string) => {
     // Files mock/real updates on backend
     return executeHybridRequest<Activity>(
       `Upload attachment "${fileName}" to activity ID: ${activityId}`,
@@ -178,7 +178,7 @@ export const kegiatanAPI = {
       {
         method: "PUT",
         body: JSON.stringify({
-          fileUrl: `https://storage.internflow.com/logbook/${fileName}`
+          fileUrl: fileKey
         })
       },
       () => {
