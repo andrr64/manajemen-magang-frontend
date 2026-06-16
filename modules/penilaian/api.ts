@@ -1,64 +1,6 @@
-﻿import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianResponse, PenilaianStatResponse } from "./types";
-
-const INITIAL_ASSESSMENTS: AssessmentItem[] = [
-  { 
-    id: "absensi", 
-    name: "Kedisiplinan Absensi", 
-    desc: "Ketepatan waktu kehadiran harian, kepatuhan toleransi keterlambatan, dan pengumpulan izin formal.", 
-    score: 92, 
-    weight: 15, 
-    feedback: "Kehadiran sangat konsisten, selalu check-in tepat waktu sebelum jam 08:00.", 
-    attachment: "bukti_absen_rekap.pdf" 
-  },
-  { 
-    id: "kinerja", 
-    name: "Kinerja Proyek", 
-    desc: "Kualitas hasil pengerjaan proyek magang, efisiensi kerja teknis, dan pencapaian target mingguan.", 
-    score: 88, 
-    weight: 20, 
-    feedback: "Kualitas penulisan kode sangat bersih, dokumentasi teratur, dan tanggap menyelesaikan bug backend.", 
-    attachment: "bukti_tugas_laporan.pdf" 
-  },
-  { 
-    id: "tanggungjawab", 
-    name: "Bertanggung Jawab", 
-    desc: "Komitmen menyelesaikan tugas yang diberikan, kesiapan menanggung risiko teknis, dan inisiatif tinggi.", 
-    score: 88, 
-    weight: 15, 
-    feedback: "Menuntaskan tugas backend API sesuai target sprint dengan komitmen yang tinggi.", 
-    attachment: null 
-  },
-  { 
-    id: "sikap", 
-    name: "Etika & Sikap Kerja", 
-    desc: "Sopan santun dalam berkomunikasi, kepatuhan terhadap regulasi perusahaan, dan integritas profesional.", 
-    score: 95, 
-    weight: 10, 
-    feedback: "Sangat sopan, ramah, dan beradaptasi dengan budaya korporat dengan sangat baik.", 
-    attachment: null 
-  },
-  { 
-    id: "keaktifan", 
-    name: "Keaktifan & Komunikasi", 
-    desc: "Partisipasi aktif dalam sesi daily stand-up, inisiatif memberikan ide solusi, dan koordinasi tim.", 
-    score: 86, 
-    weight: 15, 
-    feedback: "Aktif berkomunikasi di Discord tim dan tanggap dalam memberikan update harian.", 
-    attachment: null 
-  },
-  { 
-    id: "laporan", 
-    name: "Laporan Akhir Magang", 
-    desc: "Sistematika penulisan laporan magang, kedalaman analisis bab per bab, dan orisinalitas isi laporan.", 
-    score: 84, 
-    weight: 25, 
-    feedback: "Penulisan bab 1-3 sudah sangat detail. Perlu sedikit penajaman analisis performa query di bab 4.", 
-    attachment: "laporan_akhir_draft_puncak.docx" 
-  }
-];
-
 const DEFAULT_STUDENT_ASSESSMENTS = [
   {
     periodeId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
@@ -240,16 +182,13 @@ export const penilaianAPI = {
       API_ROUTES.PENILAIAN_LIST,
       {
         method: "GET"
-      },
-      () => {
-        return mockDB.get<AssessmentItem[]>("assessments", INITIAL_ASSESSMENTS);
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const list = res.data as any[];
         return {
           ...res,
-          data: list.length > 0 ? mapBackendPenilaianToFrontend(list[0]) : INITIAL_ASSESSMENTS
+          data: list.length > 0 ? mapBackendPenilaianToFrontend(list[0]) : null as any
         };
       }
       return res;
@@ -262,30 +201,9 @@ export const penilaianAPI = {
       API_ROUTES.PENILAIAN_LIST,
       {
         method: "GET"
-      },
-      () => {
-        const list = mockDB.get<AssessmentItem[]>("assessments", INITIAL_ASSESSMENTS);
-        
-        let weightedSum = 0;
-        list.forEach(item => {
-          weightedSum += item.score * (item.weight / 100);
-        });
-
-        const overallScore = parseFloat((weightedSum).toFixed(1)) || 0;
-        let gradeLetter = "A (Sangat Memuaskan)";
-        let status: "Lulus" | "Tidak Lulus" | "Pending" = "Lulus";
-
-        if (overallScore < 85) gradeLetter = "B (Memuaskan)";
-        if (overallScore < 75) gradeLetter = "C (Cukup)";
-
-        return {
-          overallScore,
-          gradeLetter,
-          status
-        } as GradeSummary;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const list = res.data as unknown as any[];
         const overallScore = list.length > 0 ? list[0].nilaiTotal || 85.0 : 85.0;
         let gradeLetter = "A (Sangat Memuaskan)";
@@ -329,62 +247,6 @@ export const penilaianAPI = {
           kerjasama: getVal("kerjasama"),
           catatan: payload.grades[0]?.feedback || "Performa magang sangat memuaskan."
         })
-      },
-      () => {
-        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
-        const index = current.findIndex(item => String(item.mahasiswaId) === String(payload.studentId));
-        
-        const kinerja = getVal("kinerja");
-        const kedisiplinan = getVal("kedisiplinan");
-        const tanggungJawab = getVal("tanggungjawab");
-        const komunikasi = getVal("komunikasi");
-        const sikap = getVal("sikap");
-        const kerapihan = getVal("kerapihan");
-        const absensi = getVal("absensi");
-        const kerjasama = getVal("kerjasama");
-        const catatan = payload.grades[0]?.feedback || "Performa magang sangat memuaskan.";
-        const nilaiTotal = parseFloat(((kinerja * 0.2) + (kedisiplinan * 0.15) + (tanggungJawab * 0.15) + (komunikasi * 0.1) + (sikap * 0.1) + (kerapihan * 0.1) + (absensi * 0.1) + (kerjasama * 0.1)).toFixed(1));
-
-        if (index !== -1) {
-          current[index] = {
-            ...current[index],
-            penilaianId: current[index].penilaianId || `pen-${Date.now()}`,
-            nilaiTotal,
-            catatan,
-            kinerja,
-            kedisiplinan,
-            tanggungJawab,
-            komunikasi,
-            sikap,
-            kerapihan,
-            absensi,
-            kerjasama,
-            statusPenilaian: "Sudah Dinilai"
-          };
-        } else {
-          current.push({
-            periodeId: payload.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
-            mahasiswaId: String(payload.studentId),
-            nim: "2201012001",
-            namaMahasiswa: "Mahasiswa Baru",
-            penilaianId: `pen-${Date.now()}`,
-            mentorId: payload.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
-            namaMentor: "Mentor A",
-            nilaiTotal,
-            catatan,
-            kinerja,
-            kedisiplinan,
-            tanggungJawab,
-            komunikasi,
-            sikap,
-            kerapihan,
-            absensi,
-            kerjasama,
-            statusPenilaian: "Sudah Dinilai"
-          });
-        }
-        mockDB.set<any[]>("student_assessments", current);
-        return true;
       }
     ).then((res) => {
       return {
@@ -405,24 +267,6 @@ export const penilaianAPI = {
       url,
       {
         method: "GET"
-      },
-      () => {
-        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
-        return current.filter(item => {
-          const isGraded = item.penilaianId !== null;
-          const matchesStatus =
-            status === "Semua" ||
-            !status ||
-            (status === "Sudah Dinilai" && isGraded) ||
-            (status === "Belum Dinilai" && !isGraded);
-
-          const matchesName =
-            !namaMahasiswa ||
-            item.namaMahasiswa.toLowerCase().includes(namaMahasiswa.toLowerCase()) ||
-            item.nim.includes(namaMahasiswa);
-
-          return matchesStatus && matchesName;
-        });
       }
     ).then((res) => {
       if (res.data && Array.isArray(res.data)) {
@@ -452,23 +296,6 @@ export const penilaianAPI = {
       url,
       {
         method: "GET"
-      },
-      () => {
-        const current = mockDB.get<any[]>("student_assessments", DEFAULT_STUDENT_ASSESSMENTS);
-        const filtered = current.filter(item => {
-          if (!namaMahasiswa) return true;
-          return item.namaMahasiswa.toLowerCase().includes(namaMahasiswa.toLowerCase()) || item.nim.includes(namaMahasiswa);
-        });
-
-        const totalPenilaian = filtered.length;
-        const totalSudahDinilai = filtered.filter(item => item.penilaianId !== null || item.statusPenilaian === "Sudah Dinilai").length;
-        const totalBelumDinilai = totalPenilaian - totalSudahDinilai;
-
-        return {
-          totalPenilaian,
-          totalSudahDinilai,
-          totalBelumDinilai
-        };
       }
     );
   }

@@ -67,10 +67,6 @@ export function RoleGuard({
         case "mentor":
           router.push(WEB_ROUTES.MENTOR_DASHBOARD);
           break;
-        case "super-admin":
-        case "admin":
-          router.push(WEB_ROUTES.SUPER_ADMIN_DASHBOARD);
-          break;
         default:
           router.push(WEB_ROUTES.HOME);
       }

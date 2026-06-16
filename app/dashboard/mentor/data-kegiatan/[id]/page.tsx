@@ -24,7 +24,7 @@ import {
   Trash2
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
-import { ActivityLog } from "../page";
+import { ActivityLog } from "../client";
 import { useMentorActivities } from "../../../../../modules/data_kegiatan/hooks";
 import { useStudents } from "../../../../../modules/data_mahasiswa/hooks";
 

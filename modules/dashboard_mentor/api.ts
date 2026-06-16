@@ -13,22 +13,9 @@ export const dashboardMentorAPI = {
     return executeHybridRequest<DashboardStatResponse>(
       "Get dashboard stats for mentor",
       url,
-      { method: "GET" },
-      () => {
-        // Fallback Mock Data
-        return {
-          jumlahMahasiswaAktif: 4,
-          jumlahMahasiswaSelesai: 2,
-          rekapAbsensi: {
-            "Hadir": 120,
-            "Sakit": 5,
-            "Izin": 2,
-            "Alfa": 0
-          }
-        };
-      }
+      { method: "GET" }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: res.data as unknown as DashboardStatResponse
@@ -46,13 +33,9 @@ export const dashboardMentorAPI = {
     return executeHybridRequest<SearchStudentResponse[]>(
       `Search students with name: ${name || 'all'}`,
       url,
-      { method: "GET" },
-      () => {
-        // Fallback Mock Data
-        return [];
-      }
+      { method: "GET" }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: res.data as unknown as SearchStudentResponse[]
@@ -72,26 +55,9 @@ export const dashboardMentorAPI = {
       {
         method: "POST",
         body: JSON.stringify(payload)
-      },
-      () => {
-        // Fallback Mock Data
-        return {
-          id: String(Date.now()),
-          userId: `usr-${Date.now()}`,
-          email: payload.email,
-          nim: payload.nim,
-          nama: payload.nama,
-          noHp: payload.noHp || "-",
-          gender: payload.gender,
-          universitas: payload.universitas,
-          periodeId: `per-${Date.now()}`,
-          tanggalMulai: payload.tanggalMulai || "2026-02-01",
-          tanggalBerakhir: payload.tanggalBerakhir || "2026-07-31",
-          statusPeriode: "aktif"
-        } as SearchStudentResponse;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: res.data as unknown as SearchStudentResponse

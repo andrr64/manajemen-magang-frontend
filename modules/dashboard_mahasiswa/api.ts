@@ -12,17 +12,9 @@ export const dashboardMahasiswaAPI = {
       `${API_ROUTES.DASHBOARD_MAHASISWA_STATISTIK}?mahasiswaId=${mahasiswaId}`,
       {
         method: "GET"
-      },
-      () => {
-        // Fallback Mock Data jika tidak ada backend
-        return {
-          totalKehadiran: 24,
-          sisaWaktuMagangDays: 60,
-          sisaWaktuMagangFormatted: "2 Bulan Lagi"
-        };
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         // Asumsikan data dari backend sesuai secara langsung dengan struktur interface TypeScript.
         return {
           ...res,

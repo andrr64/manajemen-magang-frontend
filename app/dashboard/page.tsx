@@ -26,10 +26,6 @@ export default function DashboardRootDispatcher() {
       case "mentor":
         router.replace("/dashboard/mentor");
         break;
-      case "super-admin":
-      case "admin":
-        router.replace("/dashboard/super-admin");
-        break;
       default:
         // Fallback jika role tidak diketahui
         router.replace("/login");

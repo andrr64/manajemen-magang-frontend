@@ -58,6 +58,10 @@ export interface APIResponse<T> {
   message: string;
   data: T;
   errors?: any;
+  length?: number;
+  index?: number;
+  size?: number;
+  totalPages?: number;
 }
 
 // Simulated offline request execution
@@ -91,7 +95,7 @@ export async function executeHybridRequest<T>(
   actionName: string,
   apiPath: string,
   fetchOptions: RequestInit = {},
-  mockExecutor: () => T
+  mockExecutor?: () => T
 ): Promise<APIResponse<T>> {
   console.log(`[API Dispatch] ${actionName} -> target: ${BASE_URL}${apiPath}`);
   
@@ -133,6 +137,7 @@ export async function executeHybridRequest<T>(
     let data: T;
     let success = true;
     let message = "Success (Real Mode)";
+    let pagination = {};
     if (response.status === 204) {
       data = {} as T;
     } else {
@@ -141,6 +146,14 @@ export async function executeHybridRequest<T>(
         data = jsonRes.data;
         message = jsonRes.message || message;
         success = jsonRes.success;
+        if (jsonRes.length !== undefined) {
+          pagination = {
+            length: jsonRes.length,
+            index: jsonRes.index,
+            size: jsonRes.size,
+            totalPages: jsonRes.totalPages
+          };
+        }
       } else {
         data = jsonRes as T;
       }
@@ -150,13 +163,13 @@ export async function executeHybridRequest<T>(
     return {
       success,
       message,
-      data
+      data,
+      ...pagination
     };
   } catch (err: any) {
-    // If it is a network connectivity issue (server down or CORS/DNS fail)
     if (err instanceof TypeError || err.message === "Failed to fetch" || err.code === "ECONNREFUSED") {
-      console.warn(`[API Dispatch] Spring Boot backend is offline or unreachable at ${BASE_URL}. Falling back to stateful Mock DB.`);
-      return await simulateAPIRequest(actionName, mockExecutor);
+      console.warn(`[API Dispatch] Spring Boot backend is offline or unreachable at ${BASE_URL}.`);
+      throw new APIError("Koneksi ke server gagal. Pastikan server produksi aktif.", 503);
     }
     
     // Otherwise, propagate actual structured backend/API validation errors

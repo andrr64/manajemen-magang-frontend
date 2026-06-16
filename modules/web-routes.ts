@@ -32,9 +32,4 @@ export const WEB_ROUTES = {
   MENTOR_SURAT_KETERANGAN_DETAIL: (id: string | number) => `/dashboard/mentor/surat-keterangan/${id}`,
   MENTOR_KEGIATAN_DETAIL:        (id: string | number) => `/dashboard/mentor/data-kegiatan/${id}`,
 
-  // ─── Super Admin ──────────────────────────────────────────────────────────
-  SUPER_ADMIN_DASHBOARD:        "/dashboard/super-admin",
-  SUPER_ADMIN_KELOLA_MAHASISWA: "/dashboard/super-admin/kelola-mahasiswa",
-  SUPER_ADMIN_KELOLA_MENTOR:    "/dashboard/super-admin/kelola-mentor",
-  SUPER_ADMIN_PROFIL:           "/dashboard/super-admin/profil",
 } as const;

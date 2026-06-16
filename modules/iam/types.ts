@@ -37,4 +37,6 @@ export interface UpdateUserRequest {
   noHp?: string;
   gender?: "Laki-laki" | "Perempuan" | "-";
   universitas?: string;
+  oldPassword?: string;
+  newPassword?: string;
 }

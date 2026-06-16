@@ -18,14 +18,6 @@ export const mediaAPI = {
         method: "POST",
         body: formData,
         // executeHybridRequest will handle removing Content-Type application/json when body is FormData
-      },
-      () => {
-        // Mock fallback behavior
-        const fakeKey = `mock-${Date.now()}-${file.name}`;
-        return {
-          message: "File uploaded successfully (Mock)",
-          key: fakeKey
-        };
       }
     );
   },
@@ -36,13 +28,6 @@ export const mediaAPI = {
       API_ROUTES.MEDIA_FILE(key),
       {
         method: "DELETE",
-      },
-      () => {
-        // Mock fallback behavior
-        return {
-          message: "File deleted successfully (Mock)",
-          key
-        };
       }
     );
   },

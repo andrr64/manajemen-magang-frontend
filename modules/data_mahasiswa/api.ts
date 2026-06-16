@@ -1,119 +1,6 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse } from "./types";
-
-const INITIAL_STUDENTS: Student[] = [
-  {
-    id: 1,
-    name: "Budi Santoso",
-    nim: "2201012001",
-    email: "budi.santoso@student.ui.ac.id",
-    university: "Universitas Indonesia",
-    phone: "+62 812-9876-5432",
-    gender: "Laki-laki",
-    program: "S1 Teknik Informatika",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    status: "Aktif",
-    progress: 85,
-    lastActive: "Hari ini, 09:30",
-    avatarColor: "from-blue-500 to-indigo-500",
-    address: "Jl. Margonda Raya No. 100, Depok, Jawa Barat",
-    period: "1 Februari 2026 - 31 Juli 2026",
-    grade: 88,
-    logbooksCount: 8,
-    logbooksPending: 2,
-    attendance: { present: 76, sick: 2, leave: 1, absent: 0 }
-  },
-  {
-    id: 2,
-    name: "Siti Rahmawati",
-    nim: "2201012042",
-    email: "siti.rahma@student.itb.ac.id",
-    university: "Institut Teknologi Bandung",
-    phone: "+62 856-1234-5678",
-    gender: "Perempuan",
-    program: "S1 Sistem Informasi",
-    company: "Bank Central Indonesia Tbk.",
-    role: "Data Analyst Intern",
-    status: "Aktif",
-    progress: 60,
-    lastActive: "Kemarin, 14:15",
-    avatarColor: "from-pink-500 to-rose-500",
-    address: "Jl. Ganesha No. 10, Bandung, Jawa Barat",
-    period: "1 Februari 2026 - 31 Juli 2026",
-    grade: 82,
-    logbooksCount: 8,
-    logbooksPending: 4,
-    attendance: { present: 74, sick: 1, leave: 2, absent: 1 }
-  },
-  {
-    id: 3,
-    name: "Rian Hidayat",
-    nim: "2201012015",
-    email: "rian.h@student.ugm.ac.id",
-    university: "Universitas Gadjah Mada",
-    phone: "+62 878-5555-4433",
-    gender: "Laki-laki",
-    program: "S1 Teknik Informatika",
-    company: "Shopee Indonesia",
-    role: "Frontend Developer Intern",
-    status: "Aktif",
-    progress: 90,
-    lastActive: "23 Mei 2026",
-    avatarColor: "from-cyan-500 to-blue-500",
-    address: "Jl. Kaliurang KM 5, Sleman, DI Yogyakarta",
-    period: "1 Februari 2026 - 31 Juli 2026",
-    grade: 92,
-    logbooksCount: 8,
-    logbooksPending: 0,
-    attendance: { present: 79, sick: 0, leave: 0, absent: 0 }
-  },
-  {
-    id: 4,
-    name: "Amanda Putri",
-    nim: "2201012088",
-    email: "amanda.putri@binus.ac.id",
-    university: "Universitas Bina Nusantara",
-    phone: "+62 813-8888-9999",
-    gender: "Perempuan",
-    program: "S1 Desain Komunikasi Visual",
-    company: "Gojek Tokopedia (GoTo)",
-    role: "UI/UX Designer Intern",
-    status: "Aktif",
-    progress: 40,
-    lastActive: "20 Mei 2026",
-    avatarColor: "from-purple-500 to-indigo-500",
-    address: "Jl. Palmerah Barat No. 29, Jakarta Barat",
-    period: "1 Maret 2026 - 31 Agustus 2026",
-    grade: null,
-    logbooksCount: 6,
-    logbooksPending: 5,
-    attendance: { present: 54, sick: 3, leave: 1, absent: 0 }
-  },
-  {
-    id: 5,
-    name: "Dedi Kurniawan",
-    nim: "2201012102",
-    email: "dedi.k@student.undip.ac.id",
-    university: "Universitas Diponegoro",
-    phone: "+62 821-2233-4455",
-    gender: "Laki-laki",
-    program: "S1 Sistem Informasi",
-    company: "PT. Pertamina (Persero)",
-    role: "Business Analyst Intern",
-    status: "Selesai",
-    progress: 100,
-    lastActive: "Hari ini, 08:00",
-    avatarColor: "from-emerald-500 to-teal-500",
-    address: "Jl. Prof. Soedarto, Tembalang, Semarang, Jawa Tengah",
-    period: "1 Januari 2026 - 30 Juni 2026",
-    grade: 95,
-    logbooksCount: 12,
-    logbooksPending: 0,
-    attendance: { present: 118, sick: 1, leave: 1, absent: 0 }
-  }
-];
 
 function mapBackendStudentToFrontend(item: StudentResponse): Student {
   const formatDate = (start: string | null, end: string | null) => {
@@ -171,7 +58,7 @@ function mapBackendStudentToFrontend(item: StudentResponse): Student {
 }
 
 export const mahasiswaAPI = {
-  listStudents: async (filters?: any) => {
+  listStudents: async (filters?: any, index: number = 1, size: number = 10) => {
     const params = new URLSearchParams();
     if (filters?.gender && filters.gender !== "Semua") {
       params.append("gender", filters.gender);
@@ -185,6 +72,8 @@ export const mahasiswaAPI = {
         : (filters.status === "Selesai" ? "selesai" : filters.status);
       params.append("status", backendStatus);
     }
+    if (index) params.append("index", String(index));
+    if (size) params.append("size", String(size));
     const queryString = params.toString() ? `?${params.toString()}` : "";
 
     return executeHybridRequest<Student[]>(
@@ -192,18 +81,9 @@ export const mahasiswaAPI = {
       `${API_ROUTES.MAHASISWA_LIST}${queryString}`,
       {
         method: "GET"
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        return students.filter(s => {
-          const matchGender = !filters?.gender || filters.gender === "Semua" || s.gender === filters.gender;
-          const matchUniv = !filters?.universitas || filters.universitas === "Semua" || s.university === filters.universitas;
-          const matchStatus = !filters?.status || filters.status === "Semua" || s.status === filters.status;
-          return matchGender && matchUniv && matchStatus;
-        });
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const list = res.data as unknown as StudentResponse[];
         return {
           ...res,
@@ -229,25 +109,9 @@ export const mahasiswaAPI = {
       `${API_ROUTES.MAHASISWA_STATISTIK}${queryString}`,
       {
         method: "GET"
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        const filtered = students.filter(s => {
-          const matchGender = !filters?.gender || filters.gender === "Semua" || s.gender === filters.gender;
-          const matchUniv = !filters?.universitas || filters.universitas === "Semua" || s.university === filters.universitas;
-          return matchGender && matchUniv;
-        });
-        const totalAktif = filtered.filter(s => s.status === "Aktif").length;
-        const totalSelesai = filtered.filter(s => s.status === "Selesai").length;
-        const totalAktifTanpaPenilaian = filtered.filter(s => s.status === "Aktif" && s.grade === null).length;
-        return {
-          totalAktif,
-          totalSelesai,
-          totalAktifTanpaPenilaian
-        };
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const stats = res.data as unknown as StudentStatResponse;
         return {
           ...res,
@@ -268,17 +132,9 @@ export const mahasiswaAPI = {
       API_ROUTES.MAHASISWA_DETAIL(id),
       {
         method: "GET"
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        const student = students.find(s => String(s.id) === String(id));
-        if (!student) {
-          throw new Error("Data mahasiswa tidak ditemukan.");
-        }
-        return student;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
@@ -306,40 +162,9 @@ export const mahasiswaAPI = {
           tanggalBerakhir: payload.tanggalBerakhir || "2026-07-31",
           periodeStatus: payload.periodeStatus || "aktif"
         })
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        
-        const newStudent: Student = {
-          id: String(Date.now()),
-          name: payload.name,
-          nim: payload.nim,
-          email: payload.email,
-          university: payload.university,
-          phone: payload.phone || "-",
-          gender: payload.gender,
-          program: payload.program || "S1 Teknik Informatika",
-          company: payload.company || "PT. Global Teknologi Nusantara",
-          role: payload.role || "Intern",
-          status: payload.periodeStatus === "selesai" ? "Selesai" : "Aktif",
-          progress: 0,
-          lastActive: "Baru terdaftar",
-          avatarColor: "from-blue-500 to-indigo-500",
-          address: payload.address || "Jakarta, Indonesia",
-          period: payload.period || (payload.tanggalMulai && payload.tanggalBerakhir ? `${payload.tanggalMulai} - ${payload.tanggalBerakhir}` : "1 Februari 2026 - 31 Juli 2026"),
-          grade: null,
-          logbooksCount: 0,
-          logbooksPending: 0,
-          attendance: { present: 0, sick: 0, leave: 0, absent: 0 },
-          idUniversity: payload.idUniversity
-        };
-
-        students.unshift(newStudent);
-        mockDB.set<Student[]>("students", students);
-        return newStudent;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
@@ -370,30 +195,9 @@ export const mahasiswaAPI = {
           idUniversity: payload.idUniversity,
           periode: resolvedPeriode
         })
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        const index = students.findIndex(s => String(s.id) === String(id));
-
-        if (index === -1) {
-          throw new Error("Data mahasiswa tidak ditemukan.");
-        }
-
-        const updatedStudent: Student = {
-          ...students[index],
-          ...payload,
-          name: payload.nama || students[index].name,
-          phone: payload.noHp || students[index].phone,
-          gender: (payload.gender as "Laki-laki" | "Perempuan" | "-") || students[index].gender,
-          id: students[index].id
-        };
-
-        students[index] = updatedStudent;
-        mockDB.set<Student[]>("students", students);
-        return updatedStudent;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
@@ -409,12 +213,6 @@ export const mahasiswaAPI = {
       API_ROUTES.MAHASISWA_DETAIL(id),
       {
         method: "DELETE"
-      },
-      () => {
-        const students = mockDB.get<Student[]>("students", INITIAL_STUDENTS);
-        const updated = students.filter(s => String(s.id) !== String(id));
-        mockDB.set<Student[]>("students", updated);
-        return true;
       }
     );
   },
@@ -425,10 +223,6 @@ export const mahasiswaAPI = {
       API_ROUTES.MAHASISWA_SISA_WAKTU,
       {
         method: "GET"
-      },
-      () => {
-        // Fallback for mock DB
-        return 60;
       }
     );
   }

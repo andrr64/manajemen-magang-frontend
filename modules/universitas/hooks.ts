@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Universitas, UniversitasRequest } from "./types";
 import { universitasApi } from "./api";
 
-export function useUniversitas() {
+export function useUniversitas(pageIndex: number = 1, pageSize: number = 1000) {
   const [universitasList, setUniversitasList] = useState<Universitas[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -22,7 +22,7 @@ export function useUniversitas() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [pageIndex, pageSize]);
 
   useEffect(() => {
     fetchUniversitasList();

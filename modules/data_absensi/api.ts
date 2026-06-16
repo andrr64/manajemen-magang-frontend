@@ -1,4 +1,4 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import {
   AttendanceLog,
@@ -14,18 +14,6 @@ import {
 // =====================================================================
 // MOCK DATA
 // =====================================================================
-
-const INITIAL_ATTENDANCE: AttendanceLog[] = [
-  { id: 1, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "07:45 WIB", checkOut: "17:05 WIB", document: null,                        status: "Diverifikasi", studentId: 1, studentName: "Angelika Eve",    studentNim: "12220999" },
-  { id: 2, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "08:00 WIB", checkOut: "17:15 WIB", document: null,                        status: "Diverifikasi", studentId: 2, studentName: "Muhammad Rizky", studentNim: "12220456" },
-  { id: 3, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "07:30 WIB", checkOut: "16:45 WIB", document: null,                        status: "Diverifikasi", studentId: 3, studentName: "Siti Rahma",      studentNim: "12220789" },
-  { id: 4, date: "Kamis, 28 Mei 2026", type: "Izin",   checkIn: "-- : --",   checkOut: "-- : --",   document: "surat_izin_semnas.pdf",     documentSize: "1.2 MB", notes: "Sakit gigi, izin berobat.", status: "Menunggu", studentId: 4, studentName: "Budi Santoso",   studentNim: "12220123" },
-  { id: 5, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "07:55 WIB", checkOut: "17:00 WIB", document: null,                        status: "Diverifikasi", studentId: 5, studentName: "Dewi Lestari",   studentNim: "12220234" },
-  { id: 6, date: "Kamis, 28 Mei 2026", type: "Sakit",  checkIn: "-- : --",   checkOut: "-- : --",   document: "surat_dokter_klinik.pdf",   documentSize: "850 KB", notes: "Demam tinggi.", status: "Menunggu", studentId: 6, studentName: "Fajar Nugraha",  studentNim: "12220345" },
-  { id: 7, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "08:15 WIB", checkOut: "Pending",   document: null,                        status: "Diverifikasi", studentId: 7, studentName: "Larasati Putri", studentNim: "12220567" },
-  { id: 8, date: "Kamis, 28 Mei 2026", type: "Hadir",  checkIn: "07:50 WIB", checkOut: "17:02 WIB", document: null,                        status: "Diverifikasi", studentId: 8, studentName: "Hendra Wijaya",  studentNim: "12220678" },
-];
-
 // =====================================================================
 // MAPPERS — backend → frontend shape
 // =====================================================================
@@ -102,34 +90,7 @@ export const absensiAPI = {
     return executeHybridRequest<AbsensiResponse[]>(
       "Get attendance history list",
       `${API_ROUTES.ABSENSI_LIST}?${q.toString()}`,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        let filtered = history;
-        if (status && status !== "Semua")
-          filtered = filtered.filter(h => h.type.toLowerCase() === status.toLowerCase());
-        if (namaMahasiswa)
-          filtered = filtered.filter(h =>
-            h.studentName?.toLowerCase().includes(namaMahasiswa.toLowerCase())
-          );
-        
-        const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
-          Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
-        };
-        const revStatusMap: Record<AttendanceLog["status"], string> = {
-          Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
-        };
-        return filtered.map(h => ({
-          id: String(h.id),
-          periodeMagangId: "mock-periode-id",
-          mahasiswaId: String(h.studentId || "mock-student-id"),
-          nim: h.studentNim || "",
-          namaMahasiswa: h.studentName || "",
-          tanggal: new Date().toISOString().split("T")[0],
-          status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document
-        } satisfies AbsensiResponse));
-      }
+      { method: "GET" }
     ).then(res => {
       return {
         ...res,
@@ -148,13 +109,7 @@ export const absensiAPI = {
     return executeHybridRequest<AbsensiStatResponse>(
       "Calculate attendance statistics",
       `${API_ROUTES.ABSENSI_STATISTIK}?${q.toString()}`,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const totalHadir = history.filter(h => h.type === "Hadir").length;
-        const totalIzinSakit = history.filter(h => h.type === "Izin" || h.type === "Sakit").length;
-        return { totalHadir, totalIzinSakit } satisfies AbsensiStatResponse;
-      }
+      { method: "GET" }
     ).then(res => {
       const d = res.data;
       return {
@@ -179,32 +134,7 @@ export const absensiAPI = {
     return executeHybridRequest<AbsensiResponse>(
       `Verify attendance ID: ${id} → ${status}`,
       `${API_ROUTES.ABSENSI_VERIFY(id)}?action=${action}`,
-      { method: "POST" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const idx = history.findIndex(h => h.id === id);
-        if (idx === -1) throw new Error("Log absensi tidak ditemukan.");
-        history[idx].status = status;
-        mockDB.set("attendance_history", history);
-        
-        const h = history[idx];
-        const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
-          Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
-        };
-        const revStatusMap: Record<AttendanceLog["status"], string> = {
-          Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
-        };
-        return {
-          id: String(h.id),
-          periodeMagangId: "mock-periode-id",
-          mahasiswaId: String(h.studentId || "mock-student-id"),
-          nim: h.studentNim || "",
-          namaMahasiswa: h.studentName || "",
-          tanggal: new Date().toISOString().split("T")[0],
-          status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document
-        } satisfies AbsensiResponse;
-      }
+      { method: "POST" }
     ).then(res => {
       return {
         ...res,
@@ -220,13 +150,7 @@ export const absensiAPI = {
     return executeHybridRequest<void>(
       `Delete attendance ID: ${id}`,
       API_ROUTES.ABSENSI_DELETE(id),
-      { method: "DELETE" },
-      () => {
-        const filtered = mockDB
-          .get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE)
-          .filter(h => h.id !== id);
-        mockDB.set("attendance_history", filtered);
-      }
+      { method: "DELETE" }
     );
   },
 
@@ -241,19 +165,7 @@ export const absensiAPI = {
     return executeHybridRequest<string>(
       "Export attendance records",
       `${API_ROUTES.ABSENSI_EKSPOR}?${q.toString()}`,
-      { method: "GET" },
-      () => {
-        let list = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        if (status && status !== "Semua")
-          list = list.filter(h => h.type.toLowerCase() === status.toLowerCase());
-        const header = "No;Tanggal;NIM;Nama Mahasiswa;Jam Masuk;Jam Keluar;Status Presensi;Status Verifikasi;URL Lampiran\n";
-        const rows = list
-          .map((h, i) =>
-            `${i + 1};${h.date};${h.studentNim ?? "-"};${h.studentName ?? "-"};${h.checkIn};${h.checkOut};${h.type.toUpperCase()};${h.status.toUpperCase()};${h.document ?? "-"}`
-          )
-          .join("\n");
-        return header + rows;
-      }
+      { method: "GET" }
     );
   },
 
@@ -264,14 +176,7 @@ export const absensiAPI = {
     return executeHybridRequest<{ url: string }>(
       `Get surat keterangan ID: ${id}`,
       API_ROUTES.ABSENSI_SURAT_KET(id),
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const record = history.find(h => h.id === id);
-        if (!record || !record.document)
-          throw new Error("Tidak ada lampiran untuk absensi ini.");
-        return { url: record.document };
-      }
+      { method: "GET" }
     );
   },
 
@@ -302,44 +207,6 @@ export const absensiAPI = {
           keterangan: payload.keterangan,
           attachmentUrl: payload.attachmentUrl ?? null,
         }),
-      },
-      () => {
-        // ---- MOCK FALLBACK ----
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const todayStr = new Date().toLocaleDateString("id-ID", {
-          weekday: "long", day: "numeric", month: "long", year: "numeric",
-        });
-
-        if (history.some(h => h.date === todayStr))
-          throw new Error("Anda sudah mengirimkan absensi hari ini!");
-
-        const typeMap = { hadir: "Hadir", izin: "Izin", sakit: "Sakit" } as const;
-        const now = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-
-        const newRecord: AttendanceLog = {
-          id:           Date.now(),
-          date:         todayStr,
-          type:         typeMap[payload.status],
-          checkIn:      payload.status === "hadir" ? `${now} WIB` : "-- : --",
-          checkOut:     "Pending",
-          document:     payload.attachmentUrl ?? null,
-          notes:        payload.keterangan,
-          status:       payload.status === "hadir" ? "Diverifikasi" : "Menunggu",
-        };
-
-        history.unshift(newRecord);
-        mockDB.set("attendance_history", history);
-
-        return {
-          id: String(newRecord.id),
-          periodeMagangId: "mock-periode-id",
-          mahasiswaId: userId,
-          nim: "12229999",
-          namaMahasiswa: "Mahasiswa Mock",
-          tanggal: new Date().toISOString().split("T")[0],
-          status: payload.status,
-          attachmentUrl: newRecord.document
-        } satisfies AbsensiResponse;
       }
     ).then(res => {
       return {
@@ -360,26 +227,7 @@ export const absensiAPI = {
     return executeHybridRequest<AbsensiResponse[]>(
       "Get riwayat absensi mahasiswa",
       `${API_ROUTES.ABSENSI_RIWAYAT}?userId=${userId}`,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
-          Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
-        };
-        const revStatusMap: Record<AttendanceLog["status"], string> = {
-          Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
-        };
-        return history.map(h => ({
-          id: String(h.id),
-          periodeMagangId: "mock-periode-id",
-          mahasiswaId: userId,
-          nim: h.studentNim || "",
-          namaMahasiswa: h.studentName || "",
-          tanggal: new Date().toISOString().split("T")[0],
-          status: revTypeMap[h.type] || "hadir",
-          attachmentUrl: h.document
-        } satisfies AbsensiResponse));
-      }
+      { method: "GET" }
     ).then(res => {
       return {
         ...res,
@@ -399,16 +247,7 @@ export const absensiAPI = {
     return executeHybridRequest<AbsensiMahasiswaStatResponse>(
       "Get statistik absensi mahasiswa",
       `${API_ROUTES.ABSENSI_MAHASISWA_STATISTIK}?userId=${userId}`,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        return {
-          totalHadir: history.filter(h => h.type === "Hadir").length,
-          totalIzin:  history.filter(h => h.type === "Izin").length,
-          totalSakit: history.filter(h => h.type === "Sakit").length,
-          totalAlfa:  history.filter(h => h.type === "Alpha").length,
-        } satisfies AbsensiMahasiswaStatResponse;
-      }
+      { method: "GET" }
     ).then(res => {
       return {
         ...res,
@@ -427,11 +266,7 @@ export const absensiAPI = {
     return executeHybridRequest<number>(
       "Get total kehadiran",
       API_ROUTES.ABSENSI_TOTAL_KEHADIRAN,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        return history.filter(h => h.type === "Hadir" && h.studentId === Number(userId)).length;
-      }
+      { method: "GET" }
     );
   },
 
@@ -442,15 +277,7 @@ export const absensiAPI = {
     return executeHybridRequest<{ totalHadir: number; totalIzin: number; totalSakit: number }>(
       "Get statistik kehadiran harian",
       API_ROUTES.ABSENSI_STATISTIK_KEHADIRAN,
-      { method: "GET" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        return {
-          totalHadir: history.filter(h => h.type === "Hadir").length,
-          totalIzin:  history.filter(h => h.type === "Izin").length,
-          totalSakit: history.filter(h => h.type === "Sakit").length,
-        };
-      }
+      { method: "GET" }
     );
   },
 
@@ -472,20 +299,7 @@ export const absensiAPI = {
     return executeHybridRequest<AttendanceLog>(
       "Check-out for today",
       API_ROUTES.ABSENSI_CHECKOUT,
-      { method: "POST" },
-      () => {
-        const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
-        const todayStr = new Date().toLocaleDateString("id-ID", {
-          weekday: "long", day: "numeric", month: "long", year: "numeric",
-        });
-        const idx = history.findIndex(h => h.date === todayStr);
-        if (idx === -1) throw new Error("Anda belum check-in hari ini!");
-        if (history[idx].type !== "Hadir") throw new Error("Check-out hanya untuk status Hadir.");
-        if (history[idx].checkOut !== "Pending") throw new Error("Anda sudah check-out hari ini.");
-        history[idx].checkOut = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB";
-        mockDB.set("attendance_history", history);
-        return history[idx];
-      }
+      { method: "POST" }
     );
   },
 };

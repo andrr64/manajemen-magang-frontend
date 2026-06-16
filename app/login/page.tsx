@@ -1,15 +1,28 @@
 "use client";
-import { WEB_ROUTES } from "@/modules/web-routes";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Shield, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { useIam } from "@/modules/iam/hooks";
+import { WEB_ROUTES } from "@/modules/web-routes";
+
+function getRoleDashboard(role: string): string {
+  if (role === "mentor") return WEB_ROUTES.MENTOR_DASHBOARD;
+  if (role === "mahasiswa") return WEB_ROUTES.MAHASISWA_DASHBOARD;
+  return WEB_ROUTES.DASHBOARD;
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useIam();
+  const { login, isAuthenticated, isLoading: authLoading, user } = useIam();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user) {
+      router.replace(getRoleDashboard(user.role));
+    }
+  }, [authLoading, isAuthenticated, user, router]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,12 +43,22 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      router.push(WEB_ROUTES.DASHBOARD);
+      const stored = (await import("@/modules/iam/store")).useIamStore.getState();
+      router.push(getRoleDashboard(stored.user?.role ?? ""));
     } catch (err: any) {
       setErrorMsg(err.message || "Akses ditolak. Kredensial tidak valid.");
       setIsSubmitting(false);
     }
   };
+
+  // Show nothing while checking existing session to avoid login form flash
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#050505]">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center items-center bg-[#050505] text-slate-50 font-sans relative px-4 overflow-hidden selection:bg-cyan-500/30">

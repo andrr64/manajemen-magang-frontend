@@ -3,8 +3,9 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Student, CreateStudentRequest, UpdateStudentRequest, StudentStat, StudentFilterParams } from "./types";
 import { mahasiswaAPI } from "./api";
 
-export function useStudents(filters?: StudentFilterParams & { searchQuery?: string }) {
+export function useStudents(filters?: StudentFilterParams & { searchQuery?: string }, pageIndex: number = 1, pageSize: number = 1000) {
   const [students, setStudents] = useState<Student[]>([]);
+  const [pagination, setPagination] = useState({ index: 1, size: 10, length: 0, totalPages: 1 });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,15 +25,16 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
     setIsLoading(true);
     setError(null);
     try {
-      const response = await mahasiswaAPI.listStudents(backendFilters);
+      const response = await mahasiswaAPI.listStudents(backendFilters, pageIndex, pageSize);
       setStudents(response.data);
+      setPagination({ index: response.index || pageIndex, size: response.size || pageSize, length: response.length || 0, totalPages: response.totalPages || 1 });
     } catch (err: any) {
       notifier.error(err.message || "Gagal memuat daftar mahasiswa.");
       setError(err.message || "Gagal memuat daftar mahasiswa.");
     } finally {
       setIsLoading(false);
     }
-  }, [filterKey]);
+  }, [filterKey, pageIndex, pageSize]);
 
   useEffect(() => {
     fetchStudents();

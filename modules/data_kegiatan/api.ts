@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { Activity, CreateActivityRequest, ActivityStat, ActivityResponse, ActivityStatResponse } from "./types";
 
@@ -13,25 +13,6 @@ export interface MentorActivityLog {
   status: "Disetujui" | "Dalam Review";
   attachment: string | null;
 }
-
-const INITIAL_STUDENT_ACTIVITIES: Activity[] = [
-  { id: 1, title: "Slicing Figma UI Dashboard Mahasiswa & Mentor", date: "29 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "dashboard_slicing_v1.zip", fileSize: "12.4 MB", status: "Sudah Diunggah" },
-  { id: 2, title: "Integrasi API Absensi Harian dengan Geofence", date: "28 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "api_integration_docs.pdf", fileSize: "2.1 MB", status: "Sudah Diunggah" },
-  { id: 3, title: "Unit Testing & Security Audit Modul Auth", date: "27 Mei 2026", time: "08:00 - 17:00 WIB", fileName: null, fileSize: null, status: "Belum Unggah" },
-  { id: 4, title: "Refactoring Database Schema & Indexing", date: "26 Mei 2026", time: "08:00 - 17:00 WIB", fileName: "db_refactor_script.sql", fileSize: "450 KB", status: "Sudah Diunggah" },
-  { id: 5, title: "Penyusunan Dokumentasi Laporan Bab 3 Magang", date: "25 Mei 2026", time: "08:00 - 16:30 WIB", fileName: null, fileSize: null, status: "Belum Unggah" }
-];
-
-const INITIAL_MENTOR_ACTIVITIES: MentorActivityLog[] = [
-  { id: 1, studentId: 1, activityName: "Implementasi Payment Gateway API Midtrans", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "28", status: "Dalam Review", attachment: "midtrans_integration_doc.pdf" },
-  { id: 2, studentId: 2, activityName: "Visualisasi Data Transaksi Menggunakan Chart.js", category: "Data Analytics", year: "2026", month: "Mei (05)", day: "28", status: "Disetujui", attachment: "chart_analytics_draft.png" },
-  { id: 3, studentId: 3, activityName: "Slicing Landing Page & Setup Tailwind Config", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "27", status: "Disetujui", attachment: "tailwind_slicing_v2.zip" },
-  { id: 4, studentId: 4, activityName: "Riset User Journey & Figma Wireframing Dashboard", category: "UI/UX Design", year: "2026", month: "Mei (05)", day: "26", status: "Dalam Review", attachment: null },
-  { id: 5, studentId: 5, activityName: "Penyusunan Laporan Proyek Akhir Magang Bab 1-3", category: "Administration", year: "2026", month: "Mei (05)", day: "26", status: "Disetujui", attachment: "laporan_akhir_draft1.docx" },
-  { id: 6, studentId: 6, activityName: "Wiring Diagram Listrik Gardu Induk & ETAP", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "25", status: "Dalam Review", attachment: "diagram_wiring_gardu.pdf" },
-  { id: 7, studentId: 7, activityName: "Refactoring Relasional Database Query Optimization", category: "Data Analytics", year: "2026", month: "Mei (05)", day: "25", status: "Dalam Review", attachment: null },
-  { id: 8, studentId: 8, activityName: "Konfigurasi Terraform Script untuk AWS VPC", category: "Software Engineering", year: "2026", month: "Mei (05)", day: "24", status: "Disetujui", attachment: "aws_vpc_terraform.tf" }
-];
 
 function mapBackendActivityToFrontend(item: ActivityResponse): Activity {
   const formatDate = (dateStr: string) => {
@@ -114,12 +95,9 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_LIST,
       {
         method: "GET"
-      },
-      () => {
-        return mockDB.get<Activity[]>("student_activities", INITIAL_STUDENT_ACTIVITIES);
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const list = res.data as unknown as ActivityResponse[];
         return {
           ...res,
@@ -142,26 +120,9 @@ export const kegiatanAPI = {
           waktu: new Date().toISOString(),
           fileUrl: payload.fileKey || null
         })
-      },
-      () => {
-        const activities = mockDB.get<Activity[]>("student_activities", INITIAL_STUDENT_ACTIVITIES);
-        
-        const newAct: Activity = {
-          id: Date.now(),
-          title: payload.title,
-          date: payload.date,
-          time: payload.time,
-          fileName: payload.fileName || null,
-          fileSize: payload.fileSize || null,
-          status: payload.fileName ? "Sudah Diunggah" : "Belum Unggah"
-        };
-
-        activities.unshift(newAct);
-        mockDB.set<Activity[]>("student_activities", activities);
-        return newAct;
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
@@ -181,24 +142,9 @@ export const kegiatanAPI = {
         body: JSON.stringify({
           fileUrl: fileKey
         })
-      },
-      () => {
-        const activities = mockDB.get<Activity[]>("student_activities", INITIAL_STUDENT_ACTIVITIES);
-        const index = activities.findIndex(a => String(a.id) === String(activityId));
-
-        if (index === -1) {
-          throw new Error("Kegiatan tidak ditemukan.");
-        }
-
-        activities[index].fileName = fileName;
-        activities[index].fileSize = fileSize;
-        activities[index].status = "Sudah Diunggah";
-
-        mockDB.set<Activity[]>("student_activities", activities);
-        return activities[index];
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
@@ -214,12 +160,6 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_DETAIL(activityId),
       {
         method: "DELETE"
-      },
-      () => {
-        const activities = mockDB.get<Activity[]>("student_activities", INITIAL_STUDENT_ACTIVITIES);
-        const updated = activities.filter(a => String(a.id) !== String(activityId));
-        mockDB.set<Activity[]>("student_activities", updated);
-        return true;
       }
     );
   },
@@ -232,12 +172,9 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_LIST,
       {
         method: "GET"
-      },
-      () => {
-        return mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const list = res.data as unknown as ActivityResponse[];
         return {
           ...res,
@@ -255,21 +192,9 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_STATUS(activityId, statusParam),
       {
         method: "PUT"
-      },
-      () => {
-        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
-        const index = activities.findIndex(a => String(a.id) === String(activityId));
-
-        if (index === -1) {
-          throw new Error("Laporan kegiatan tidak ditemukan.");
-        }
-
-        activities[index].status = status;
-        mockDB.set<MentorActivityLog[]>("mentor_activities", activities);
-        return activities[index];
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         return {
           ...res,
           data: mapBackendActivityToMentorLog(res.data as unknown as ActivityResponse)
@@ -285,12 +210,6 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_DETAIL(activityId),
       {
         method: "DELETE"
-      },
-      () => {
-        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
-        const updated = activities.filter(a => String(a.id) !== String(activityId));
-        mockDB.set<MentorActivityLog[]>("mentor_activities", updated);
-        return true;
       }
     );
   },
@@ -301,14 +220,6 @@ export const kegiatanAPI = {
       API_ROUTES.KEGIATAN_FILE(activityId),
       {
         method: "GET"
-      },
-      () => {
-        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
-        const act = activities.find(a => String(a.id) === String(activityId));
-        if (!act || !act.attachment) {
-          throw new Error("Berkas lampiran tidak ditemukan.");
-        }
-        return { url: `https://storage.internflow.com/logbook/${act.attachment}` };
       }
     );
   },
@@ -323,27 +234,9 @@ export const kegiatanAPI = {
       `${API_ROUTES.KEGIATAN_STATISTIK}?${q.toString()}`,
       {
         method: "GET"
-      },
-      () => {
-        const activities = mockDB.get<MentorActivityLog[]>("mentor_activities", INITIAL_MENTOR_ACTIVITIES);
-        const filtered = activities.filter(a => {
-          const matchStatus = !status || status === "Semua" || a.status === status;
-          const matchName = !namaMahasiswa || a.activityName.toLowerCase().includes(namaMahasiswa.toLowerCase());
-          return matchStatus && matchName;
-        });
-
-        const totalKegiatan = filtered.length;
-        const disetujui = filtered.filter(a => a.status === "Disetujui").length;
-        const ditolak = filtered.filter(a => (a.status as any) === "Ditolak").length;
-
-        return {
-          totalKegiatan,
-          disetujui,
-          ditolak
-        };
       }
     ).then((res) => {
-      if (res.message.includes("Real")) {
+      if (true) {
         const backend = res.data as unknown as ActivityStatResponse;
         return {
           ...res,

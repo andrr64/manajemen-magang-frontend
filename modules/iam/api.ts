@@ -1,4 +1,4 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { RegisterRequest, LoginRequest, LoginResponse, UserResponse, UpdateUserRequest } from "./types";
 
@@ -23,14 +23,6 @@ export const iamAPI = {
       {
         method: "POST",
         body: JSON.stringify(payload)
-      },
-      () => {
-        // Mock fallback behavior
-        const mockToken = "mock-access-token-for-testing";
-        mockDB.set<string>("token", mockToken);
-        return {
-          accessToken: mockToken
-        };
       }
     );
   },
@@ -42,23 +34,6 @@ export const iamAPI = {
       {
         method: "POST",
         body: JSON.stringify(payload)
-      },
-      () => {
-        // Mock fallback behavior
-        const newUser: UserResponse = {
-          id: `user-${Date.now()}`,
-          email: payload.email,
-          role: payload.role,
-          nim: payload.nim || null,
-          nama: payload.nama,
-          noHp: payload.noHp || null,
-          gender: payload.gender || null,
-          universitas: payload.universitas || null
-        };
-        const users = mockDB.get<UserResponse[]>("users", MOCK_USERS);
-        users.push(newUser);
-        mockDB.set("users", users);
-        return newUser;
       }
     );
   },
@@ -69,11 +44,6 @@ export const iamAPI = {
       API_ROUTES.IAM_ME,
       { 
         method: "GET" 
-      },
-      () => {
-        // Mock fallback behavior
-        const users = mockDB.get<UserResponse[]>("users", MOCK_USERS);
-        return users[0]; // mock return the first user
       }
     );
   },
@@ -85,12 +55,6 @@ export const iamAPI = {
       {
         method: "PUT",
         body: JSON.stringify(payload)
-      },
-      () => {
-        // Mock fallback behavior
-        const users = mockDB.get<UserResponse[]>("users", MOCK_USERS);
-        const updatedUser = { ...users[0], ...payload };
-        return updatedUser as UserResponse;
       }
     );
   },
@@ -99,11 +63,7 @@ export const iamAPI = {
     return executeHybridRequest(
       "Logout",
       API_ROUTES.IAM_LOGOUT,
-      { method: "POST" },
-      () => {
-        mockDB.set("token", null);
-        return { data: true, status: 200, message: "Logged out" };
-      }
+      { method: "POST" }
     );
   }
 };
