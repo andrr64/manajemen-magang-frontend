@@ -46,6 +46,7 @@ export interface CreateActivityRequest {
   title: string;
   date: string;
   time: string;
+  fileKey?: string | null;
   fileName?: string | null;
   fileSize?: string | null;
 }

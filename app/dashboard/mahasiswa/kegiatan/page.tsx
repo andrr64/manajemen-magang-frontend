@@ -18,6 +18,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useActivities } from "@/modules/kegiatan/hooks";
+import { useFileUpload } from "@/modules/media/hooks";
 
 export default function StudentActivitiesPage() {
   const {
@@ -44,6 +45,8 @@ export default function StudentActivitiesPage() {
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
+  const { upload } = useFileUpload();
+
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setShowToast(true);
@@ -61,11 +64,12 @@ export default function StudentActivitiesPage() {
         date: newDate,
         time: newTime
       });
-      
+
       if (newFile && newActivity && newActivity.id) {
         try {
           const sizeMB = (newFile.size / 1024 / 1024).toFixed(1);
-          await uploadAttachment(newActivity.id, newFile.name, `${sizeMB} MB`);
+          const { key } = await upload(newFile);
+          await uploadAttachment(newActivity.id, key, newFile.name, `${sizeMB} MB`);
         } catch (uploadErr: any) {
           triggerToast("Kegiatan ditambahkan, tetapi gagal mengunggah berkas.");
           return; // Stop here if upload fails, though activity is added
@@ -88,9 +92,10 @@ export default function StudentActivitiesPage() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const sizeMB = (file.size / 1024 / 1024).toFixed(1);
-      
+
       try {
-        await uploadAttachment(activityId, file.name, `${sizeMB} MB`);
+        const { key } = await upload(file);
+        await uploadAttachment(activityId, key, file.name, `${sizeMB} MB`);
         triggerToast(`Berkas "${file.name}" berhasil diunggah!`);
       } catch (err: any) {
         triggerToast(err.message || "Gagal mengunggah berkas.");

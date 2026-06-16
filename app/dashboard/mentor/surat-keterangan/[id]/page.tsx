@@ -28,6 +28,8 @@ import {
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
 import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useFileUpload } from "@/modules/media/hooks";
+import { mediaAPI } from "@/modules/media/api";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -91,16 +93,19 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   // State for file attachment upload
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [fileKey, setFileKey] = useState<string | null>(null);
 
   // Sync state once matchedCert finishes loading
   useEffect(() => {
     if (matchedCert) {
       if (matchedCert.url && matchedCert.url !== "-") {
         setFileName(matchedCert.url.split("/").pop() || "surat_keterangan.pdf");
-        setFileUrl(matchedCert.url);
+        setFileUrl(mediaAPI.getFileUrl(matchedCert.url));
+        setFileKey(matchedCert.url);
       } else {
         setFileName(null);
         setFileUrl(null);
+        setFileKey(null);
       }
     }
   }, [matchedCert]);
@@ -109,9 +114,10 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   const [fileSize, setFileSize] = useState<string>("1.8 MB");
   const [fileType, setFileType] = useState<string>("application/pdf");
 
-  // State for live upload simulator
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const { upload, isUploading, error: uploadError } = useFileUpload({
+    maxSizeMB: 5,
+    allowedTypes: ["application/pdf", "image/jpeg", "image/png"],
+  });
   const [showToast, setShowToast] = useState("");
 
   // States for final page submission
@@ -123,35 +129,26 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
     fileInputRef.current?.click();
   };
 
-  // Real File upload handler
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Real upload to media module
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
 
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
     const typeLabel = file.type || "application/pdf";
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          
-          setFileName(file.name);
-          setFileUrl(`https://storage.internflow.com/letters/${file.name}`);
-          setFileSize(`${sizeInMb} MB`);
-          setFileType(typeLabel);
-          setIsUploading(false);
-          setShowToast(`Surat keterangan "${file.name}" sukses diunggah!`);
-          setTimeout(() => setShowToast(""), 3000);
-
-          return 100;
-        }
-        return prev + 20;
-      });
-    }, 200);
+    try {
+      const result = await upload(file);
+      setFileName(result.fileName);
+      setFileUrl(result.url);
+      setFileKey(result.key);
+      setFileSize(`${sizeInMb} MB`);
+      setFileType(typeLabel);
+      setShowToast(`Surat keterangan "${result.fileName}" sukses diunggah!`);
+      setTimeout(() => setShowToast(""), 3000);
+    } catch (err: any) {
+      alert(err.message || "Gagal mengunggah berkas surat keterangan.");
+    }
   };
 
   // Simulated Reference Letter Deletion
@@ -159,6 +156,7 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
     if (confirm("Apakah Anda yakin ingin menghapus berkas surat keterangan ini?")) {
       setFileName(null);
       setFileUrl(null);
+      setFileKey(null);
       setShowToast("Berkas surat keterangan magang berhasil dihapus.");
       setTimeout(() => setShowToast(""), 3000);
     }
@@ -167,14 +165,13 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
   // Real API save submit
   const handleSaveLetter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!student || !matchedCert) return;
+    if (!student || !matchedCert || !fileKey) return;
 
     setIsSubmitting(true);
 
     try {
-      const finalUrl = fileUrl || `https://storage.internflow.com/letters/surat_keterangan_${student.name.toLowerCase().replace(/\s+/g, "_")}.pdf`;
-      await uploadStudentLetter(matchedCert.periodeMagangId, finalUrl);
-      
+      await uploadStudentLetter(matchedCert.periodeMagangId, fileKey);
+
       setIsSubmitting(false);
       setIsSuccess(true);
 
@@ -365,30 +362,20 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
                       Harap tunggu, berkas sedang divalidasi dan disimpan secara aman.
                     </p>
                   </div>
-                  
-                  {/* Progress percentage bar */}
-                  <div className="max-w-xs mx-auto space-y-1">
-                    <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-200/30">
-                      <div className="bg-indigo-600 h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-                    </div>
-                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 block text-right">
-                      {uploadProgress}%
-                    </span>
-                  </div>
                 </div>
 
               ) : fileName === null ? (
-                
+
                 /* REAL FILE UPLOADER & DRAG & DROP DROPZONE (BELUM DIUNGGAH) */
                 <>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileChange} 
-                    accept=".pdf,image/*" 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf,image/*"
+                    className="hidden"
                   />
-                  <div 
+                  <div
                     onClick={triggerFileInput}
                     className="p-12 border-2 border-dashed border-slate-200 hover:border-indigo-500 dark:border-slate-800 dark:hover:border-indigo-500/80 rounded-3xl text-center space-y-3 bg-slate-50/40 dark:bg-slate-900/10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-all group scale-100 hover:scale-[1.005]"
                   >
@@ -404,6 +391,9 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
                       </p>
                     </div>
                   </div>
+                  {uploadError && (
+                    <p className="text-[10px] text-rose-500 font-bold text-center mt-2">{uploadError}</p>
+                  )}
                 </>
 
               ) : (
@@ -465,14 +455,15 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
                     </div>
 
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => alert(`Mengunduh berkas: ${fileName}`)}
+                      <a
+                        href={fileUrl ?? "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200/30 rounded-xl font-extrabold text-[10px] flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                       >
                         <Download className="w-3.5 h-3.5" />
                         Download
-                      </button>
+                      </a>
                       <button
                         type="button"
                         onClick={handleRemoveLetter}
@@ -498,7 +489,7 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || fileName === null}
+                  disabled={isSubmitting || fileKey === null || isHookSubmitting || isUploading}
                   className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/65 text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
                 >
                   {isSubmitting ? (

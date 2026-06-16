@@ -1,6 +1,7 @@
 import { executeHybridRequest, mockDB } from "../api-client";
 import { CertificateInfo, VerifyCertificateResponse, SertifikatResponse, SertifikatStatResponse } from "./types";
 import { studentsData } from "@/app/dashboard/mentor/data-mahasiswa/studentsData";
+import { mediaAPI } from "../media/api";
 
 const INITIAL_CERTIFICATE: CertificateInfo = {
   number: "CERT/IF/UI-GTN/2026/05/0021",
@@ -38,7 +39,7 @@ export function mapBackendSertifikatToFrontend(item: any): CertificateInfo {
     fileSize: "2.8 MB",
     fileFormat: "PDF Document",
     status: item.statusSertifikat === "Sudah Diunggah" ? "Issued" : "Pending",
-    downloadUrl: item.url !== "-" ? item.url : undefined
+    downloadUrl: item.url && item.url !== "-" ? mediaAPI.getFileUrl(item.url) : undefined
   };
 }
 

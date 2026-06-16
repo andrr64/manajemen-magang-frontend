@@ -1,5 +1,6 @@
 import { executeHybridRequest, mockDB } from "../api-client";
 import { LetterInfo, RequestLetterPayload, VerifyLetterResponse, SuratKeteranganResponse, SuratKeteranganStatResponse } from "./types";
+import { mediaAPI } from "../media/api";
 
 const INITIAL_LETTER: LetterInfo = {
   number: "GTN/HRD-INTERN/V/2026/0892",
@@ -35,7 +36,7 @@ function mapBackendLetterToFrontend(item: any): LetterInfo {
     fileSize: "1.4 MB",
     fileFormat: "PDF Document",
     status: item.statusSurat === "Sudah Diunggah" ? "Issued" : "Pending",
-    downloadUrl: item.url || undefined,
+    downloadUrl: item.url && item.url !== "-" ? mediaAPI.getFileUrl(item.url) : undefined,
     hasSignature: item.statusSurat === "Sudah Diunggah",
     hrName: "Siti Amelia, M.Psi."
   };

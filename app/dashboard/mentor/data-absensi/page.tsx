@@ -21,6 +21,7 @@ import { useAttendance } from "@/modules/absensi/hooks";
 import { absensiAPI } from "@/modules/absensi/api";
 import { useStudents } from "@/modules/mahasiswa/hooks";
 import { AttendanceLog } from "@/modules/absensi/types";
+import { mediaAPI } from "@/modules/media/api";
 
 export default function MentorAttendancePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,10 +41,10 @@ export default function MentorAttendancePage() {
 
   const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", notes: string, initialUrl?: string | null) => {
     try {
-      const url = await getSuratKeterangan(logId);
-      setViewingLeaveDoc({ studentName, type, notes, documentUrl: url });
+      const key = await getSuratKeterangan(logId);
+      setViewingLeaveDoc({ studentName, type, notes, documentUrl: key ? mediaAPI.getFileUrl(key) : null });
     } catch (err) {
-      setViewingLeaveDoc({ studentName, type, notes, documentUrl: initialUrl || null });
+      setViewingLeaveDoc({ studentName, type, notes, documentUrl: initialUrl ? mediaAPI.getFileUrl(initialUrl) : null });
     }
   };
   const { rawStudents } = useStudents();
