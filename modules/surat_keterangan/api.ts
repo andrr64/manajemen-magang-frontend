@@ -23,19 +23,14 @@ export const suratKeteranganAPI = {
   getLetter: async () => {
     return executeHybridRequest<LetterInfo>(
       "Get student reference letter details",
-      API_ROUTES.SURAT_KETERANGAN_LIST,
-      {
-        method: "GET"
-      }
+      API_ROUTES.SURAT_KETERANGAN_MAHASISWA,
+      { method: "GET" }
     ).then((res) => {
-      if (true) {
-        const list = res.data as unknown as any[];
-        return {
-          ...res,
-          data: list.length > 0 ? mapBackendLetterToFrontend(list[0]) : null as any
-        };
-      }
-      return res;
+      const item = res.data as any;
+      return {
+        ...res,
+        data: item ? mapBackendLetterToFrontend(item) : null as any
+      };
     });
   },
 

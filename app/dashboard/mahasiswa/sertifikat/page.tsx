@@ -14,12 +14,11 @@ import {
   Sparkles
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
-import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
+import { useIamStore } from "@/modules/iam/store";
 
 export default function StudentSertifikatPage() {
-  const { certificate, isLoading: isCertLoading } = useCertificate();
-  const { student, isLoading: isStudentLoading } = useStudentDetail(1);
-  const isLoading = isCertLoading || isStudentLoading;
+  const { certificate, isLoading } = useCertificate();
+  const { user } = useIamStore();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -137,7 +136,7 @@ export default function StudentSertifikatPage() {
                     {certificateInfo.recipient}
                   </h2>
                   <p className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/70 mt-2 font-semibold">
-                    NIM. {student?.nim || "10101010"} • {student?.university || "Universitas"}
+                    NIM. {user?.nim || "-"} • {user?.universitas || "Universitas"}
                   </p>
                 </div>
 
@@ -152,7 +151,7 @@ export default function StudentSertifikatPage() {
                   <div>
                     <span className="text-[#2F578A] dark:text-[#F1F5F9]/50 block font-normal">Dosen Pembimbing</span>
                     <span className="text-[#232F72] dark:text-white block mt-2 font-black italic">
-                      {student?.namaMentor || "Belum Ada"}
+                      Dosen Pembimbing
                     </span>
                   </div>
                   <div>

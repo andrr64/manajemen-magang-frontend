@@ -40,6 +40,8 @@ export default function StudentActivitiesPage() {
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"Semua" | "Belum Unggah" | "Sudah Diunggah">("Semua");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   // Show Toast
   const [toastMessage, setToastMessage] = useState("");
@@ -115,7 +117,6 @@ export default function StudentActivitiesPage() {
     }
   };
 
-  // Filtered Activities List
   const filteredActivities = useMemo(() => {
     return activities.filter(act => {
       const matchesSearch = act.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,6 +125,13 @@ export default function StudentActivitiesPage() {
       return matchesSearch && matchesStatus;
     });
   }, [activities, searchQuery, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredActivities.length / perPage));
+  const pagedActivities = useMemo(() => {
+    const adjustedPage = page > totalPages ? totalPages : page;
+    const start = (adjustedPage - 1) * perPage;
+    return filteredActivities.slice(start, start + perPage);
+  }, [filteredActivities, page, totalPages, perPage]);
 
   return (
     <div className="space-y-6 relative pb-10">
@@ -341,12 +349,12 @@ export default function StudentActivitiesPage() {
                   </td>
                 </tr>
               ) : (
-                filteredActivities.map((act, index) => (
+                pagedActivities.map((act, index) => (
                   <tr key={act.id} className="hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-colors group">
                   
                   {/* Column 1: Nomor */}
                   <td className="py-4 pl-4 font-extrabold text-[#2F578A] dark:text-[#F1F5F9]/60">
-                    {index + 1}
+                    {(page - 1) * perPage + index + 1}
                   </td>
 
                   {/* Column 2: Nama Kegiatan */}
@@ -423,6 +431,40 @@ export default function StudentActivitiesPage() {
           </table>
         </div>
       </div>
+
+      {/* PAGINATION */}
+      {filteredActivities.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+          <div className="flex items-center gap-2 text-xs text-[#2F578A] dark:text-[#F1F5F9]/60 font-semibold">
+            <span>Baris per halaman:</span>
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+              className="px-2 py-1 rounded-lg border border-[#2F578A]/30 dark:border-[#2F578A]/50 bg-white dark:bg-[#232F72]/30 text-[#232F72] dark:text-white text-xs font-bold focus:outline-none"
+            >
+              {[5, 10, 20].map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <span className="ml-2">
+              {Math.min((page - 1) * perPage + 1, filteredActivities.length)}–{Math.min(page * perPage, filteredActivities.length)} dari {filteredActivities.length}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setPage(1)} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Awal</button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Sebelumnya</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1).reduce<(number | string)[]>((acc, p, i, arr) => {
+              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("...");
+              acc.push(p);
+              return acc;
+            }, []).map((p, i) => typeof p === "string" ? (
+              <span key={`ellipsis-${i}`} className="px-2 text-[#2F578A] dark:text-[#F1F5F9]/50 text-xs font-bold">…</span>
+            ) : (
+              <button key={p} onClick={() => setPage(p as number)} className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${page === p ? "bg-[#36ADA3] text-white border-[#36ADA3] shadow-[0_0_8px_rgba(54,173,163,0.3)]" : "border-[#2F578A]/30 dark:border-[#2F578A]/50 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50"}`}>{p}</button>
+            ))}
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Selanjutnya</button>
+            <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Akhir</button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

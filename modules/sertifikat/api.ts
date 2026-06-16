@@ -26,20 +26,14 @@ export const sertifikatAPI = {
   getCertificate: async () => {
     return executeHybridRequest<CertificateInfo>(
       "Get student certificate details",
-      API_ROUTES.SERTIFIKAT_LIST,
-      {
-        method: "GET"
-      }
+      API_ROUTES.SERTIFIKAT_MAHASISWA,
+      { method: "GET" }
     ).then((res) => {
-      if (true) {
-        const list = res.data as unknown as any[];
-        const budiCert = list.find(item => item.namaMahasiswa === "Budi Santoso" || item.nim === "2201012001") || list[0];
-        return {
-          ...res,
-          data: budiCert ? mapBackendSertifikatToFrontend(budiCert) : null as any
-        };
-      }
-      return res;
+      const item = res.data as any;
+      return {
+        ...res,
+        data: item ? mapBackendSertifikatToFrontend(item) : null as any
+      };
     });
   },
 

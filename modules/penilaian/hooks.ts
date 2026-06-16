@@ -13,7 +13,7 @@ export function useAssessment() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await penilaianAPI.getAssessments();
+      const response = await penilaianAPI.getMahasiswaNilai();
       setAssessments(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat detail komponen penilaian.";

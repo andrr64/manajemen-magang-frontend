@@ -92,43 +92,33 @@ export const kegiatanAPI = {
   getStudentActivities: async () => {
     return executeHybridRequest<Activity[]>(
       "Get student daily activities list",
-      API_ROUTES.KEGIATAN_LIST,
-      {
-        method: "GET"
-      }
+      API_ROUTES.KEGIATAN_MAHASISWA,
+      { method: "GET" }
     ).then((res) => {
-      if (true) {
-        const list = res.data as unknown as ActivityResponse[];
-        return {
-          ...res,
-          data: list.map(mapBackendActivityToFrontend)
-        };
-      }
-      return res;
+      const list = res.data as unknown as ActivityResponse[];
+      return {
+        ...res,
+        data: Array.isArray(list) ? list.map(mapBackendActivityToFrontend) : []
+      };
     });
   },
 
   createStudentActivity: async (payload: CreateActivityRequest) => {
     return executeHybridRequest<Activity>(
       `Create daily activity: "${payload.title}"`,
-      API_ROUTES.KEGIATAN_LIST,
+      API_ROUTES.KEGIATAN_MAHASISWA,
       {
         method: "POST",
         body: JSON.stringify({
           judul: payload.title,
-          deskripsi: "Aktivitas magang harian mahasiswa.",
-          waktu: new Date().toISOString(),
-          fileUrl: payload.fileKey || null
+          deskripsi: "Aktivitas magang harian mahasiswa."
         })
       }
     ).then((res) => {
-      if (true) {
-        return {
-          ...res,
-          data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
-        };
-      }
-      return res;
+      return {
+        ...res,
+        data: mapBackendActivityToFrontend(res.data as unknown as ActivityResponse)
+      };
     });
   },
 

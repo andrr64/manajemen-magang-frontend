@@ -176,6 +176,20 @@ function mapBackendPenilaianToFrontend(item: any): AssessmentItem[] {
 }
 
 export const penilaianAPI = {
+  getMahasiswaNilai: async () => {
+    return executeHybridRequest<AssessmentItem[]>(
+      "Get mahasiswa own assessment",
+      API_ROUTES.PENILAIAN_MAHASISWA,
+      { method: "GET" }
+    ).then((res) => {
+      const item = res.data as any;
+      return {
+        ...res,
+        data: item ? mapBackendPenilaianToFrontend(item) : [] as AssessmentItem[]
+      };
+    });
+  },
+
   getAssessments: async () => {
     return executeHybridRequest<AssessmentItem[]>(
       "Get student assessment list",

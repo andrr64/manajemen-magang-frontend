@@ -26,6 +26,7 @@ export const API_ROUTES = {
   KEGIATAN_DETAIL:   (id: string | number) => `/api/kegiatan/${id}`,
   KEGIATAN_FILE:     (id: string | number) => `/api/kegiatan/${id}/file`,
   KEGIATAN_STATUS:   (id: string | number, status: string) => `/api/kegiatan/${id}/status?status=${encodeURIComponent(status)}`,
+  KEGIATAN_MAHASISWA: "/api/kegiatan/mahasiswa",
 
   // ─── MAHASISWA ────────────────────────────────────────────────────────────
   MAHASISWA_LIST:       "/api/mahasiswa",
@@ -35,16 +36,19 @@ export const API_ROUTES = {
   MAHASISWA_EDIT_BY_MENTOR: (id: string | number) => `/api/mahasiswa/edit-by-mentor/${id}`,
 
   // ─── PENILAIAN ────────────────────────────────────────────────────────────
-  PENILAIAN_LIST:      "/api/penilaian",
-  PENILAIAN_STATISTIK: "/api/penilaian/statistik",
+  PENILAIAN_LIST:        "/api/penilaian",
+  PENILAIAN_STATISTIK:   "/api/penilaian/statistik",
+  PENILAIAN_MAHASISWA:   "/api/penilaian/mahasiswa/nilai",
 
   // ─── SERTIFIKAT ───────────────────────────────────────────────────────────
-  SERTIFIKAT_LIST:      "/api/sertifikat",
-  SERTIFIKAT_STATISTIK: "/api/sertifikat/statistik",
+  SERTIFIKAT_LIST:        "/api/sertifikat",
+  SERTIFIKAT_STATISTIK:   "/api/sertifikat/statistik",
+  SERTIFIKAT_MAHASISWA:   "/api/sertifikat/mahasiswa",
 
   // ─── SURAT KETERANGAN ─────────────────────────────────────────────────────
-  SURAT_KETERANGAN_LIST:      "/api/surat-keterangan",
-  SURAT_KETERANGAN_STATISTIK: "/api/surat-keterangan/statistik",
+  SURAT_KETERANGAN_LIST:        "/api/surat-keterangan",
+  SURAT_KETERANGAN_STATISTIK:   "/api/surat-keterangan/statistik",
+  SURAT_KETERANGAN_MAHASISWA:   "/api/surat-keterangan/mahasiswa",
 
   // ─── UNIVERSITAS ──────────────────────────────────────────────────────────
   UNIVERSITAS_LIST:   "/api/universitas",

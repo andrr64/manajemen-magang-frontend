@@ -1,57 +1,85 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  FileText, 
-  Download, 
-  Eye, 
-  CheckCircle2, 
-  Calendar, 
-  ShieldCheck, 
+import {
+  FileText,
+  Download,
+  Eye,
+  CheckCircle2,
+  Calendar,
+  ShieldCheck,
   Loader2,
   X,
   Sparkles,
   Building
 } from "lucide-react";
+import { useReferenceLetter } from "@/modules/surat_keterangan/hooks";
 
 export default function StudentSuratKeteranganPage() {
+  const { letter: letterInfo, isLoading } = useReferenceLetter();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  // Statement letter details based on Budi Santoso's internship
-  const letterInfo = {
-    number: "GTN/HRD-INTERN/V/2026/0892",
-    issueDate: "29 Mei 2026",
-    recipient: "Budi Santoso",
-    company: "PT. Global Teknologi Nusantara",
-    role: "Software Engineering Intern",
-    fileSize: "1.4 MB",
-    fileFormat: "PDF Document"
-  };
-
   const handleDownload = () => {
+    if (!letterInfo) return;
     setIsDownloading(true);
-    
-    // Simulate file downloading progress loader
     setTimeout(() => {
       setIsDownloading(false);
       setShowToast(true);
-      
-      // Simulate file download trigger
-      const link = document.createElement("a");
-      link.href = "#";
-      link.setAttribute("download", `Surat_Keterangan_Magang_${letterInfo.recipient.replace(" ", "_")}.pdf`);
-      document.body.appendChild(link);
-      document.body.removeChild(link);
+
+      if (letterInfo.downloadUrl) {
+        const link = document.createElement("a");
+        link.href = letterInfo.downloadUrl;
+        link.setAttribute("download", `Surat_Keterangan_Magang_${letterInfo.recipient.replace(" ", "_")}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
       setTimeout(() => setShowToast(false), 4000);
     }, 1500);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-10 h-10 text-[#36ADA3] animate-spin" />
+        <p className="text-[#2F578A] dark:text-[#F1F5F9]/70 font-extrabold text-sm animate-pulse">
+          Memuat berkas surat keterangan magang...
+        </p>
+      </div>
+    );
+  }
+
+  if (!letterInfo || letterInfo.status !== "Issued") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Surat Keterangan Magang</h3>
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau surat keterangan resmi penyelesaian praktikum kerja magang dari mitra industri.</p>
+        </div>
+        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-8 md:p-12 shadow-xl bg-white dark:bg-[#121358] text-center max-w-2xl mx-auto space-y-6">
+          <div className="w-20 h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 border border-amber-200/40 dark:border-amber-900/40 flex items-center justify-center mx-auto shadow-md">
+            <FileText className="w-10 h-10 animate-bounce" />
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-black text-lg text-[#232F72] dark:text-white">Surat Keterangan Belum Diterbitkan</h4>
+            <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold leading-relaxed max-w-md mx-auto">
+              Dokumen formal surat keterangan magang Anda saat ini sedang diproses oleh Mentor atau HRD mitra industri Anda.
+            </p>
+            <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 max-w-sm mx-auto pt-2">
+              Segera setelah berkas ditandatangani dan diunggah, dokumen PDF resmi Anda akan langsung tersedia di halaman ini.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 relative pb-10">
-      
+
       {/* FLOATING SUCCESS TOAST */}
       {showToast && (
         <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-850 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
@@ -116,14 +144,6 @@ export default function StudentSuratKeteranganPage() {
                       <span>Nama Lengkap</span>
                       <span className="col-span-2">: {letterInfo.recipient}</span>
                     </div>
-                    <div className="grid grid-cols-3">
-                      <span>NIM</span>
-                      <span className="col-span-2">: 2201012001</span>
-                    </div>
-                    <div className="grid grid-cols-3">
-                      <span>Instansi</span>
-                      <span className="col-span-2">: Universitas Indonesia</span>
-                    </div>
                   </div>
 
                   <p>
@@ -136,7 +156,7 @@ export default function StudentSuratKeteranganPage() {
                   <div className="text-right">
                     <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal">Jakarta, {letterInfo.issueDate}</span>
                     <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal mt-0.5">Human Resources Director</span>
-                    <span className="text-[#232F72] dark:text-white block mt-8 font-black italic">Ir. Bambang Wijaya</span>
+                    <span className="text-[#232F72] dark:text-white block mt-8 font-black italic">{letterInfo.hrName}</span>
                   </div>
                 </div>
               </div>

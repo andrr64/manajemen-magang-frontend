@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useIam } from "@/modules/iam/hooks";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Check, 
-  Sparkles, 
-  Shield, 
-  BookOpen, 
-  Bookmark, 
-  Building, 
-  MapPin, 
-  GraduationCap 
+import {
+  User,
+  Mail,
+  Phone,
+  Check,
+  Sparkles,
+  Shield,
+  BookOpen,
+  Bookmark,
+  Building,
+  MapPin,
+  GraduationCap,
+  Lock,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 export default function StudentProfilePage() {
@@ -28,6 +31,10 @@ export default function StudentProfilePage() {
   });
 
   const [formData, setFormData] = useState({ ...profile });
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -53,9 +60,13 @@ export default function StudentProfilePage() {
       await updateProfile({
         nama: formData.name,
         email: formData.email,
-        noHp: formData.phone
+        noHp: formData.phone,
+        oldPassword: oldPassword || undefined,
+        newPassword: newPassword || undefined
       });
       setProfile({ ...formData });
+      setOldPassword("");
+      setNewPassword("");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 4000);
     } catch (error) {
@@ -287,6 +298,48 @@ export default function StudentProfilePage() {
                       className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold"
                     />
                     <Shield className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/40 absolute left-4 top-4" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Password Change Section */}
+              <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 space-y-4">
+                <p className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-[#36ADA3]" />
+                  Ubah Password (Opsional)
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60">Password Lama</label>
+                    <div className="relative group/input">
+                      <input
+                        type={showOldPassword ? "text" : "password"}
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                        placeholder="Masukkan password lama..."
+                      />
+                      <Lock className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
+                      <button type="button" onClick={() => setShowOldPassword(v => !v)} className="absolute right-3 top-4 text-[#2F578A] dark:text-[#F1F5F9]/50 hover:text-[#36ADA3] transition-colors">
+                        {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-extrabold uppercase text-[#2F578A] dark:text-[#F1F5F9]/60">Password Baru</label>
+                    <div className="relative group/input">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                        placeholder="Min. 8 karakter..."
+                      />
+                      <Lock className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
+                      <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-3 top-4 text-[#2F578A] dark:text-[#F1F5F9]/50 hover:text-[#36ADA3] transition-colors">
+                        {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

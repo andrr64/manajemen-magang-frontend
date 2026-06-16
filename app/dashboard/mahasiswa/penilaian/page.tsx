@@ -15,7 +15,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useAssessment } from "@/modules/penilaian/hooks";
-import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
+import { useIamStore } from "@/modules/iam/store";
 
 interface AssessmentItem {
   id: string;
@@ -30,11 +30,11 @@ interface AssessmentItem {
 export default function StudentPenilaianPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreFilter, setScoreFilter] = useState<"Semua" | "Sangat Baik" | "Baik" | "Cukup">("Semua");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
-  // Fetch assessments from API
   const { assessments, isLoading } = useAssessment();
-  // Fetch real mentor detail
-  const { student } = useStudentDetail(1);
+  const { user } = useIamStore();
 
   // Dynamic calculations for GPA/Overall Score
   const overallStats = useMemo(() => {
@@ -64,12 +64,11 @@ export default function StudentPenilaianPage() {
     return { average, grade, status, color };
   }, [assessments]);
 
-  // Filtered Assessments List
   const filteredAssessments = useMemo(() => {
     return assessments.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             item.desc.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       let matchesScore = true;
       if (scoreFilter === "Sangat Baik") matchesScore = item.score >= 85;
       else if (scoreFilter === "Baik") matchesScore = item.score >= 75 && item.score < 85;
@@ -78,6 +77,13 @@ export default function StudentPenilaianPage() {
       return matchesSearch && matchesScore;
     });
   }, [assessments, searchQuery, scoreFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAssessments.length / perPage));
+  const pagedAssessments = useMemo(() => {
+    const adjustedPage = page > totalPages ? totalPages : page;
+    const start = (adjustedPage - 1) * perPage;
+    return filteredAssessments.slice(start, start + perPage);
+  }, [filteredAssessments, page, totalPages, perPage]);
 
   return (
     <div className="space-y-6 relative pb-10">
@@ -215,13 +221,13 @@ export default function StudentPenilaianPage() {
                   </td>
                 </tr>
               ) : (
-                filteredAssessments.map((item, index) => {
+                pagedAssessments.map((item, index) => {
                   return (
                     <tr key={item.id} className="hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-colors group">
                     
                     {/* NO */}
                     <td className="py-4 pl-4 font-extrabold text-[#2F578A] dark:text-[#F1F5F9]/60">
-                      {index + 1}
+                      {(page - 1) * perPage + index + 1}
                     </td>
 
                     {/* Nama Penilaian */}
@@ -265,6 +271,40 @@ export default function StudentPenilaianPage() {
         </div>
       </div>
 
+      {/* PAGINATION */}
+      {filteredAssessments.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+          <div className="flex items-center gap-2 text-xs text-[#2F578A] dark:text-[#F1F5F9]/60 font-semibold">
+            <span>Baris per halaman:</span>
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+              className="px-2 py-1 rounded-lg border border-[#2F578A]/30 dark:border-[#2F578A]/50 bg-white dark:bg-[#232F72]/30 text-[#232F72] dark:text-white text-xs font-bold focus:outline-none"
+            >
+              {[5, 10, 20].map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <span className="ml-2">
+              {Math.min((page - 1) * perPage + 1, filteredAssessments.length)}–{Math.min(page * perPage, filteredAssessments.length)} dari {filteredAssessments.length}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setPage(1)} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Awal</button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Sebelumnya</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1).reduce<(number | string)[]>((acc, p, i, arr) => {
+              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("...");
+              acc.push(p);
+              return acc;
+            }, []).map((p, i) => typeof p === "string" ? (
+              <span key={`ellipsis-${i}`} className="px-2 text-[#2F578A] dark:text-[#F1F5F9]/50 text-xs font-bold">…</span>
+            ) : (
+              <button key={p} onClick={() => setPage(p as number)} className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${page === p ? "bg-[#36ADA3] text-white border-[#36ADA3] shadow-[0_0_8px_rgba(54,173,163,0.3)]" : "border-[#2F578A]/30 dark:border-[#2F578A]/50 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50"}`}>{p}</button>
+            ))}
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Selanjutnya</button>
+            <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Akhir</button>
+          </div>
+        </div>
+      )}
+
       {/* RATING INFORMATION CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         
@@ -276,10 +316,10 @@ export default function StudentPenilaianPage() {
           <div>
             <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-black uppercase tracking-wider block">TIM PENILAI INDEPENDEN</span>
             <h5 className="font-black text-sm text-[#232F72] dark:text-white mt-1">
-              {student?.namaMentor || "Belum Ada Mentor"}
+              Mentor Pembimbing
             </h5>
             <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/70 mt-0.5 leading-normal">
-              Dosen Pembimbing Akademik Utama • {student?.university || "Universitas"}
+              Dosen Pembimbing Akademik Utama • {user?.universitas || "Universitas"}
             </p>
           </div>
         </div>
