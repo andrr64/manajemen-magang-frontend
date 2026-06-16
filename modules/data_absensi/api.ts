@@ -62,7 +62,7 @@ function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
 function mapBackendStatMahasiswa(data: AbsensiMahasiswaStatResponse): AbsensiMahasiswaStat {
   return {
     totalHadir: Number(data.totalHadir ?? 0),
-    totalIzin:  Number(data.totalIzin  ?? 0),
+    totalIzin:  Number(data.totalIzin  ?? 0),
     totalSakit: Number(data.totalSakit ?? 0),
     totalAlfa:  Number(data.totalAlfa  ?? 0),
   };
@@ -71,7 +71,14 @@ function mapBackendStatMahasiswa(data: AbsensiMahasiswaStatResponse): AbsensiMah
 /** Ambil userId dari localStorage token (ditulis saat login) */
 function getCurrentUserId(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("internflow_user_id");
+  try {
+    const storage = localStorage.getItem("iam-storage");
+    if (storage) {
+      const parsed = JSON.parse(storage);
+      return parsed?.state?.user?.id || null;
+    }
+  } catch (e) {}
+  return null;
 }
 
 // =====================================================================
