@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { dashboardMentorAPI } from "./api";
+import { notifier } from "@/modules/notifier";
 import { DashboardStatResponse, SearchStudentResponse, RegisterStudentRequest } from "./types";
 
 /**
@@ -19,7 +20,9 @@ export function useDashboardMentorStats(mentorId?: string | number) {
         setStats(response.data);
       }
     } catch (err: any) {
-      setError(err.message || "Gagal mengambil statistik dashboard mentor.");
+      const errMsg = err.message || "Gagal mengambil statistik dashboard mentor.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +58,9 @@ export function useSearchStudents(initialSearchTerm: string = "") {
         setStudents(response.data);
       }
     } catch (err: any) {
-      setError(err.message || "Gagal melakukan pencarian mahasiswa.");
+      const errMsg = err.message || "Gagal melakukan pencarian mahasiswa.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

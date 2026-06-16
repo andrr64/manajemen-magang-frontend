@@ -122,7 +122,11 @@ export default function MentorInternshipPeriodPage() {
       const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
 
       await updateStudent(editingStudentId!, {
-        period: periodStr
+        periode: {
+          tanggalMulai: editStartDate,
+          tanggalBerakhir: editEndDate,
+          status: "aktif"
+        }
       });
       await refreshStudents();
 

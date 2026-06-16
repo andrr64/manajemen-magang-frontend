@@ -5,6 +5,8 @@ export interface UserResponse {
   nim?: string | null;
   nama?: string | null;
   noHp?: string | null;
+  gender?: "Laki-laki" | "Perempuan" | "-" | null;
+  universitas?: string | null;
 }
 
 export interface RegisterRequest {
@@ -14,6 +16,9 @@ export interface RegisterRequest {
   nim?: string;
   nama: string;
   noHp?: string;
+  gender?: "Laki-laki" | "Perempuan" | "-";
+  universitas?: string;
+  secretKey?: string;
 }
 
 export interface LoginRequest {
@@ -30,4 +35,6 @@ export interface UpdateUserRequest {
   nim?: string;
   nama?: string;
   noHp?: string;
+  gender?: "Laki-laki" | "Perempuan" | "-";
+  universitas?: string;
 }

@@ -54,10 +54,10 @@ export const mockDB = {
 };
 
 export interface APIResponse<T> {
-  data: T;
-  status: number;
+  success: boolean;
   message: string;
-  timestamp: string;
+  data: T;
+  errors?: any;
 }
 
 // Simulated offline request execution
@@ -77,10 +77,9 @@ export async function simulateAPIRequest<T>(
   try {
     const data = executor();
     return {
-      data,
-      status: 200,
+      success: true,
       message: "Success (Mock Mode)",
-      timestamp: new Date().toISOString()
+      data
     };
   } catch (err: any) {
     throw new APIError(err.message || "Internal Server Error", 500);
@@ -132,18 +131,26 @@ export async function executeHybridRequest<T>(
     }
 
     let data: T;
+    let success = true;
+    let message = "Success (Real Mode)";
     if (response.status === 204) {
       data = {} as T;
     } else {
-      data = await response.json() as T;
+      const jsonRes = await response.json();
+      if (jsonRes && typeof jsonRes === 'object' && 'success' in jsonRes) {
+        data = jsonRes.data;
+        message = jsonRes.message || message;
+        success = jsonRes.success;
+      } else {
+        data = jsonRes as T;
+      }
     }
 
     console.log(`[API Real] Success: ${actionName}`);
     return {
-      data,
-      status: response.status,
-      message: "Success (Real Mode)",
-      timestamp: new Date().toISOString()
+      success,
+      message,
+      data
     };
   } catch (err: any) {
     // If it is a network connectivity issue (server down or CORS/DNS fail)

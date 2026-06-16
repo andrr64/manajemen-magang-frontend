@@ -2,51 +2,59 @@ import { useState, useCallback, useEffect } from "react";
 import { iamAPI } from "./api";
 import { LoginRequest, RegisterRequest, UpdateUserRequest } from "./types";
 import { useIamStore } from "./store";
+import { notifier } from "@/modules/notifier";
 
 export function useIam() {
-  // Use global persisted state
-  const { user, isAuthenticated, setUser, clearUser } = useIamStore();
+  const store = useIamStore();
+  const [mounted, setMounted] = useState(false);
   
+  // Start with loading true to prevent hydration mismatch for protected routes
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSession = useCallback(async () => {
-    setIsLoading(true);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fetchSession = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     setError(null);
     try {
       const response = await iamAPI.getMe();
-      setUser(response.data);
+      store.setUser(response.data);
     } catch (err: any) {
-      clearUser();
-      console.warn("No active session:", err.message);
+      store.clearUser();
+      if (!silent) console.warn("No active session:", err.message);
     } finally {
       setIsLoading(false);
     }
-  }, [setUser, clearUser]);
+  }, [store]);
 
   useEffect(() => {
-    // Karena kita sekarang menggunakan HttpOnly cookies (atau mock token),
-    // kita tidak bisa mengecek localStorage internflow_token.
-    // Jika di Zustand store isAuthenticated adalah true, kita pastikan sessionnya masih valid di server.
-    if (isAuthenticated) {
-      fetchSession();
-    } else {
-      setIsLoading(false);
+    if (mounted) {
+      if (store.isAuthenticated) {
+        // Silently re-verify session in the background so we don't block the UI
+        fetchSession(true);
+      } else {
+        setIsLoading(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mounted]);
 
   const login = async (payload: LoginRequest) => {
     setIsLoading(true);
     setError(null);
     try {
       await iamAPI.login(payload);
-      // Panggil session dan biarkan melemparkan error jika gagal
+      // Fetch session data
       const response = await iamAPI.getMe();
-      setUser(response.data);
+      store.setUser(response.data);
+      notifier.success("Login berhasil!");
     } catch (err: any) {
-      clearUser();
+      store.clearUser();
       const errMsg = err.message || "Failed to login.";
+      notifier.error(errMsg);
       setError(errMsg);
       setIsLoading(false);
       throw new Error(errMsg);
@@ -63,12 +71,17 @@ export function useIam() {
       // Automatically attempt login if password is provided
       if (payload.password) {
         await login({ email: payload.email, password: payload.password });
+      } else {
+        notifier.success("Registrasi berhasil!");
       }
     } catch (err: any) {
       const errMsg = err.message || "Failed to register.";
+      notifier.error(errMsg);
       setError(errMsg);
       setIsLoading(false);
       throw new Error(errMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,31 +90,39 @@ export function useIam() {
     setError(null);
     try {
       const response = await iamAPI.updateProfile(payload);
-      setUser(response.data);
+      store.setUser(response.data);
+      notifier.success("Profil berhasil diperbarui!");
     } catch (err: any) {
       const errMsg = err.message || "Failed to update profile.";
+      notifier.error(errMsg);
       setError(errMsg);
       setIsLoading(false);
       throw new Error(errMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = async () => {
     setIsLoading(true);
-    await iamAPI.logout();
-    clearUser();
-    setIsLoading(false);
+    try {
+      await iamAPI.logout();
+      notifier.success("Logout berhasil!");
+    } finally {
+      store.clearUser();
+      setIsLoading(false);
+    }
   };
 
   return {
-    user,
-    isAuthenticated,
-    isLoading,
+    user: mounted ? store.user : null,
+    isAuthenticated: mounted ? store.isAuthenticated : false,
+    isLoading: !mounted || isLoading,
     error,
     login,
     register,
     updateProfile,
     logout,
-    refreshSession: fetchSession
+    refreshSession: () => fetchSession(false)
   };
 }

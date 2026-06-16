@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Mentor, CreateMentorRequest, UpdateMentorRequest } from "./types";
 import { mentorAPI } from "./api";
@@ -15,7 +16,9 @@ export function useMentors(options?: { searchQuery?: string; typeFilter?: string
       const response = await mentorAPI.listMentors();
       setMentors(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar mentor.");
+      const errMsg = err.message || "Gagal memuat daftar mentor.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +53,7 @@ export function useMentors(options?: { searchQuery?: string; typeFilter?: string
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus data mentor.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -101,7 +105,9 @@ export function useMentorDetail(id?: number) {
       const response = await mentorAPI.getMentorById(id);
       setMentor(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat detail data mentor.");
+      const errMsg = err.message || "Gagal memuat detail data mentor.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

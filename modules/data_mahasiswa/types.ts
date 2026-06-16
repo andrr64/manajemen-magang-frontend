@@ -80,6 +80,7 @@ export interface Student {
   mentorId?: string | null;
   namaMentor?: string | null;
   userId?: string | null;
+  idUniversity?: number | null;
 }
 
 // =====================================================================

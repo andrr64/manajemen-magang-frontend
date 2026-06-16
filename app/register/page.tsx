@@ -21,6 +21,9 @@ export default function RegisterPage() {
     password: "",
     noHp: "",
     nim: "",
+    gender: "",
+    universitas: "",
+    secretKey: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +43,9 @@ export default function RegisterPage() {
         role: role,
         noHp: formData.noHp || undefined,
         nim: role === "mahasiswa" ? formData.nim : undefined,
+        gender: (formData.gender as "Laki-laki" | "Perempuan" | "-") || undefined,
+        universitas: formData.universitas || undefined,
+        secretKey: role === "mentor" ? formData.secretKey : undefined,
       };
 
       await register(payload);
@@ -205,6 +211,51 @@ export default function RegisterPage() {
                     value={formData.nim}
                     onChange={handleChange}
                     className="w-full bg-neutral-900/50 border border-neutral-800 text-white rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-neutral-600"
+                  />
+                </div>
+              )}
+
+              <div className="relative">
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange as any}
+                  required
+                  className="w-full bg-neutral-900/50 border border-neutral-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all appearance-none"
+                >
+                  <option value="" disabled className="text-neutral-600">Pilih Jenis Kelamin</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Building2 className="h-5 w-5 text-neutral-500" />
+                </div>
+                <input
+                  name="universitas"
+                  type="text"
+                  placeholder="Asal Universitas / Instansi"
+                  value={formData.universitas}
+                  onChange={handleChange}
+                  className="w-full bg-neutral-900/50 border border-neutral-800 text-white rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-neutral-600"
+                />
+              </div>
+
+              {role === "mentor" && (
+                <div className="relative animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-neutral-500" />
+                  </div>
+                  <input
+                    name="secretKey"
+                    type="password"
+                    required
+                    placeholder="Kunci Rahasia Mentor (Secret Key)"
+                    value={formData.secretKey}
+                    onChange={handleChange}
+                    className="w-full bg-neutral-900/50 border border-neutral-800 text-white rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all placeholder:text-neutral-600"
                   />
                 </div>
               )}

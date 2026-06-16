@@ -157,20 +157,13 @@ export default function KelolaMahasiswaPage() {
         await updateStudent(editingStudent.id, {
           email: formEmail,
           nim: formNim,
-          name: formName,
+          nama: formName,
           gender: formGender,
-          phone: formPhone || "-",
-          university: formUniv,
-          program: formProgram,
-          company: resolvedCompany,
-          role: resolvedRole,
-          status: resolvedStatus,
-          progress: formProgress,
-          period: resolvedPeriod,
+          noHp: formPhone || "-",
           periode: hasDates ? {
             tanggalMulai: undefined, // Will be parsed inside api.ts from resolvedPeriod
             tanggalBerakhir: undefined,
-            status: resolvedStatus === "Selesai" ? "SELESAI" : "AKTIF"
+            status: resolvedStatus === "Selesai" ? "selesai" : "aktif"
           } : undefined
         });
         await refreshStudents();

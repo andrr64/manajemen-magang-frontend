@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest, mockDB } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { RegisterRequest, LoginRequest, LoginResponse, UserResponse, UpdateUserRequest } from "./types";
 
@@ -9,7 +9,9 @@ const MOCK_USERS: UserResponse[] = [
     role: "mahasiswa",
     nim: "2201012001",
     nama: "Budi Santoso",
-    noHp: "081298765432"
+    noHp: "081298765432",
+    gender: "Laki-laki",
+    universitas: "Universitas Indonesia"
   }
 ];
 
@@ -49,7 +51,9 @@ export const iamAPI = {
           role: payload.role,
           nim: payload.nim || null,
           nama: payload.nama,
-          noHp: payload.noHp || null
+          noHp: payload.noHp || null,
+          gender: payload.gender || null,
+          universitas: payload.universitas || null
         };
         const users = mockDB.get<UserResponse[]>("users", MOCK_USERS);
         users.push(newUser);

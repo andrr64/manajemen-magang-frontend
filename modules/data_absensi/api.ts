@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest, mockDB } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import {
   AttendanceLog,
@@ -116,7 +116,7 @@ export const absensiAPI = {
         const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
           Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
         };
-        const revStatusMap: Record<AttendanceLog["status"], AbsensiResponse["statusVerifikasi"]> = {
+        const revStatusMap: Record<AttendanceLog["status"], string> = {
           Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
         };
         return filtered.map(h => ({
@@ -191,7 +191,7 @@ export const absensiAPI = {
         const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
           Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
         };
-        const revStatusMap: Record<AttendanceLog["status"], AbsensiResponse["statusVerifikasi"]> = {
+        const revStatusMap: Record<AttendanceLog["status"], string> = {
           Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
         };
         return {
@@ -366,7 +366,7 @@ export const absensiAPI = {
         const revTypeMap: Record<AttendanceLog["type"], AbsensiResponse["status"]> = {
           Hadir: "hadir", Izin: "izin", Sakit: "sakit", Alpha: "alpha"
         };
-        const revStatusMap: Record<AttendanceLog["status"], AbsensiResponse["statusVerifikasi"]> = {
+        const revStatusMap: Record<AttendanceLog["status"], string> = {
           Diverifikasi: "DISETUJUI", Menunggu: "PENDING", Ditolak: "DITOLAK"
         };
         return history.map(h => ({

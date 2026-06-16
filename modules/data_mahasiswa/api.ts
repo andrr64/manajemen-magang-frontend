@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { executeHybridRequest, mockDB } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse } from "./types";
 
@@ -350,70 +350,11 @@ export const mahasiswaAPI = {
   },
 
   updateStudent: async (id: number | string, payload: UpdateStudentRequest) => {
-    // Formatting update values
-    const dateRange = payload.period ? payload.period.split(" - ") : [];
-    const formatDateObj = (indoStr: string) => {
-      try {
-        const cleanStr = indoStr.trim().replace(/\u00a0/g, " "); // Replace non-breaking spaces
-        
-        // 1. Check if it is already in yyyy-MM-dd format
-        if (/^\d{4}-\d{2}-\d{2}$/.test(cleanStr)) {
-          return cleanStr;
-        }
-
-        // 2. Check if it is a slash format like "2/1/2026" or "02/01/2026" (month/day/year)
-        if (cleanStr.includes("/")) {
-          const parts = cleanStr.split("/");
-          if (parts.length === 3) {
-            if (parts[2].length === 4) {
-              const month = parts[0].padStart(2, "0");
-              const day = parts[1].padStart(2, "0");
-              const year = parts[2];
-              return `${year}-${month}-${day}`;
-            } else if (parts[0].length === 4) {
-              const year = parts[0];
-              const month = parts[1].padStart(2, "0");
-              const day = parts[2].padStart(2, "0");
-              return `${year}-${month}-${day}`;
-            }
-          }
-        }
-
-        // 3. Handle Indonesian textual format like "1 Februari 2026"
-        const monthMap: Record<string, string> = { 
-          "januari": "01", "februari": "02", "maret": "03", "april": "04", "mei": "05", "juni": "06", 
-          "juli": "07", "agustus": "08", "september": "09", "oktober": "10", "november": "11", "desember": "12" 
-        };
-        const parts = cleanStr.toLowerCase().split(/\s+/);
-        if (parts.length > 2) {
-          const day = parts[0].padStart(2, "0");
-          const month = monthMap[parts[1]] || "01";
-          const year = parts[2];
-          return `${year}-${month}-${day}`;
-        }
-
-        // 4. Fallback to standard JS Date parser
-        const parsedDate = new Date(cleanStr);
-        if (!isNaN(parsedDate.getTime())) {
-          return parsedDate.toISOString().split("T")[0];
-        }
-
-        return "2026-02-01";
-      } catch (_) {
-        return "2026-02-01";
-      }
-    };
-
-    const isPeriodProvided = payload.periode || dateRange.length > 1;
     const resolvedPeriode = payload.periode ? {
       tanggalMulai: payload.periode.tanggalMulai,
       tanggalBerakhir: payload.periode.tanggalBerakhir,
       status: payload.periode.status ? payload.periode.status.toUpperCase() : undefined
-    } : (dateRange.length > 1 ? {
-      tanggalMulai: formatDateObj(dateRange[0]),
-      tanggalBerakhir: formatDateObj(dateRange[1]),
-      status: payload.status === "Selesai" ? "SELESAI" : "AKTIF"
-    } : undefined);
+    } : undefined;
 
     return executeHybridRequest<Student>(
       `Update student details for ID: ${id}`,
@@ -443,6 +384,7 @@ export const mahasiswaAPI = {
           ...payload,
           name: payload.nama || students[index].name,
           phone: payload.noHp || students[index].phone,
+          gender: (payload.gender as "Laki-laki" | "Perempuan" | "-") || students[index].gender,
           id: students[index].id
         };
 

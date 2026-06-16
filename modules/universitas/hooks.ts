@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
 import { Universitas, UniversitasRequest } from "./types";
 import { universitasApi } from "./api";
@@ -15,7 +16,9 @@ export function useUniversitas() {
       const response = await universitasApi.getUniversitasList();
       setUniversitasList(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar universitas.");
+      const errMsg = err.message || "Gagal memuat daftar universitas.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +55,7 @@ export function useUniversitas() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal mengupdate universitas.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -68,6 +72,7 @@ export function useUniversitas() {
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus universitas.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState } from "react";
 import { mediaAPI } from "./api";
 import { UploadResponse, DeleteResponse } from "./types";
@@ -30,6 +31,7 @@ export function useMediaUpload() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal mengunggah file. Silakan coba lagi.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -63,7 +65,9 @@ export function useFileUpload(options?: FileUploadOptions) {
     try {
       validate(file);
     } catch (err: any) {
-      setError(err.message);
+      const errMsg = err.message;
+      notifier.error(errMsg);
+      setError(errMsg);
       throw err;
     }
 
@@ -101,6 +105,7 @@ export function useMediaDelete() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus file. Silakan coba lagi.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

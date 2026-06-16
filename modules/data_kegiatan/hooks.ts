@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Activity, CreateActivityRequest, ActivityStat } from "./types";
 import { kegiatanAPI, MentorActivityLog } from "./api";
 import { mediaAPI } from "../media/api";
+import { notifier } from "@/modules/notifier";
 
 export function useActivities() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -16,7 +17,9 @@ export function useActivities() {
       const response = await kegiatanAPI.getStudentActivities();
       setActivities(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar kegiatan.");
+      const errMsg = err.message || "Gagal memuat daftar kegiatan.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -32,6 +35,7 @@ export function useActivities() {
     try {
       const response = await kegiatanAPI.createStudentActivity(payload);
       setActivities(prev => [response.data, ...prev]);
+      notifier.success("Kegiatan berhasil ditambahkan.");
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menambahkan kegiatan.";
@@ -48,9 +52,11 @@ export function useActivities() {
     try {
       const response = await kegiatanAPI.uploadStudentAttachment(activityId, fileKey, fileName, fileSize);
       setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? response.data : a));
+      notifier.success("Berkas lampiran berhasil diunggah.");
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal mengunggah berkas lampiran.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -64,9 +70,11 @@ export function useActivities() {
     try {
       await kegiatanAPI.deleteStudentActivity(activityId);
       setActivities(prev => prev.filter(a => String(a.id) !== String(activityId)));
+      notifier.success("Kegiatan berhasil dihapus.");
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus kegiatan.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -99,7 +107,9 @@ export function useMentorActivities() {
       const response = await kegiatanAPI.getMentorActivities();
       setActivities(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat data kegiatan mahasiswa.");
+      const errMsg = err.message || "Gagal memuat data kegiatan mahasiswa.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -115,6 +125,7 @@ export function useMentorActivities() {
     try {
       const response = await kegiatanAPI.approveMentorActivity(activityId, "Disetujui");
       setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? response.data : a));
+      notifier.success("Kegiatan berhasil disetujui.");
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memverifikasi kegiatan.";
@@ -131,9 +142,11 @@ export function useMentorActivities() {
     try {
       await kegiatanAPI.deleteMentorActivity(activityId);
       setActivities(prev => prev.filter(a => String(a.id) !== String(activityId)));
+      notifier.success("Laporan kegiatan berhasil ditolak.");
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menolak laporan kegiatan.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -174,7 +187,9 @@ export function useActivityStats(status?: string, namaMahasiswa?: string) {
       const response = await kegiatanAPI.getActivityStatistics(status, namaMahasiswa);
       setStats(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat statistik kegiatan.");
+      const errMsg = err.message || "Gagal memuat statistik kegiatan.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

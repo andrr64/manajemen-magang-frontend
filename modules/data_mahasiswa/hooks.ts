@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Student, CreateStudentRequest, UpdateStudentRequest, StudentStat, StudentFilterParams } from "./types";
 import { mahasiswaAPI } from "./api";
@@ -26,6 +27,7 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
       const response = await mahasiswaAPI.listStudents(backendFilters);
       setStudents(response.data);
     } catch (err: any) {
+      notifier.error(err.message || "Gagal memuat daftar mahasiswa.");
       setError(err.message || "Gagal memuat daftar mahasiswa.");
     } finally {
       setIsLoading(false);
@@ -42,9 +44,11 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
     try {
       const response = await mahasiswaAPI.createStudent(payload);
       setStudents(prev => [response.data, ...prev]);
+      notifier.success("Data berhasil ditambahkan!");
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal mendaftarkan mahasiswa.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -58,9 +62,11 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
     try {
       const response = await mahasiswaAPI.updateStudent(id, payload);
       setStudents(prev => prev.map(s => String(s.id) === String(id) ? response.data : s));
+      notifier.success("Data berhasil diperbarui!");
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memperbarui data mahasiswa.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -77,6 +83,7 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
       return true;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menghapus akun mahasiswa.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -132,6 +139,7 @@ export function useStudentDetail(id?: number | string) {
       const response = await mahasiswaAPI.getStudentById(id);
       setStudent(response.data);
     } catch (err: any) {
+      notifier.error(err.message || "Gagal memuat detail mahasiswa.");
       setError(err.message || "Gagal memuat detail mahasiswa.");
     } finally {
       setIsLoading(false);
@@ -152,6 +160,7 @@ export function useStudentDetail(id?: number | string) {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memperbarui data mahasiswa.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -183,6 +192,7 @@ export function useStudentStats(filters?: { gender?: string; universitas?: strin
       const response = await mahasiswaAPI.getStudentStatistics(filters);
       setStats(response.data);
     } catch (err: any) {
+      notifier.error(err.message || "Gagal memuat statistik mahasiswa.");
       setError(err.message || "Gagal memuat statistik mahasiswa.");
     } finally {
       setIsLoading(false);

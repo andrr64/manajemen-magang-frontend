@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
 import {
   AttendanceLog,
@@ -25,7 +26,9 @@ export function useAttendance() {
       const res = await absensiAPI.getHistory(status, namaMahasiswa);
       setHistory(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat riwayat kehadiran.");
+      const errMsg = err.message || "Gagal memuat riwayat kehadiran.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -57,8 +60,11 @@ export function useAttendance() {
     try {
       await absensiAPI.deleteAttendance(id);
       setHistory(prev => prev.filter(item => item.id !== id));
+      notifier.success("Berhasil dihapus.");
+      notifier.success("Berhasil dihapus.");
     } catch (err: any) {
       const msg = err.message || "Gagal menghapus catatan absensi.";
+      notifier.error(msg);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -82,6 +88,7 @@ export function useAttendance() {
       URL.revokeObjectURL(url);
     } catch (err: any) {
       const msg = err.message || "Gagal mengekspor data absensi.";
+      notifier.error(msg);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -96,6 +103,7 @@ export function useAttendance() {
       return res.data.url;
     } catch (err: any) {
       const msg = err.message || "Gagal mendapatkan surat keterangan.";
+      notifier.error(msg);
       setError(msg);
       throw new Error(msg);
     }
@@ -131,7 +139,9 @@ export function useAttendanceStats(namaMahasiswa?: string) {
       const res = await absensiAPI.getSummary(namaMahasiswa);
       setStats(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat statistik kehadiran.");
+      const errMsg = err.message || "Gagal memuat statistik kehadiran.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -197,7 +207,9 @@ export function useRiwayatAbsensi() {
       const res = await absensiAPI.getRiwayatAbsensi();
       setRiwayat(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat riwayat absensi.");
+      const errMsg = err.message || "Gagal memuat riwayat absensi.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -246,7 +258,9 @@ export function useAbsensiMahasiswaStat() {
       const res = await absensiAPI.getMahasiswaStat();
       setStat(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat statistik absensi.");
+      const errMsg = err.message || "Gagal memuat statistik absensi.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -298,7 +312,9 @@ export function useStatistikKehadiran() {
       const res = await absensiAPI.getStatistikKehadiran();
       setStat(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat statistik kehadiran harian.");
+      const errMsg = err.message || "Gagal memuat statistik kehadiran harian.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -328,7 +344,9 @@ export function useAttendanceLegacy() {
       const res = await absensiAPI.getRiwayatAbsensi();
       setHistory(res.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat riwayat kehadiran.");
+      const errMsg = err.message || "Gagal memuat riwayat kehadiran.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -361,6 +379,7 @@ export function useAttendanceLegacy() {
       return res.data;
     } catch (err: any) {
       const msg = err.message || "Gagal melakukan check-out.";
+      notifier.error(msg);
       setError(msg);
       throw new Error(msg);
     } finally {

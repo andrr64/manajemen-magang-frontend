@@ -90,7 +90,11 @@ export default function MentorDataMahasiswaPage() {
 
     try {
       await updateStudent(editingStudentId!, {
-        period: periodStr
+        periode: {
+          tanggalMulai: editStartDate,
+          tanggalBerakhir: editEndDate,
+          status: "aktif"
+        }
       });
       await refreshStudents();
     } catch (err) {

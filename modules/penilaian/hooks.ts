@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
 import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianStatResponse } from "./types";
 import { penilaianAPI } from "./api";
@@ -15,7 +16,9 @@ export function useAssessment() {
       const response = await penilaianAPI.getAssessments();
       setAssessments(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat detail komponen penilaian.");
+      const errMsg = err.message || "Gagal memuat detail komponen penilaian.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +66,9 @@ export function useGrades() {
       const response = await penilaianAPI.getGradeSummary();
       setSummary(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat rekap nilai.");
+      const errMsg = err.message || "Gagal memuat rekap nilai.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +98,9 @@ export function useStudentAssessments() {
       const response = await penilaianAPI.getStudentAssessmentList(status, namaMahasiswa);
       setAssessments(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar penilaian mahasiswa.");
+      const errMsg = err.message || "Gagal memuat daftar penilaian mahasiswa.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +126,9 @@ export function usePenilaianStats(namaMahasiswa?: string) {
       const response = await penilaianAPI.getPenilaianStatistics(namaMahasiswa);
       setStats(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat statistik penilaian.");
+      const errMsg = err.message || "Gagal memuat statistik penilaian.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

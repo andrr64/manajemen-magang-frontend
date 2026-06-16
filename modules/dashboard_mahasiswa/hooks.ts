@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { dashboardMahasiswaAPI } from "./api";
+import { notifier } from "@/modules/notifier";
 import { DashboardMahasiswaStatResponse } from "./types";
 
 export function useDashboardMahasiswaStats(mahasiswaId?: string | number) {
@@ -18,7 +19,9 @@ export function useDashboardMahasiswaStats(mahasiswaId?: string | number) {
         setStats(response.data);
       }
     } catch (err: any) {
-      setError(err.message || "Gagal mengambil data statistik dashboard.");
+      const errMsg = err.message || "Gagal mengambil data statistik dashboard.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

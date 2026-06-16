@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
 import { CertificateInfo, VerifyCertificateResponse, SertifikatResponse, SertifikatStatResponse } from "./types";
 import { sertifikatAPI } from "./api";
@@ -17,7 +18,9 @@ export function useCertificate() {
       const response = await sertifikatAPI.getCertificate();
       setCertificate(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat informasi sertifikat.");
+      const errMsg = err.message || "Gagal memuat informasi sertifikat.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +55,7 @@ export function useCertificate() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menerbitkan sertifikat.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -91,7 +95,9 @@ export function useStudentCertificates() {
       setCertificates(listRes.data);
       setStatistics(statsRes.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar sertifikat bimbingan.");
+      const errMsg = err.message || "Gagal memuat daftar sertifikat bimbingan.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

@@ -1,3 +1,4 @@
+import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
 import { LetterInfo, RequestLetterPayload, VerifyLetterResponse, SuratKeteranganResponse, SuratKeteranganStatResponse } from "./types";
 import { suratKeteranganAPI } from "./api";
@@ -16,7 +17,9 @@ export function useReferenceLetter() {
       const response = await suratKeteranganAPI.getLetter();
       setLetter(response.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat surat keterangan magang.");
+      const errMsg = err.message || "Gagal memuat surat keterangan magang.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -51,6 +54,7 @@ export function useReferenceLetter() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memverifikasi kode surat keterangan.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -67,6 +71,7 @@ export function useReferenceLetter() {
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menyetujui dan menandatangani surat.";
+      notifier.error(errMsg);
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
@@ -106,7 +111,9 @@ export function useStudentReferenceLetters() {
       setLetters(listRes.data);
       setStatistics(statsRes.data);
     } catch (err: any) {
-      setError(err.message || "Gagal memuat daftar surat keterangan magang.");
+      const errMsg = err.message || "Gagal memuat daftar surat keterangan magang.";
+      notifier.error(errMsg);
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
