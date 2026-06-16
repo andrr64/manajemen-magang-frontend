@@ -248,25 +248,25 @@ export default function DashboardHome() {
 
         {/* 6 Required Columns Table */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full min-w-[900px] border-collapse">
+          <table className="w-full min-w-[900px] border-collapse border border-[#2F578A]/20 dark:border-[#2F578A]/40">
             <thead>
-              <tr className="border-b border-[#2F578A]/30 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/70 uppercase tracking-widest text-left">
-                <th className="pb-3.5 pl-4 font-bold">Nama</th>
-                <th className="pb-3.5 font-bold">NIM</th>
-                <th className="pb-3.5 font-bold">Universitas</th>
-                <th className="pb-3.5 font-bold">Email</th>
-                <th className="pb-3.5 font-bold">No. Telp</th>
-                <th className="pb-3.5 font-bold">Gender</th>
-                <th className="pb-3.5 pr-4 font-bold text-right">Aksi</th>
+              <tr className="border-b border-[#2F578A]/30 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/70 uppercase tracking-widest text-center bg-[#F8FAFC]/70 dark:bg-[#232F72]/50">
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">Nama</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">NIM</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">Universitas</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">Email</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">No. Telp</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">Gender</th>
+                <th className="py-3 px-4 font-bold border border-[#2F578A]/20 dark:border-[#2F578A]/40">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
+            <tbody className="text-xs">
               {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer">
+                <tr key={student.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
                   
                   {/* Column 1: Nama (Avatar initials, name, link to detail data-mahasiswa) */}
-                  <td className="py-4 pl-4">
-                    <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="flex items-center gap-3">
+                  <td className="py-4 px-4 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
+                    <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="flex justify-center items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-xs shadow-inner group-hover:scale-105 transition-transform`}>
                         {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
@@ -282,14 +282,14 @@ export default function DashboardHome() {
                   </td>
 
                   {/* Column 2: NIM */}
-                  <td className="py-4 font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">
+                  <td className="py-4 px-4 font-bold text-[#232F72]/80 dark:text-[#F1F5F9] border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="block w-full py-1">
                       {student.nim}
                     </Link>
                   </td>
 
                   {/* Column 3: Universitas */}
-                  <td className="py-4">
+                  <td className="py-4 px-4 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="inline-flex items-center gap-1.5 text-[#232F72]/80 dark:text-[#F1F5F9] font-bold">
                       <School className="w-3.5 h-3.5 text-[#36ADA3]" />
                       <span>{student.university}</span>
@@ -297,7 +297,7 @@ export default function DashboardHome() {
                   </td>
 
                   {/* Column 4: Email */}
-                  <td className="py-4 text-[#2F578A] dark:text-[#F1F5F9]/80 font-semibold">
+                  <td className="py-4 px-4 text-[#2F578A] dark:text-[#F1F5F9]/80 font-semibold border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <a 
                       href={`mailto:${student.email}`}
                       className="inline-flex items-center gap-1 hover:text-[#36ADA3] dark:hover:text-[#36ADA3]"
@@ -309,7 +309,7 @@ export default function DashboardHome() {
                   </td>
 
                   {/* Column 5: No Telp */}
-                  <td className="py-4 text-[#2F578A] dark:text-[#F1F5F9]/80">
+                  <td className="py-4 px-4 text-[#2F578A] dark:text-[#F1F5F9]/80 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <a 
                       href={`tel:${student.phone.replace(/[^0-9+]/g, '')}`}
                       className="inline-flex items-center gap-1 hover:text-[#36ADA3] dark:hover:text-[#36ADA3] font-bold"
@@ -321,7 +321,7 @@ export default function DashboardHome() {
                   </td>
 
                   {/* Column 6: Gender */}
-                  <td className="py-4">
+                  <td className="py-4 px-4 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border ${
                       student.gender === "Laki-laki" 
                         ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/40" 
@@ -333,7 +333,7 @@ export default function DashboardHome() {
                   </td>
 
                   {/* Action Link to Student details page */}
-                  <td className="py-4 pr-4 text-right">
+                  <td className="py-4 px-4 text-center border border-[#2F578A]/20 dark:border-[#2F578A]/40">
                     <Link 
                       href={`/dashboard/mentor/data-mahasiswa/${student.id}`}
                       className="inline-flex items-center gap-0.5 px-3 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#36ADA3] hover:text-[#FFFFFF] dark:hover:bg-[#36ADA3] dark:hover:text-[#FFFFFF] text-[10px] font-black rounded-xl transition-all text-[#232F72] dark:text-[#F1F5F9]"

@@ -28,6 +28,7 @@ import {
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useAuth } from "@/modules/auth/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -49,6 +50,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { submitGrades } = useAssessment();
   const { rawStudents } = useStudents();
+  const { user: authUser } = useAuth();
   const studentsList = rawStudents;
 
   // Fetch once on mount
@@ -99,34 +101,36 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
 
   // Form Assessment Criteria configurations
   const assessmentCriteria: CriteriaItem[] = [
-    { id: "absensi", label: "Kedisiplinan Absensi", desc: "Ketepatan waktu kehadiran harian, kepatuhan toleransi keterlambatan, dan pengumpulan izin formal.", weight: 15 },
-    { id: "kinerja", label: "Kinerja", desc: "Kualitas hasil pengerjaan proyek magang, efisiensi kerja teknis, dan pencapaian target mingguan.", weight: 20 },
+    { id: "kinerja", label: "Kinerja", desc: "Kualitas hasil pengerjaan proyek magang, efisiensi kerja teknis, dan pencapaian target mingguan.", weight: 15 },
     { id: "kedisiplinan", label: "Kedisiplinan", desc: "Kepatuhan terhadap tata tertib industri mitra, SOP perusahaan, dan instruksi mentor akademik.", weight: 15 },
-    { id: "kerjasama", label: "Kerja Sama", desc: "Kemampuan berkolaborasi dalam tim divisi, koordinasi antar departemen, dan kontribusi diskusi.", weight: 15 },
     { id: "tanggungjawab", label: "Tanggung Jawab", desc: "Komitmen menyelesaikan tugas yang diberikan, kesiapan menanggung risiko teknis, dan inisiatif tinggi.", weight: 15 },
     { id: "komunikasi", label: "Komunikasi", desc: "Kejelasan menyampaikan laporan progres harian, etika berbahasa, serta responsivitas koordinasi.", weight: 10 },
-    { id: "penampilan", label: "Penampilan", desc: "Kerapian berpakaian kerja sesuai regulasi mitra, etika profesionalisme sikap, dan presentasi akhir.", weight: 10 }
+    { id: "sikap", label: "Sikap", desc: "Sopan santun dalam berkomunikasi, kepatuhan terhadap regulasi perusahaan, dan integritas profesional.", weight: 10 },
+    { id: "kerapihan", label: "Kerapihan", desc: "Kerapian berpakaian kerja sesuai regulasi mitra, etika profesionalisme sikap, dan presentasi akhir.", weight: 10 },
+    { id: "absensi", label: "Absensi", desc: "Ketepatan waktu kehadiran harian, kepatuhan toleransi keterlambatan, dan pengumpulan izin formal.", weight: 10 },
+    { id: "kerjasama", label: "Kerja Sama", desc: "Kemampuan berkolaborasi dalam tim divisi, koordinasi antar departemen, dan kontribusi diskusi.", weight: 15 }
   ];
 
   // Initialize grades state. Prefill if student has already been graded in database.
   const [grades, setGrades] = useState<Record<string, number>>({
-    absensi: 80, kinerja: 80, kedisiplinan: 80, kerjasama: 80, tanggungjawab: 80, komunikasi: 80, penampilan: 80
+    kinerja: 80, kedisiplinan: 80, tanggungjawab: 80, komunikasi: 80, sikap: 80, kerapihan: 80, absensi: 80, kerjasama: 80
   });
 
   // Supporting attachments files for EACH criteria column/slot
   const [attachments, setAttachments] = useState<Record<string, string | null>>({
-    absensi: null, kinerja: null, kedisiplinan: null, kerjasama: null, tanggungjawab: null, komunikasi: null, penampilan: null
+    kinerja: null, kedisiplinan: null, tanggungjawab: null, komunikasi: null, sikap: null, kerapihan: null, absensi: null, kerjasama: null
   });
 
   // Short descriptive comments for each criteria
   const [feedbacks, setFeedbacks] = useState<Record<string, string>>({
-    absensi: "Kehadiran sangat konsisten, selalu check-in tepat waktu.",
     kinerja: "Kualitas penulisan kode sangat bersih, dokumentasi teratur.",
     kedisiplinan: "Sopan santun dan kepatuhan SOP kantor sangat baik.",
-    kerjasama: "Aktif berkoordinasi dalam tim agile sprint.",
     tanggungjawab: "Menuntaskan tugas backend API sesuai target.",
     komunikasi: "Responsif saat dipanggil rapat koordinasi.",
-    penampilan: "Selalu berpakaian rapi dan profesional saat On-site."
+    sikap: "Selalu bersikap profesional dan saling menghargai.",
+    kerapihan: "Selalu berpakaian rapi dan profesional saat On-site.",
+    absensi: "Kehadiran sangat konsisten, selalu check-in tepat waktu.",
+    kerjasama: "Aktif berkoordinasi dalam tim agile sprint."
   });
 
   // Reactively prefill grades and feedback when assessmentRecord or mockStudent becomes available
@@ -135,51 +139,55 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
       const isAlreadyGraded = assessmentRecord.nilaiTotal !== null && assessmentRecord.nilaiTotal !== undefined;
       if (isAlreadyGraded) {
         setGrades({
-          absensi: assessmentRecord.absensi ?? 80,
           kinerja: assessmentRecord.kinerja ?? 80,
           kedisiplinan: assessmentRecord.kedisiplinan ?? 80,
-          kerjasama: assessmentRecord.kerjasama ?? 80,
           tanggungjawab: assessmentRecord.tanggungJawab ?? 80,
           komunikasi: assessmentRecord.komunikasi ?? 80,
-          penampilan: assessmentRecord.kerapihan ?? 80,
+          sikap: assessmentRecord.sikap ?? 80,
+          kerapihan: assessmentRecord.kerapihan ?? 80,
+          absensi: assessmentRecord.absensi ?? 80,
+          kerjasama: assessmentRecord.kerjasama ?? 80,
         });
         setAttachments({
-          absensi: "bukti_absen_rekap.pdf",
           kinerja: "bukti_tugas_laporan.pdf",
           kedisiplinan: null,
-          kerjasama: "penilaian_peer_to_peer.docx",
           tanggungjawab: null,
           komunikasi: null,
-          penampilan: "rubrik_sidang_akhir.pdf"
+          sikap: null,
+          kerapihan: "rubrik_sidang_akhir.pdf",
+          absensi: "bukti_absen_rekap.pdf",
+          kerjasama: "penilaian_peer_to_peer.docx"
         });
         if (assessmentRecord.catatan) {
           setFeedbacks({
-            absensi: assessmentRecord.catatan,
             kinerja: assessmentRecord.catatan,
             kedisiplinan: assessmentRecord.catatan,
-            kerjasama: assessmentRecord.catatan,
             tanggungjawab: assessmentRecord.catatan,
             komunikasi: assessmentRecord.catatan,
-            penampilan: assessmentRecord.catatan,
+            sikap: assessmentRecord.catatan,
+            kerapihan: assessmentRecord.catatan,
+            absensi: assessmentRecord.catatan,
+            kerjasama: assessmentRecord.catatan,
           });
         }
       }
     } else if (mockStudent && mockStudent.grade !== null) {
       setAttachments({
-        absensi: "bukti_absen_rekap.pdf",
         kinerja: "bukti_tugas_laporan.pdf",
         kedisiplinan: null,
-        kerjasama: "penilaian_peer_to_peer.docx",
         tanggungjawab: null,
         komunikasi: null,
-        penampilan: "rubrik_sidang_akhir.pdf"
+        sikap: null,
+        kerapihan: "rubrik_sidang_akhir.pdf",
+        absensi: "bukti_absen_rekap.pdf",
+        kerjasama: "penilaian_peer_to_peer.docx"
       });
-      if (mockStudent.id === 1) setGrades({ absensi: 92, kinerja: 88, kedisiplinan: 90, kerjasama: 85, tanggungjawab: 88, komunikasi: 85, penampilan: 86 });
-      if (mockStudent.id === 2) setGrades({ absensi: 85, kinerja: 80, kedisiplinan: 83, kerjasama: 82, tanggungjawab: 84, komunikasi: 80, penampilan: 82 });
-      if (mockStudent.id === 3) setGrades({ absensi: 94, kinerja: 90, kedisiplinan: 92, kerjasama: 92, tanggungjawab: 95, komunikasi: 90, penampilan: 93 });
-      if (mockStudent.id === 5) setGrades({ absensi: 98, kinerja: 94, kedisiplinan: 96, kerjasama: 95, tanggungjawab: 96, komunikasi: 92, penampilan: 95 });
-      if (mockStudent.id === 6) setGrades({ absensi: 88, kinerja: 84, kedisiplinan: 85, kerjasama: 86, tanggungjawab: 85, komunikasi: 82, penampilan: 85 });
-      if (mockStudent.id === 8) setGrades({ absensi: 90, kinerja: 86, kedisiplinan: 87, kerjasama: 88, tanggungjawab: 88, komunikasi: 85, penampilan: 86 });
+      if (mockStudent.id === 1) setGrades({ kinerja: 88, kedisiplinan: 90, tanggungjawab: 88, komunikasi: 85, sikap: 92, kerapihan: 86, absensi: 92, kerjasama: 85 });
+      if (mockStudent.id === 2) setGrades({ kinerja: 80, kedisiplinan: 83, tanggungjawab: 84, komunikasi: 80, sikap: 85, kerapihan: 82, absensi: 85, kerjasama: 82 });
+      if (mockStudent.id === 3) setGrades({ kinerja: 90, kedisiplinan: 92, tanggungjawab: 95, komunikasi: 90, sikap: 94, kerapihan: 93, absensi: 94, kerjasama: 92 });
+      if (mockStudent.id === 5) setGrades({ kinerja: 94, kedisiplinan: 96, tanggungjawab: 96, komunikasi: 92, sikap: 98, kerapihan: 95, absensi: 98, kerjasama: 95 });
+      if (mockStudent.id === 6) setGrades({ kinerja: 84, kedisiplinan: 85, tanggungjawab: 85, komunikasi: 82, sikap: 88, kerapihan: 85, absensi: 88, kerjasama: 86 });
+      if (mockStudent.id === 8) setGrades({ kinerja: 86, kedisiplinan: 87, tanggungjawab: 88, komunikasi: 85, sikap: 90, kerapihan: 86, absensi: 90, kerjasama: 88 });
     }
   }, [assessmentRecord, mockStudent]);
 
@@ -302,7 +310,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
       await submitGrades({
         studentId: student.id,
         periodeMagangId: assessmentRecord?.periodeId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
-        mentorId: assessmentRecord?.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
+        mentorId: assessmentRecord?.mentorId || authUser?.id || "",
         grades: gradesList
       });
 
@@ -573,53 +581,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                         />
                       </div>
 
-                      {/* Attachment component slot for each criteria column */}
-                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between flex-wrap gap-2 text-[10px]">
-                        <span className="font-bold text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                          <Paperclip className="w-3.5 h-3.5 text-indigo-550" />
-                          Berkas Bukti / Lampiran (Attachment)
-                        </span>
 
-                        {uploadingCriteria === c.id ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              Mengunggah ({uploadProgress}%)
-                            </span>
-                            <div className="w-16 bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden">
-                              <div className="bg-indigo-600 h-full transition-all" style={{ width: `${uploadProgress}%` }} />
-                            </div>
-                          </div>
-                        ) : attachment ? (
-                          <div className="flex items-center gap-2">
-                            <a
-                              href="#"
-                              onClick={(e) => { e.preventDefault(); alert(`Lampiran berkas kriteria ${c.label}: ${attachment}`); }}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400 border border-indigo-200/30 rounded-xl font-bold transition-all"
-                            >
-                              <Paperclip className="w-3 h-3" />
-                              <span className="truncate max-w-[120px]">{attachment}</span>
-                            </a>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveAttachment(c.id, c.label)}
-                              className="p-1 bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400 rounded-lg transition-all border border-rose-200/30"
-                              title="Hapus berkas"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleAttachmentUpload(c.id, c.label)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-indigo-650 hover:text-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-transparent text-[10px] font-black rounded-xl transition-all cursor-pointer hover:scale-[1.01] active:scale-95 shadow-sm"
-                          >
-                            <Upload className="w-3 h-3" />
-                            Simpan Lampiran
-                          </button>
-                        )}
-                      </div>
 
                     </div>
                   );

@@ -1,156 +1,482 @@
-import type { Metadata } from "next";
+
 import Link from "next/link";
-import { ArrowRight, Hexagon, Shield, Sparkles, Building2, Lock } from "lucide-react";
+import type { Metadata } from "next";
+import { ArrowRight, Shield, Sparkles, Building2, Lock, Users, BarChart3, Zap, ChevronDown } from "lucide-react";
+import CursorGlow from "./CursorGlow";
 
 export const metadata: Metadata = {
-  title: "DIREKTORAT WILAYAH 1",
-  description: "Portal Akses Resmi Direktorat Wilayah 1",
+  title: "DW 1 · Sistem Manajemen Magang",
+  description: "Portal Resmi Direktorat Wilayah 1 — Platform digital terpadu untuk pengelolaan program magang industri.",
 };
 
 export default function Home() {
+  const stats = [
+    { value: "1.200+", label: "Mahasiswa Aktif" },
+    { value: "48", label: "Instansi Mitra" },
+    { value: "99.9%", label: "Uptime Sistem" },
+    { value: "24/7", label: "Monitoring" },
+  ];
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Keamanan Tingkat Tinggi",
+      desc: "Enkripsi end-to-end dengan autentikasi berlapis untuk seluruh data anggota.",
+      color: "from-cyan-500/20 to-blue-500/20",
+      border: "border-cyan-500/20",
+      iconColor: "text-cyan-400",
+      glow: "shadow-cyan-500/20",
+    },
+    {
+      icon: Building2,
+      title: "Layanan Terpadu",
+      desc: "Akses seluruh layanan wilayah dalam satu platform terintegrasi.",
+      color: "from-violet-500/20 to-purple-500/20",
+      border: "border-violet-500/20",
+      iconColor: "text-violet-400",
+      glow: "shadow-violet-500/20",
+    },
+    {
+      icon: Zap,
+      title: "Real-Time Sync",
+      desc: "Sinkronisasi data secara real-time antar departemen dan wilayah.",
+      color: "from-amber-500/20 to-orange-500/20",
+      border: "border-amber-500/20",
+      iconColor: "text-amber-400",
+      glow: "shadow-amber-500/20",
+    },
+    {
+      icon: BarChart3,
+      title: "Analitik Cerdas",
+      desc: "Dashboard analitik canggih untuk monitoring performa magang.",
+      color: "from-emerald-500/20 to-green-500/20",
+      border: "border-emerald-500/20",
+      iconColor: "text-emerald-400",
+      glow: "shadow-emerald-500/20",
+    },
+    {
+      icon: Users,
+      title: "Manajemen Anggota",
+      desc: "Kelola data mahasiswa, pembimbing, dan instansi dengan mudah.",
+      color: "from-pink-500/20 to-rose-500/20",
+      border: "border-pink-500/20",
+      iconColor: "text-pink-400",
+      glow: "shadow-pink-500/20",
+    },
+    {
+      icon: Sparkles,
+      title: "Sistem Terintegrasi",
+      desc: "Terhubung langsung dengan sistem pusat Direktorat Wilayah 1.",
+      color: "from-blue-500/20 to-indigo-500/20",
+      border: "border-blue-500/20",
+      iconColor: "text-blue-400",
+      glow: "shadow-blue-500/20",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#050505] text-slate-50 font-sans overflow-hidden relative selection:bg-cyan-500/30">
-      
-      {/* 1. ULTRA PREMIUM BACKGROUND */}
-      <div className="absolute inset-0 z-0">
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-        
-        {/* Glowing Orbs */}
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-900/40 blur-[120px] mix-blend-screen animate-pulse-slow" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-cyan-900/30 blur-[150px] mix-blend-screen animate-pulse-slow animation-delay-500" />
-        <div className="absolute top-[20%] right-[20%] w-[300px] h-[300px] rounded-full bg-indigo-600/20 blur-[100px] mix-blend-screen" />
+    <div className="min-h-screen bg-[#030712] text-slate-50 font-sans overflow-x-hidden selection:bg-cyan-500/30">
+
+      {/* ── CURSOR GLOW ── */}
+      <CursorGlow />
+
+      {/* ── BACKGROUND ── */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        {/* Noise texture */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay" />
+
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:72px_72px]" />
+
+        {/* Animated orbs */}
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+
+        {/* Radial vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(6,182,212,0.08),transparent)]" />
+        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#030712] to-transparent" />
       </div>
 
-      {/* 2. FLOATING PILL NAVBAR */}
-      <nav className="fixed top-6 inset-x-0 z-50 flex justify-center px-4 animate-fade-in-down">
-        <div className="flex items-center justify-between w-full max-w-5xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl rounded-full px-6 py-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+      {/* ── NAVBAR ── */}
+      <nav className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 pt-5">
+        <div className="navbar-glass flex items-center justify-between w-full max-w-5xl px-5 py-3">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 group cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:rotate-12 transition-transform duration-500">
-              <Shield className="w-4 h-4 text-white" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/60 group-hover:scale-110 transition-all duration-300">
+              <Shield className="w-4.5 h-4.5 text-white" size={18} />
             </div>
-            <span className="font-bold text-sm tracking-widest text-white">
-              DIRWIL<span className="text-cyan-400">1</span>
+            <span className="font-black text-sm tracking-[0.2em] text-white">
+              DW<span className="text-cyan-400"> 1</span>
             </span>
-          </div>
+          </Link>
 
-          {/* Links */}
+          {/* Nav links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-xs font-bold tracking-widest uppercase text-white/90 relative after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:w-full after:h-[1px] after:bg-cyan-400 after:scale-x-100 after:transition-transform">
-              Beranda
-            </Link>
+            {["Beranda", "Tentang", "Kontak"].map((link) => (
+              <a
+                key={link}
+                href="#"
+                className="text-[11px] font-semibold tracking-widest uppercase text-slate-400 hover:text-white transition-colors duration-200"
+              >
+                {link}
+              </a>
+            ))}
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <Link 
-              href="/login" 
-              className="text-xs font-bold text-slate-300 hover:text-white transition-colors px-4 py-2"
+            <Link
+              href="/login"
+              className="text-[11px] font-bold text-slate-300 hover:text-white transition-colors px-3 py-2"
             >
-              Login
+              Masuk
             </Link>
-            <Link 
-              href="/register" 
-              className="text-xs font-bold bg-white text-black hover:bg-cyan-50 px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_20px_-5px_rgba(255,255,255,0.5)]"
+            <Link
+              href="/register"
+              className="btn-primary text-[11px] font-bold px-5 py-2.5 rounded-xl"
             >
-              Register
+              Daftar
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* 3. HERO SECTION */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen max-w-6xl mx-auto px-6 text-center pt-20">
-        
-        {/* Top Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 mb-8 animate-fade-in-up shadow-[0_0_30px_-5px_rgba(6,182,212,0.3)]">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Sistem Informasi Terpusat</span>
+      {/* ── HERO ── */}
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen max-w-7xl mx-auto px-6 text-center pt-28">
+
+        {/* Badge */}
+        <div className="badge mb-10 animate-fade-in">
+          <Sparkles className="w-3 h-3 text-cyan-400" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-300">
+            Portal Resmi · Direktorat Wilayah 1
+          </span>
+          <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping-slow ml-1" />
         </div>
 
-        {/* Massive Typography */}
-        <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-[0.9] mb-8 animate-fade-in-up animation-delay-100">
-          <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500">
-            DIREKTORAT
+        {/* Headline */}
+        <h1 className="hero-text animate-fade-in-up animation-delay-100">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/30">
+            Sistem Manajemen
           </span>
-          <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 drop-shadow-[0_0_40px_rgba(6,182,212,0.4)]">
-            WILAYAH 1
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-500">
+            Magang Terpadu
           </span>
         </h1>
 
-        {/* Subtext */}
-        <p className="max-w-2xl text-base md:text-lg text-slate-400 font-medium mb-12 leading-relaxed animate-fade-in-up animation-delay-200">usat kendali dan layanan digital eksklusif untuk jajaran Direktorat Wilayah 1. Dirancang dengan tingkat keamanan tinggi, cepat, dan terintegrasi penuh.
+        {/* Sub */}
+        <p className="max-w-xl text-sm md:text-base text-slate-400 font-medium mb-12 leading-relaxed animate-fade-in-up animation-delay-200">
+          Platform digital eksklusif untuk pengelolaan program magang industri. Dirancang dengan keamanan tinggi, terintegrasi penuh, dan mudah digunakan.
         </p>
 
-        {/* Call To Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up animation-delay-300 w-full sm:w-auto">
-          <Link 
-            href="/login" 
-            className="group relative flex items-center justify-center gap-2 h-14 px-8 w-full sm:w-auto rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_-10px_rgba(6,182,212,0.6)] border border-white/10"
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up animation-delay-300 w-full sm:w-auto mb-20">
+          <Link
+            href="/login"
+            className="btn-cta-primary group w-full sm:w-auto"
           >
             <Lock className="w-4 h-4 relative z-10" />
-            <span className="relative z-10">Akses Portal Server</span>
+            <span className="relative z-10">Akses Sekarang</span>
             <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute inset-0 h-full w-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            <span className="btn-shine" />
           </Link>
-          
-          <Link 
-            href="/register" 
-            className="flex items-center justify-center h-14 px-8 w-full sm:w-auto rounded-full bg-white/[0.03] border border-white/[0.1] text-white font-bold text-sm hover:bg-white/[0.08] transition-all duration-300 hover:border-white/30 active:scale-95 backdrop-blur-md"
+          <Link
+            href="/register"
+            className="btn-cta-secondary w-full sm:w-auto"
           >
             Registrasi Anggota
           </Link>
         </div>
 
-        {/* Bottom Decorative Glass Panels */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl animate-fade-in-up animation-delay-400">
-          {[
-            { icon: Building2, title: "Layanan Terpadu", desc: "Akses seluruh layanan wilayah dalam satu pintu." },
-            { icon: Shield, title: "Keamanan Tingkat Tinggi", desc: "Enkripsi end-to-end untuk seluruh data anggota." },
-            { icon: Hexagon, title: "Sistem Terintegrasi", desc: "Sinkronisasi data real-time antar departemen." }
-          ].map((item, idx) => (
-            <div key={idx} className="flex flex-col items-center p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-lg hover:bg-white/[0.04] transition-colors">
-              <item.icon className="w-6 h-6 text-cyan-400 mb-4 opacity-80" />
-              <h3 className="text-sm font-bold text-slate-200 mb-2">{item.title}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
+        {/* Stats strip */}
+        <div className="stats-bar animate-fade-in-up animation-delay-400 w-full max-w-3xl mb-24">
+          {stats.map((s, i) => (
+            <div key={i} className="stat-item">
+              <span className="stat-value">{s.value}</span>
+              <span className="stat-label">{s.label}</span>
             </div>
           ))}
         </div>
 
+        {/* Scroll hint */}
+        <div className="flex flex-col items-center gap-2 animate-bounce-slow text-slate-600 mb-8">
+          <span className="text-[9px] uppercase tracking-widest font-bold">Fitur Unggulan</span>
+          <ChevronDown className="w-4 h-4" />
+        </div>
       </main>
 
-      {/* Global CSS injected */}
-      <style dangerouslySetInnerHTML={{__html: `
+      {/* ── FEATURES SECTION ── */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-32">
+        <div className="text-center mb-14">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-400 mb-4 block">Mengapa DW 1?</span>
+          <h2 className="text-3xl md:text-4xl font-black text-white">
+            Dirancang untuk{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+              Performa Maksimal
+            </span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {features.map((f, i) => (
+            <div
+              key={i}
+              className={`feature-card bg-gradient-to-br ${f.color} border ${f.border}`}
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <div className={`icon-wrap ${f.iconColor} shadow-lg ${f.glow}`}>
+                <f.icon className="w-5 h-5" />
+              </div>
+              <h3 className="text-sm font-bold text-white mb-2">{f.title}</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="relative z-10 border-t border-white/[0.05] py-8 text-center">
+        <p className="text-[10px] font-medium text-slate-600">
+          © 2025 Direktorat Wilayah 1 · Sistem Manajemen Magang ·{" "}
+          <span className="text-slate-500">All rights reserved</span>
+        </p>
+      </footer>
+
+      {/* ── GLOBAL STYLES ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Orbs */
+        .orb {
+          position: absolute;
+          border-radius: 9999px;
+          filter: blur(120px);
+          animation: orbFloat 10s ease-in-out infinite;
+          mix-blend-mode: screen;
+        }
+        .orb-1 {
+          top: -15%; left: -10%;
+          width: 55vw; height: 55vw;
+          background: radial-gradient(circle, rgba(6,182,212,0.18) 0%, rgba(37,99,235,0.12) 60%, transparent 100%);
+          animation-duration: 12s;
+        }
+        .orb-2 {
+          bottom: -20%; right: -10%;
+          width: 45vw; height: 45vw;
+          background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(6,182,212,0.08) 60%, transparent 100%);
+          animation-duration: 15s;
+          animation-delay: -5s;
+        }
+        .orb-3 {
+          top: 30%; right: 15%;
+          width: 25vw; height: 25vw;
+          background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 100%);
+          animation-duration: 9s;
+          animation-delay: -3s;
+        }
+        @keyframes orbFloat {
+          0%, 100% { transform: translateY(0) scale(1); }
+          33% { transform: translateY(-4%) scale(1.03); }
+          66% { transform: translateY(3%) scale(0.97); }
+        }
+
+        /* Navbar */
+        .navbar-glass {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        /* Badge */
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 16px;
+          border-radius: 9999px;
+          background: rgba(6,182,212,0.08);
+          border: 1px solid rgba(6,182,212,0.25);
+          backdrop-filter: blur(12px);
+          box-shadow: 0 0 30px -8px rgba(6,182,212,0.4), inset 0 1px 0 rgba(6,182,212,0.1);
+        }
+
+        /* Ping dot */
+        @keyframes pingSlow {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.8); }
+        }
+        .animate-ping-slow { animation: pingSlow 2s ease-in-out infinite; }
+
+        /* Hero text */
+        .hero-text {
+          font-size: clamp(3rem, 8vw, 6.5rem);
+          font-weight: 900;
+          line-height: 0.95;
+          letter-spacing: -0.03em;
+          margin-bottom: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn-primary {
+          background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(37,99,235,0.15));
+          border: 1px solid rgba(6,182,212,0.3);
+          color: white;
+          transition: all 0.2s;
+        }
+        .btn-primary:hover {
+          background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(37,99,235,0.25));
+          border-color: rgba(6,182,212,0.6);
+          box-shadow: 0 0 20px -5px rgba(6,182,212,0.5);
+        }
+
+        .btn-cta-primary {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 52px;
+          padding: 0 28px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #06b6d4, #2563eb);
+          color: white;
+          font-weight: 700;
+          font-size: 13px;
+          overflow: hidden;
+          transition: all 0.3s;
+          box-shadow: 0 0 40px -10px rgba(6,182,212,0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.15);
+        }
+        .btn-cta-primary:hover {
+          transform: scale(1.04);
+          box-shadow: 0 0 60px -8px rgba(6,182,212,0.9);
+        }
+        .btn-cta-primary:active { transform: scale(0.97); }
+        .btn-shine {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+          transform: translateX(-100%);
+          transition: transform 0.6s;
+        }
+        .btn-cta-primary:hover .btn-shine { transform: translateX(100%); }
+
+        .btn-cta-secondary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 52px;
+          padding: 0 28px;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: white;
+          font-weight: 700;
+          font-size: 13px;
+          backdrop-filter: blur(12px);
+          transition: all 0.3s;
+        }
+        .btn-cta-secondary:hover {
+          background: rgba(255,255,255,0.08);
+          border-color: rgba(255,255,255,0.25);
+          transform: scale(1.02);
+        }
+
+        /* Stats */
+        .stats-bar {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px;
+          overflow: hidden;
+          backdrop-filter: blur(12px);
+        }
+        @media (max-width: 640px) {
+          .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px 16px;
+          background: rgba(255,255,255,0.02);
+          gap: 4px;
+          transition: background 0.2s;
+        }
+        .stat-item:hover { background: rgba(255,255,255,0.05); }
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 900;
+          background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -0.03em;
+        }
+        .stat-label {
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #64748b;
+        }
+
+        /* Feature cards */
+        .feature-card {
+          display: flex;
+          flex-direction: column;
+          padding: 28px;
+          border-radius: 20px;
+          backdrop-filter: blur(12px);
+          transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+          animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .feature-card:hover {
+          transform: translateY(-4px) scale(1.01);
+          box-shadow: 0 20px 60px -15px rgba(0,0,0,0.5);
+        }
+        .icon-wrap {
+          width: 44px; height: 44px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 16px;
+          transition: transform 0.3s;
+        }
+        .feature-card:hover .icon-wrap { transform: scale(1.1) rotate(3deg); }
+
+        /* Animations */
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px) scale(0.95); filter: blur(10px); }
-          to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+          from { opacity: 0; transform: translateY(24px); filter: blur(8px); }
+          to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
         @keyframes fadeInDown {
-          from { opacity: 0; transform: translateY(-30px); }
+          from { opacity: 0; transform: translateY(-16px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulseSlow {
-          0%, 100% { opacity: 0.4; transform: scale(1); }
-          50% { opacity: 0.7; transform: scale(1.05); }
+        .animate-fade-in {
+          animation: fadeInUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
         }
         .animate-fade-in-up {
-          animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: fadeInUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
           opacity: 0;
-        }
-        .animate-fade-in-down {
-          animation: fadeInDown 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          opacity: 0;
-        }
-        .animate-pulse-slow {
-          animation: pulseSlow 8s ease-in-out infinite;
         }
         .animation-delay-100 { animation-delay: 100ms; }
-        .animation-delay-200 { animation-delay: 200ms; }
-        .animation-delay-300 { animation-delay: 300ms; }
-        .animation-delay-400 { animation-delay: 400ms; }
-        .animation-delay-500 { animation-delay: 500ms; }
+        .animation-delay-200 { animation-delay: 220ms; }
+        .animation-delay-300 { animation-delay: 340ms; }
+        .animation-delay-400 { animation-delay: 460ms; }
+
+        @keyframes bounceSlow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(6px); }
+        }
+        .animate-bounce-slow { animation: bounceSlow 2s ease-in-out infinite; }
       `}} />
     </div>
   );

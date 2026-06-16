@@ -75,7 +75,7 @@ export default function LoginPage() {
             <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300">Portal Keamanan</span>
           </div>
           <h1 className="text-2xl font-black tracking-widest text-white mb-2">
-            DIRWIL<span className="text-cyan-400">1</span>
+            DW<span className="text-cyan-400"> 1</span>
           </h1>
           <p className="text-xs text-slate-500 font-medium">Masuk untuk mengakses sistem terpadu</p>
         </div>

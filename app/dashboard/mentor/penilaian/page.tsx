@@ -42,39 +42,51 @@ export default function MentorPenilaianPage() {
 
   // Map student evaluation list response to view models
   const enrichedStudents = useMemo(() => {
-    return assessments.map(item => {
-      const student = studentsList.find(s => String(s.id) === String(item.mahasiswaId) || s.nim === item.nim);
+    return studentsList.map(student => {
+      const assessment = assessments.find(a => String(a.mahasiswaId) === String(student.id) || a.nim === student.nim);
       return {
-        id: item.mahasiswaId,
-        name: item.namaMahasiswa,
-        nim: item.nim,
-        university: student ? student.university : "Universitas Mitra",
-        company: student ? student.company : "Kantor Mitra",
-        avatarColor: student ? student.avatarColor : "from-[#2F578A] to-[#232F72]",
-        grade: item.nilaiTotal,
-        penilaianId: item.penilaianId
+        id: student.id,
+        name: student.name,
+        nim: student.nim,
+        university: student.university || "Universitas Mitra",
+        company: student.company || "Kantor Mitra",
+        avatarColor: student.avatarColor || "from-[#2F578A] to-[#232F72]",
+        grade: assessment ? assessment.nilaiTotal : null,
+        penilaianId: assessment ? assessment.id : null
       };
     });
-  }, [assessments]);
+  }, [studentsList, assessments]);
 
-  const filteredStudents = enrichedStudents;
+  const filteredStudents = useMemo(() => {
+    let result = enrichedStudents;
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(s => 
+        s.name.toLowerCase().includes(q) || 
+        s.nim.toLowerCase().includes(q) || 
+        s.university.toLowerCase().includes(q) || 
+        s.company.toLowerCase().includes(q)
+      );
+    }
+
+    if (statusFilter === "Sudah Dinilai") {
+      result = result.filter(s => s.penilaianId !== null);
+    } else if (statusFilter === "Belum Dinilai") {
+      result = result.filter(s => s.penilaianId === null);
+    }
+
+    return result;
+  }, [enrichedStudents, searchQuery, statusFilter]);
 
   // Calculate assessment quick statistics reactively
   const stats = useMemo(() => {
-    if (apiStats) {
-      return {
-        total: apiStats.totalPenilaian,
-        graded: apiStats.totalSudahDinilai,
-        pending: apiStats.totalBelumDinilai,
-        ratio: apiStats.totalPenilaian > 0 ? ((apiStats.totalSudahDinilai / apiStats.totalPenilaian) * 100).toFixed(1) : "0.0"
-      };
-    }
-    const total = assessments.length;
-    const graded = assessments.filter(s => s.penilaianId !== null).length;
+    const total = enrichedStudents.length;
+    const graded = enrichedStudents.filter(s => s.penilaianId !== null).length;
     const pending = total - graded;
     const ratio = total > 0 ? ((graded / total) * 100).toFixed(1) : "0.0";
     return { total, graded, pending, ratio };
-  }, [assessments, apiStats]);
+  }, [enrichedStudents]);
 
   return (
     <div className="space-y-6">

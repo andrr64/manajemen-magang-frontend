@@ -824,18 +824,18 @@ export default function MentorDataMahasiswaPage() {
         <div className="overflow-x-auto w-full">
           <table className="w-full min-w-[900px] border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-[#2F578A] text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 uppercase tracking-widest text-left">
-                <th className="pb-3.5 pl-4 font-bold">Nama Lengkap</th>
-                <th className="pb-3.5 font-bold">NIM</th>
-                <th className="pb-3.5 font-bold">Email</th>
-                <th className="pb-3.5 font-bold">Universitas</th>
-                <th className="pb-3.5 font-bold">No. HP</th>
-                <th className="pb-3.5 font-bold">Gender</th>
-                <th className="pb-3.5 font-bold">Periode Magang</th>
-                <th className="pb-3.5 pr-4 font-bold text-right">Aksi</th>
+              <tr className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 uppercase tracking-widest text-left">
+                <th className="py-3 pl-4 pr-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Nama Lengkap</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">NIM</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Email</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Universitas</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">No. HP</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Gender</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Periode Magang</th>
+                <th className="py-3 pl-3 pr-4 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2F578A]/30 dark:divide-[#2F578A]/50 text-xs">
+            <tbody className="text-xs">
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center">
@@ -851,7 +851,7 @@ export default function MentorDataMahasiswaPage() {
                   className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer"
                 >
                   {/* Column 1: Nama Lengkap */}
-                  <td className="py-4 pl-4">
+                  <td className="py-4 pl-4 pr-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-sm shadow-md shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
                         {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
@@ -868,14 +868,14 @@ export default function MentorDataMahasiswaPage() {
                   </td>
 
                   {/* Column 2: NIM */}
-                  <td className="py-4 font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">
+                  <td className="py-4 px-3 font-bold text-[#232F72]/80 dark:text-[#F1F5F9] border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="block h-full w-full py-1">
                       {student.nim}
                     </Link>
                   </td>
 
                   {/* Column 3: Email */}
-                  <td className="py-4 text-[#2F578A] dark:text-[#F1F5F9]/80">
+                  <td className="py-4 px-3 text-[#2F578A] dark:text-[#F1F5F9]/80 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <a 
                       href={`mailto:${student.email}`}
                       className="inline-flex items-center gap-1 hover:text-[#232F72] dark:text-[#FFFFFF] dark:hover:text-[#232F72] dark:text-[#FFFFFF] font-semibold"
@@ -888,7 +888,7 @@ export default function MentorDataMahasiswaPage() {
                   </td>
 
                   {/* Column 4: Universitas */}
-                  <td className="py-4">
+                  <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="inline-flex items-center gap-1 text-[#232F72]/80 dark:text-[#F1F5F9] font-bold">
                       <School className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF]" />
                       <span>{student.university}</span>
@@ -896,7 +896,7 @@ export default function MentorDataMahasiswaPage() {
                   </td>
 
                   {/* Column 5: No HP */}
-                  <td className="py-4 text-[#2F578A] dark:text-[#F1F5F9]/80 font-semibold">
+                  <td className="py-4 px-3 text-[#2F578A] dark:text-[#F1F5F9]/80 font-semibold border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <a 
                       href={`tel:${student.phone.replace(/[^0-9+]/g, '')}`}
                       className="inline-flex items-center gap-1 hover:text-[#232F72] dark:text-[#FFFFFF] dark:hover:text-[#232F72] dark:text-[#FFFFFF]"
@@ -908,7 +908,7 @@ export default function MentorDataMahasiswaPage() {
                   </td>
  
                   {/* Column 6: Gender */}
-                  <td className="py-4">
+                  <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wide border ${
                       student.gender === "Laki-laki" 
                         ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/40" 
@@ -922,7 +922,7 @@ export default function MentorDataMahasiswaPage() {
                   </td>
  
                   {/* Column 7: Periode Magang */}
-                  <td className="py-4">
+                  <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="flex items-center gap-2 group/period">
                       <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
                         <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || student.tanggalMulai || "-"}</span>
@@ -933,7 +933,7 @@ export default function MentorDataMahasiswaPage() {
                   </td>
 
                   {/* Column 8: Aksi */}
-                  <td className="py-4 pr-4 text-right">
+                  <td className="py-4 pl-3 pr-4 text-right border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                       <Link 
                         href={`/dashboard/mentor/data-mahasiswa/${student.id}`}

@@ -319,13 +319,13 @@ export const penilaianAPI = {
           periodeMagangId: payload.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
           mentorId: payload.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
           kinerja: getVal("kinerja"),
-          kedisiplinan: getVal("kedisiplinan") || getVal("absensi"),
+          kedisiplinan: getVal("kedisiplinan"),
           tanggungJawab: getVal("tanggungjawab"),
-          komunikasi: getVal("komunikasi") || getVal("keaktifan"),
+          komunikasi: getVal("komunikasi"),
           sikap: getVal("sikap"),
-          kerapihan: getVal("penampilan") || 85.0,
+          kerapihan: getVal("kerapihan"),
           absensi: getVal("absensi"),
-          kerjasama: getVal("kerjasama") || 85.0,
+          kerjasama: getVal("kerjasama"),
           catatan: payload.grades[0]?.feedback || "Performa magang sangat memuaskan."
         })
       },
@@ -334,13 +334,13 @@ export const penilaianAPI = {
         const index = current.findIndex(item => String(item.mahasiswaId) === String(payload.studentId));
         
         const kinerja = getVal("kinerja");
-        const kedisiplinan = getVal("kedisiplinan") || getVal("absensi");
+        const kedisiplinan = getVal("kedisiplinan");
         const tanggungJawab = getVal("tanggungjawab");
-        const komunikasi = getVal("komunikasi") || getVal("keaktifan");
+        const komunikasi = getVal("komunikasi");
         const sikap = getVal("sikap");
-        const kerapihan = getVal("penampilan") || 85.0;
+        const kerapihan = getVal("kerapihan");
         const absensi = getVal("absensi");
-        const kerjasama = getVal("kerjasama") || 85.0;
+        const kerjasama = getVal("kerjasama");
         const catatan = payload.grades[0]?.feedback || "Performa magang sangat memuaskan.";
         const nilaiTotal = parseFloat(((kinerja * 0.2) + (kedisiplinan * 0.15) + (tanggungJawab * 0.15) + (komunikasi * 0.1) + (sikap * 0.1) + (kerapihan * 0.1) + (absensi * 0.1) + (kerjasama * 0.1)).toFixed(1));
 
