@@ -268,7 +268,7 @@ export default function DashboardHome() {
                   <td className="py-4 px-4 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="flex justify-center items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-xs shadow-inner group-hover:scale-105 transition-transform`}>
-                        {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                        {(student.name || "Mahasiswa").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
                         <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#36ADA3] dark:group-hover:text-[#36ADA3] transition-colors leading-tight">

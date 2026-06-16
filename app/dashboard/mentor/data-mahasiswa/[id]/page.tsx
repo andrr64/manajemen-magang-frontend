@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { use, useState } from "react";
 import Link from "next/link";
@@ -184,7 +184,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
             <div
               className={`w-24 h-24 md:w-28 md:h-28 rounded-3xl bg-gradient-to-tr ${student.avatarColor} text-white font-black flex items-center justify-center text-4xl shadow-xl shadow-black/30 ring-4 ring-white/10`}
             >
-              {student.name
+              {(student.name || "Mahasiswa")
                 .split(" ")
                 .map((n: string) => n[0])
                 .join("")
