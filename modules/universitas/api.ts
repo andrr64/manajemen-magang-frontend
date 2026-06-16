@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { Universitas, UniversitasRequest } from "./types";
 
 const INITIAL_UNIVERSITAS: Universitas[] = [
@@ -11,7 +12,7 @@ export const universitasApi = {
   getUniversitasList: async () => {
     return executeHybridRequest<Universitas[]>(
       "Fetch universitas list",
-      "/api/universitas",
+      API_ROUTES.UNIVERSITAS_LIST,
       { method: "GET" },
       () => mockDB.get<Universitas[]>("universitas", INITIAL_UNIVERSITAS)
     );
@@ -20,7 +21,7 @@ export const universitasApi = {
   addUniversitas: async (req: UniversitasRequest) => {
     return executeHybridRequest<Universitas>(
       "Add universitas",
-      "/api/universitas",
+      API_ROUTES.UNIVERSITAS_LIST,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,7 +44,7 @@ export const universitasApi = {
   editUniversitas: async (id: number, req: UniversitasRequest) => {
     return executeHybridRequest<Universitas>(
       `Edit universitas ID: ${id}`,
-      `/api/universitas/${id}`,
+      API_ROUTES.UNIVERSITAS_DETAIL(id),
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -67,7 +68,7 @@ export const universitasApi = {
   deleteUniversitas: async (id: number) => {
     return executeHybridRequest<boolean>(
       `Delete universitas ID: ${id}`,
-      `/api/universitas/${id}`,
+      API_ROUTES.UNIVERSITAS_DETAIL(id),
       { method: "DELETE" },
       () => {
         const list = mockDB.get<Universitas[]>("universitas", INITIAL_UNIVERSITAS);

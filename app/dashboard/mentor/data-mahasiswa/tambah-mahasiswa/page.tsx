@@ -1,4 +1,5 @@
 "use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -19,10 +20,11 @@ import {
   AlertTriangle,
   GraduationCap
 } from "lucide-react";
-import { mahasiswaAPI } from "@/modules/mahasiswa/api";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 
 export default function TambahMahasiswaPage() {
   const router = useRouter();
+  const { addStudent } = useStudents();
 
   // Form Fields State
   const [formData, setFormData] = useState({
@@ -86,8 +88,7 @@ export default function TambahMahasiswaPage() {
     setIsSubmitting(true);
 
     try {
-      // Call real simulated API to save student details persistently
-      await mahasiswaAPI.createStudent({
+      await addStudent({
         name: formData.name,
         nim: formData.nim,
         email: formData.email,
@@ -106,7 +107,7 @@ export default function TambahMahasiswaPage() {
 
       // Redirect back to students table after showing success modal
       setTimeout(() => {
-        router.push("/dashboard/mentor/data-mahasiswa");
+        router.push(WEB_ROUTES.MENTOR_DATA_MAHASISWA);
       }, 2000);
     } catch (err: any) {
       setIsSubmitting(false);

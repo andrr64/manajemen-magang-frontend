@@ -21,8 +21,8 @@ import {
   ArrowRight,
   Briefcase
 } from "lucide-react";
-import { useStudents } from "@/modules/mahasiswa/hooks";
-import { mahasiswaAPI } from "@/modules/mahasiswa/api";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
+import { mahasiswaAPI } from "@/modules/data_mahasiswa/api";
 
 interface StudentPeriod {
   studentId: number;
@@ -31,7 +31,7 @@ interface StudentPeriod {
 }
 
 export default function MentorInternshipPeriodPage() {
-  const { rawStudents, refreshStudents } = useStudents();
+  const { rawStudents, refreshStudents, updateStudent } = useStudents();
   const studentsList = rawStudents;
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,7 +121,7 @@ export default function MentorInternshipPeriodPage() {
       };
       const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
 
-      await mahasiswaAPI.updateStudent(editingStudentId!, {
+      await updateStudent(editingStudentId!, {
         period: periodStr
       });
       await refreshStudents();

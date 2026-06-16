@@ -18,8 +18,8 @@ import {
   FileText
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
-import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudentReferenceLetters } from "@/modules/surat_keterangan/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 
 export default function MentorReferenceLetterPage() {
   const [searchQuery, setSearchQuery] = useState("");

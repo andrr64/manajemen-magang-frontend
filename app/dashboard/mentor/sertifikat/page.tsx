@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 
 export default function MentorCertificatePage() {
   const [searchQuery, setSearchQuery] = useState("");

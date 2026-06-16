@@ -24,9 +24,9 @@ import {
   GraduationCap,
   AlertTriangle
 } from "lucide-react";
-import { Student } from "@/modules/mahasiswa/types";
-import { useStudents, useStudentStats } from "@/modules/mahasiswa/hooks";
-import { mahasiswaAPI } from "@/modules/mahasiswa/api";
+import { Student } from "@/modules/data_mahasiswa/types";
+import { useStudents, useStudentStats } from "@/modules/data_mahasiswa/hooks";
+import { mahasiswaAPI } from "@/modules/data_mahasiswa/api";
 import { useUniversitas } from "@/modules/universitas/hooks";
 
 export default function MentorDataMahasiswaPage() {
@@ -37,7 +37,7 @@ export default function MentorDataMahasiswaPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const { students: filteredStudents, isLoading, refreshStudents, removeStudent } = useStudents({
+  const { students: filteredStudents, isLoading, refreshStudents, removeStudent, updateStudent } = useStudents({
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
     universitas: univFilter !== "Semua" ? univFilter : undefined,
     status: statusFilter !== "Semua" ? statusFilter : undefined,
@@ -89,7 +89,7 @@ export default function MentorDataMahasiswaPage() {
     const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
 
     try {
-      await mahasiswaAPI.updateStudent(editingStudentId!, {
+      await updateStudent(editingStudentId!, {
         period: periodStr
       });
       await refreshStudents();
@@ -224,7 +224,7 @@ export default function MentorDataMahasiswaPage() {
     setIsSavingEdit(true);
 
     try {
-      await mahasiswaAPI.updateStudent(editingStudent!.id, {
+      await updateStudent(editingStudent!.id, {
         nama: editForm.name,
         nim: editForm.nim,
         email: editForm.email,

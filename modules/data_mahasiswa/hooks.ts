@@ -52,6 +52,22 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
     }
   };
 
+  const updateStudent = async (id: number | string, payload: UpdateStudentRequest) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const response = await mahasiswaAPI.updateStudent(id, payload);
+      setStudents(prev => prev.map(s => String(s.id) === String(id) ? response.data : s));
+      return response.data;
+    } catch (err: any) {
+      const errMsg = err.message || "Gagal memperbarui data mahasiswa.";
+      setError(errMsg);
+      throw new Error(errMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const removeStudent = async (id: number | string) => {
     setIsSubmitting(true);
     setError(null);
@@ -93,6 +109,7 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
     isSubmitting,
     error,
     addStudent,
+    updateStudent,
     removeStudent,
     refreshStudents: fetchStudents
   };

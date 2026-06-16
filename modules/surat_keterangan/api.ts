@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { LetterInfo, RequestLetterPayload, VerifyLetterResponse, SuratKeteranganResponse, SuratKeteranganStatResponse } from "./types";
 import { mediaAPI } from "../media/api";
 
@@ -46,7 +47,7 @@ export const suratKeteranganAPI = {
   getLetter: async () => {
     return executeHybridRequest<LetterInfo>(
       "Get student reference letter details",
-      "/api/surat-keterangan",
+      API_ROUTES.SURAT_KETERANGAN_LIST,
       {
         method: "GET"
       },
@@ -68,7 +69,7 @@ export const suratKeteranganAPI = {
   requestLetter: async (payload: RequestLetterPayload) => {
     return executeHybridRequest<LetterInfo>(
       `Request new reference letter for ${payload.recipientName}`,
-      "/api/surat-keterangan",
+      API_ROUTES.SURAT_KETERANGAN_LIST,
       {
         method: "POST",
         body: JSON.stringify({
@@ -111,7 +112,7 @@ export const suratKeteranganAPI = {
   verifyCode: async (code: string) => {
     return executeHybridRequest<VerifyLetterResponse>(
       `Verify letter security code: ${code}`,
-      "/api/surat-keterangan",
+      API_ROUTES.SURAT_KETERANGAN_LIST,
       {
         method: "GET"
       },
@@ -167,7 +168,7 @@ export const suratKeteranganAPI = {
   signLetter: async (payload: Partial<LetterInfo>) => {
     return executeHybridRequest<LetterInfo>(
       "Issue and digitally sign reference letter",
-      "/api/surat-keterangan",
+      API_ROUTES.SURAT_KETERANGAN_LIST,
       {
         method: "POST",
         body: JSON.stringify({
@@ -202,7 +203,7 @@ export const suratKeteranganAPI = {
     if (status && status !== "Semua") queryParams.append("status", status);
     if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
 
-    const url = `/api/surat-keterangan?${queryParams.toString()}`;
+    const url = `${API_ROUTES.SURAT_KETERANGAN_LIST}?${queryParams.toString()}`;
     return executeHybridRequest<SuratKeteranganResponse[]>(
       "Get student reference letter list with filters",
       url,
@@ -229,7 +230,7 @@ export const suratKeteranganAPI = {
     const queryParams = new URLSearchParams();
     if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
 
-    const url = `/api/surat-keterangan/statistik?${queryParams.toString()}`;
+    const url = `${API_ROUTES.SURAT_KETERANGAN_STATISTIK}?${queryParams.toString()}`;
     return executeHybridRequest<SuratKeteranganStatResponse>(
       "Get reference letter statistics",
       url,
@@ -259,7 +260,7 @@ export const suratKeteranganAPI = {
   uploadSuratKeterangan: async (periodeMagangId: string, url: string) => {
     return executeHybridRequest<SuratKeteranganResponse>(
       "Upload reference letter",
-      "/api/surat-keterangan",
+      API_ROUTES.SURAT_KETERANGAN_LIST,
       {
         method: "POST",
         body: JSON.stringify({

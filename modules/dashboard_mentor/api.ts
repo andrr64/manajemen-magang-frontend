@@ -1,14 +1,15 @@
-import { executeHybridRequest } from "../api-client";
+﻿import { executeHybridRequest } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { DashboardStatResponse, RegisterStudentRequest, SearchStudentResponse } from "./types";
 
-const BASE_URL = "/api/dashboard-mentor";
+
 
 export const dashboardMentorAPI = {
   /**
    * Mengambil data statistik dashboard mentor.
    */
   getDashboardStats: async (mentorId?: string | number) => {
-    const url = mentorId ? `${BASE_URL}/statistik?mentorId=${mentorId}` : `${BASE_URL}/statistik`;
+    const url = mentorId ? `${API_ROUTES.DASHBOARD_MENTOR_STATISTIK}?mentorId=${mentorId}` : API_ROUTES.DASHBOARD_MENTOR_STATISTIK;
     return executeHybridRequest<DashboardStatResponse>(
       "Get dashboard stats for mentor",
       url,
@@ -41,7 +42,7 @@ export const dashboardMentorAPI = {
    * Mencari mahasiswa bimbingan berdasarkan nama.
    */
   searchStudents: async (name?: string) => {
-    const url = name ? `${BASE_URL}/mahasiswa?nama=${encodeURIComponent(name)}` : `${BASE_URL}/mahasiswa`;
+    const url = name ? `${API_ROUTES.DASHBOARD_MENTOR_MAHASISWA}?nama=${encodeURIComponent(name)}` : API_ROUTES.DASHBOARD_MENTOR_MAHASISWA;
     return executeHybridRequest<SearchStudentResponse[]>(
       `Search students with name: ${name || 'all'}`,
       url,
@@ -67,7 +68,7 @@ export const dashboardMentorAPI = {
   registerStudent: async (payload: RegisterStudentRequest) => {
     return executeHybridRequest<SearchStudentResponse>(
       `Register new student: ${payload.nama}`,
-      `${BASE_URL}/mahasiswa`,
+      API_ROUTES.DASHBOARD_MENTOR_MAHASISWA,
       {
         method: "POST",
         body: JSON.stringify(payload)

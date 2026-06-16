@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import {
   AttendanceLog,
   AttendanceSummary,
@@ -100,7 +101,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<AbsensiResponse[]>(
       "Get attendance history list",
-      `/api/absensi?${q.toString()}`,
+      `${API_ROUTES.ABSENSI_LIST}?${q.toString()}`,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -146,7 +147,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<AbsensiStatResponse>(
       "Calculate attendance statistics",
-      `/api/absensi/statistik?${q.toString()}`,
+      `${API_ROUTES.ABSENSI_STATISTIK}?${q.toString()}`,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -177,7 +178,7 @@ export const absensiAPI = {
     const action = status === "Diverifikasi" ? "setujui" : "tolak";
     return executeHybridRequest<AbsensiResponse>(
       `Verify attendance ID: ${id} → ${status}`,
-      `/api/absensi/${id}/verifikasi?action=${action}`,
+      `${API_ROUTES.ABSENSI_VERIFY(id)}?action=${action}`,
       { method: "POST" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -218,7 +219,7 @@ export const absensiAPI = {
   deleteAttendance: async (id: string | number) => {
     return executeHybridRequest<void>(
       `Delete attendance ID: ${id}`,
-      `/api/absensi/${id}`,
+      API_ROUTES.ABSENSI_DELETE(id),
       { method: "DELETE" },
       () => {
         const filtered = mockDB
@@ -239,7 +240,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<string>(
       "Export attendance records",
-      `/api/absensi/ekspor?${q.toString()}`,
+      `${API_ROUTES.ABSENSI_EKSPOR}?${q.toString()}`,
       { method: "GET" },
       () => {
         let list = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -262,7 +263,7 @@ export const absensiAPI = {
   getSuratKeterangan: async (id: string | number) => {
     return executeHybridRequest<{ url: string }>(
       `Get surat keterangan ID: ${id}`,
-      `/api/absensi/${id}/surat-keterangan`,
+      API_ROUTES.ABSENSI_SURAT_KET(id),
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -292,7 +293,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<AbsensiResponse>(
       "Submit absensi harian mahasiswa",
-      `/api/absensi/mahasiswa/submit?${q.toString()}`,
+      `${API_ROUTES.ABSENSI_SUBMIT}?${q.toString()}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -358,7 +359,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<AbsensiResponse[]>(
       "Get riwayat absensi mahasiswa",
-      `/api/absensi/mahasiswa/riwayat?userId=${userId}`,
+      `${API_ROUTES.ABSENSI_RIWAYAT}?userId=${userId}`,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -397,7 +398,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<AbsensiMahasiswaStatResponse>(
       "Get statistik absensi mahasiswa",
-      `/api/absensi/mahasiswa/statistik?userId=${userId}`,
+      `${API_ROUTES.ABSENSI_MAHASISWA_STATISTIK}?userId=${userId}`,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -425,7 +426,7 @@ export const absensiAPI = {
 
     return executeHybridRequest<number>(
       "Get total kehadiran",
-      "/api/absensi/total-kehadiran",
+      API_ROUTES.ABSENSI_TOTAL_KEHADIRAN,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -440,7 +441,7 @@ export const absensiAPI = {
   getStatistikKehadiran: async () => {
     return executeHybridRequest<{ totalHadir: number; totalIzin: number; totalSakit: number }>(
       "Get statistik kehadiran harian",
-      "/api/absensi/statistik-kehadiran",
+      API_ROUTES.ABSENSI_STATISTIK_KEHADIRAN,
       { method: "GET" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);
@@ -470,7 +471,7 @@ export const absensiAPI = {
   checkOut: async () => {
     return executeHybridRequest<AttendanceLog>(
       "Check-out for today",
-      "/api/absensi/mahasiswa/checkout",
+      API_ROUTES.ABSENSI_CHECKOUT,
       { method: "POST" },
       () => {
         const history = mockDB.get<AttendanceLog[]>("attendance_history", INITIAL_ATTENDANCE);

@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { RegisterRequest, LoginRequest, LoginResponse, UserResponse, UpdateUserRequest } from "./types";
 
 const MOCK_USERS: UserResponse[] = [
@@ -16,7 +17,7 @@ export const iamAPI = {
   login: async (payload: LoginRequest) => {
     return executeHybridRequest<LoginResponse>(
       `Login as ${payload.email}`,
-      "/api/iam/login",
+      API_ROUTES.IAM_LOGIN,
       {
         method: "POST",
         body: JSON.stringify(payload)
@@ -35,7 +36,7 @@ export const iamAPI = {
   register: async (payload: RegisterRequest) => {
     return executeHybridRequest<UserResponse>(
       `Register user: ${payload.nama}`,
-      "/api/iam/register",
+      API_ROUTES.IAM_REGISTER,
       {
         method: "POST",
         body: JSON.stringify(payload)
@@ -61,7 +62,7 @@ export const iamAPI = {
   getMe: async () => {
     return executeHybridRequest<UserResponse>(
       "Get current user profile",
-      "/api/iam/me",
+      API_ROUTES.IAM_ME,
       { 
         method: "GET" 
       },
@@ -76,7 +77,7 @@ export const iamAPI = {
   updateProfile: async (payload: UpdateUserRequest) => {
     return executeHybridRequest<UserResponse>(
       "Update profile",
-      "/api/iam/update",
+      API_ROUTES.IAM_UPDATE,
       {
         method: "PUT",
         body: JSON.stringify(payload)
@@ -93,7 +94,7 @@ export const iamAPI = {
   logout: async () => {
     return executeHybridRequest(
       "Logout",
-      "/api/iam/logout",
+      API_ROUTES.IAM_LOGOUT,
       { method: "POST" },
       () => {
         mockDB.set("token", null);

@@ -1,4 +1,5 @@
 "use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -45,7 +46,7 @@ export default function RegisterPage() {
       
       // After successful registration & automatic login inside the hook
       // Redirect to root dispatcher to centralize logic
-      router.push("/dashboard");
+      router.push(WEB_ROUTES.DASHBOARD);
     } catch (err: any) {
       setErrorMsg(err.message || "Terjadi kesalahan saat mendaftar.");
       setIsLoading(false);
@@ -237,7 +238,7 @@ export default function RegisterPage() {
               Sudah memiliki akun?{" "}
               <button 
                 type="button" 
-                onClick={() => router.push('/login')}
+                onClick={() => router.push(WEB_ROUTES.LOGIN)}
                 className="text-white hover:text-blue-400 font-medium hover:underline transition-colors"
               >
                 Masuk di sini

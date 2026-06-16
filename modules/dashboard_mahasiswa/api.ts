@@ -1,4 +1,5 @@
-import { executeHybridRequest } from "../api-client";
+﻿import { executeHybridRequest } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { DashboardMahasiswaStatResponse } from "./types";
 
 export const dashboardMahasiswaAPI = {
@@ -8,7 +9,7 @@ export const dashboardMahasiswaAPI = {
   getDashboardStats: async (mahasiswaId: string | number) => {
     return executeHybridRequest<DashboardMahasiswaStatResponse>(
       `Get dashboard stats for mahasiswa ${mahasiswaId}`,
-      `/api/dashboard-mahasiswa/statistik?mahasiswaId=${mahasiswaId}`,
+      `${API_ROUTES.DASHBOARD_MAHASISWA_STATISTIK}?mahasiswaId=${mahasiswaId}`,
       {
         method: "GET"
       },

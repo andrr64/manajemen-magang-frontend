@@ -1,4 +1,4 @@
-import { Student } from "@/modules/mahasiswa/types";
+import { Student } from "@/modules/data_mahasiswa/types";
 export type { Student };
 
 export const studentsData: Student[] = [

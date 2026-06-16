@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { CertificateInfo, VerifyCertificateResponse, SertifikatResponse, SertifikatStatResponse } from "./types";
 import { studentsData } from "@/app/dashboard/mentor/data-mahasiswa/studentsData";
 import { mediaAPI } from "../media/api";
@@ -48,7 +49,7 @@ export const sertifikatAPI = {
   getCertificate: async () => {
     return executeHybridRequest<CertificateInfo>(
       "Get student certificate details",
-      "/api/sertifikat",
+      API_ROUTES.SERTIFIKAT_LIST,
       {
         method: "GET"
       },
@@ -78,7 +79,7 @@ export const sertifikatAPI = {
 
     return executeHybridRequest<SertifikatResponse[]>(
       "List all student certificates",
-      `/api/sertifikat${queryStr}`,
+      `${API_ROUTES.SERTIFIKAT_LIST}${queryStr}`,
       {
         method: "GET"
       },
@@ -103,7 +104,7 @@ export const sertifikatAPI = {
     
     return executeHybridRequest<SertifikatStatResponse>(
       "Get certificate statistics",
-      `/api/sertifikat/statistik${query}`,
+      `${API_ROUTES.SERTIFIKAT_STATISTIK}${query}`,
       {
         method: "GET"
       },
@@ -131,7 +132,7 @@ export const sertifikatAPI = {
   verifyCode: async (code: string) => {
     return executeHybridRequest<VerifyCertificateResponse>(
       `Verify certificate code: ${code}`,
-      "/api/sertifikat",
+      API_ROUTES.SERTIFIKAT_LIST,
       {
         method: "GET"
       },
@@ -188,7 +189,7 @@ export const sertifikatAPI = {
   uploadSertifikat: async (periodeMagangId: string, url: string) => {
     return executeHybridRequest<SertifikatResponse>(
       `Upload certificate for period ${periodeMagangId}`,
-      "/api/sertifikat",
+      API_ROUTES.SERTIFIKAT_LIST,
       {
         method: "POST",
         headers: {
@@ -237,7 +238,7 @@ export const sertifikatAPI = {
   issueCertificate: async (payload: Partial<CertificateInfo>) => {
     return executeHybridRequest<CertificateInfo>(
       `Issue certificate to ${payload.recipient}`,
-      "/api/sertifikat",
+      API_ROUTES.SERTIFIKAT_LIST,
       {
         method: "POST",
         headers: {

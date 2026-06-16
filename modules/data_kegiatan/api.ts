@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { Activity, CreateActivityRequest, ActivityStat, ActivityResponse, ActivityStatResponse } from "./types";
 
 export interface MentorActivityLog {
@@ -110,7 +111,7 @@ export const kegiatanAPI = {
   getStudentActivities: async () => {
     return executeHybridRequest<Activity[]>(
       "Get student daily activities list",
-      "/api/kegiatan",
+      API_ROUTES.KEGIATAN_LIST,
       {
         method: "GET"
       },
@@ -132,7 +133,7 @@ export const kegiatanAPI = {
   createStudentActivity: async (payload: CreateActivityRequest) => {
     return executeHybridRequest<Activity>(
       `Create daily activity: "${payload.title}"`,
-      "/api/kegiatan",
+      API_ROUTES.KEGIATAN_LIST,
       {
         method: "POST",
         body: JSON.stringify({
@@ -174,7 +175,7 @@ export const kegiatanAPI = {
     // Files mock/real updates on backend
     return executeHybridRequest<Activity>(
       `Upload attachment "${fileName}" to activity ID: ${activityId}`,
-      `/api/kegiatan/${activityId}`,
+      API_ROUTES.KEGIATAN_DETAIL(activityId),
       {
         method: "PUT",
         body: JSON.stringify({
@@ -210,7 +211,7 @@ export const kegiatanAPI = {
   deleteStudentActivity: async (activityId: number | string) => {
     return executeHybridRequest<boolean>(
       `Delete activity ID: ${activityId}`,
-      `/api/kegiatan/${activityId}`,
+      API_ROUTES.KEGIATAN_DETAIL(activityId),
       {
         method: "DELETE"
       },
@@ -228,7 +229,7 @@ export const kegiatanAPI = {
   getMentorActivities: async () => {
     return executeHybridRequest<MentorActivityLog[]>(
       "Get activities checklist for mentor",
-      "/api/kegiatan",
+      API_ROUTES.KEGIATAN_LIST,
       {
         method: "GET"
       },
@@ -251,7 +252,7 @@ export const kegiatanAPI = {
     const statusParam = status === "Disetujui" ? "disetujui" : "belum disetujui";
     return executeHybridRequest<MentorActivityLog>(
       `Approve activity ID: ${activityId} to ${status}`,
-      `/api/kegiatan/${activityId}/status?status=${statusParam}`,
+      API_ROUTES.KEGIATAN_STATUS(activityId, statusParam),
       {
         method: "PUT"
       },
@@ -281,7 +282,7 @@ export const kegiatanAPI = {
   deleteMentorActivity: async (activityId: number | string) => {
     return executeHybridRequest<boolean>(
       `Delete mentor activity ID: ${activityId}`,
-      `/api/kegiatan/${activityId}`,
+      API_ROUTES.KEGIATAN_DETAIL(activityId),
       {
         method: "DELETE"
       },
@@ -297,7 +298,7 @@ export const kegiatanAPI = {
   getActivityFileUrl: async (activityId: number | string) => {
     return executeHybridRequest<{ url: string }>(
       `Get file URL for activity ID: ${activityId}`,
-      `/api/kegiatan/${activityId}/file`,
+      API_ROUTES.KEGIATAN_FILE(activityId),
       {
         method: "GET"
       },
@@ -319,7 +320,7 @@ export const kegiatanAPI = {
 
     return executeHybridRequest<ActivityStat>(
       "Get activity statistics",
-      `/api/kegiatan/statistik?${q.toString()}`,
+      `${API_ROUTES.KEGIATAN_STATISTIK}?${q.toString()}`,
       {
         method: "GET"
       },

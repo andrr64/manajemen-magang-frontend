@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import React, { use, useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -27,8 +28,8 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
-import { useAuth } from "@/modules/auth/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
+import { useIam } from "@/modules/iam/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -50,7 +51,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { submitGrades } = useAssessment();
   const { rawStudents } = useStudents();
-  const { user: authUser } = useAuth();
+  const { user: authUser } = useIam();
   const studentsList = rawStudents;
 
   // Fetch once on mount
@@ -318,7 +319,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
       setIsSuccess(true);
 
       setTimeout(() => {
-        router.push("/dashboard/mentor/penilaian");
+        router.push(WEB_ROUTES.MENTOR_PENILAIAN);
       }, 2000);
     } catch (err: any) {
       setIsSubmitting(false);

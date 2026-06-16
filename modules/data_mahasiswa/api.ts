@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse } from "./types";
 
 const INITIAL_STUDENTS: Student[] = [
@@ -188,7 +189,7 @@ export const mahasiswaAPI = {
 
     return executeHybridRequest<Student[]>(
       "List all students",
-      `/api/mahasiswa${queryString}`,
+      `${API_ROUTES.MAHASISWA_LIST}${queryString}`,
       {
         method: "GET"
       },
@@ -225,7 +226,7 @@ export const mahasiswaAPI = {
 
     return executeHybridRequest<any>(
       "Get student statistics",
-      `/api/mahasiswa/statistik${queryString}`,
+      `${API_ROUTES.MAHASISWA_STATISTIK}${queryString}`,
       {
         method: "GET"
       },
@@ -264,7 +265,7 @@ export const mahasiswaAPI = {
   getStudentById: async (id: number | string) => {
     return executeHybridRequest<Student>(
       `Get student details for ID: ${id}`,
-      `/api/mahasiswa/${id}`,
+      API_ROUTES.MAHASISWA_DETAIL(id),
       {
         method: "GET"
       },
@@ -290,7 +291,7 @@ export const mahasiswaAPI = {
   createStudent: async (payload: CreateStudentRequest) => {
     return executeHybridRequest<Student>(
       `Create student account: ${payload.name}`,
-      "/api/mahasiswa",
+      API_ROUTES.MAHASISWA_LIST,
       {
         method: "POST",
         body: JSON.stringify({
@@ -416,7 +417,7 @@ export const mahasiswaAPI = {
 
     return executeHybridRequest<Student>(
       `Update student details for ID: ${id}`,
-      `/api/mahasiswa/edit-by-mentor/${id}`,
+      API_ROUTES.MAHASISWA_EDIT_BY_MENTOR(id),
       {
         method: "PUT",
         body: JSON.stringify({
@@ -463,7 +464,7 @@ export const mahasiswaAPI = {
   deleteStudent: async (id: number | string) => {
     return executeHybridRequest<boolean>(
       `Delete student ID: ${id}`,
-      `/api/mahasiswa/${id}`,
+      API_ROUTES.MAHASISWA_DETAIL(id),
       {
         method: "DELETE"
       },
@@ -479,7 +480,7 @@ export const mahasiswaAPI = {
   getSisaWaktuMagang: async () => {
     return executeHybridRequest<number>(
       "Get Sisa Waktu Magang",
-      "/api/mahasiswa/sisa-waktu-magang",
+      API_ROUTES.MAHASISWA_SISA_WAKTU,
       {
         method: "GET"
       },

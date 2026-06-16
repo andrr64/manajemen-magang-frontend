@@ -17,10 +17,9 @@ import {
   Eye,
   Trash2
 } from "lucide-react";
-import { useAttendance } from "@/modules/absensi/hooks";
-import { absensiAPI } from "@/modules/absensi/api";
-import { useStudents } from "@/modules/mahasiswa/hooks";
-import { AttendanceLog } from "@/modules/absensi/types";
+import { useAttendance } from "@/modules/data_absensi/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
+import { AttendanceLog } from "@/modules/data_absensi/types";
 import { mediaAPI } from "@/modules/media/api";
 
 export default function MentorAttendancePage() {
@@ -37,7 +36,7 @@ export default function MentorAttendancePage() {
   }), []);
 
   // Real React Hook Integration
-  const { history: attendanceLogs, isLoading, verify, deleteLog, refreshHistory, getSuratKeterangan } = useAttendance();
+  const { history: attendanceLogs, isLoading, verify, deleteLog, exportCSV, refreshHistory, getSuratKeterangan } = useAttendance();
 
   const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", notes: string, initialUrl?: string | null) => {
     try {
@@ -132,22 +131,10 @@ export default function MentorAttendancePage() {
     }
   };
 
-  // Real CSV spreadsheet export handler with dynamic download triggers
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const response = await absensiAPI.exportAbsensi(statusFilter, searchQuery);
-      const csvContent = response.data;
-      
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;\ufeff" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "rekap-absensi.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
+      await exportCSV(statusFilter, searchQuery);
       setShowToast("Laporan absensi bulanan berhasil diekspor ke Excel!");
       setTimeout(() => setShowToast(""), 4000);
     } catch (err: any) {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { use, useState, useMemo } from "react";
 import Link from "next/link";
@@ -25,8 +25,8 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { ActivityLog } from "../page";
-import { useMentorActivities } from "../../../../../modules/kegiatan/hooks";
-import { useStudents } from "../../../../../modules/mahasiswa/hooks";
+import { useMentorActivities } from "../../../../../modules/data_kegiatan/hooks";
+import { useStudents } from "../../../../../modules/data_mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;

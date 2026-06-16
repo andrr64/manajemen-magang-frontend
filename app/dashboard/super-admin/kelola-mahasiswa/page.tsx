@@ -23,9 +23,9 @@ import {
   BookOpen,
   Loader2
 } from "lucide-react";
-import { useStudents, useStudentStats } from "@/modules/mahasiswa/hooks";
-import { Student } from "@/modules/mahasiswa/types";
-import { mahasiswaAPI } from "@/modules/mahasiswa/api";
+import { useStudents, useStudentStats } from "@/modules/data_mahasiswa/hooks";
+import { Student } from "@/modules/data_mahasiswa/types";
+import { mahasiswaAPI } from "@/modules/data_mahasiswa/api";
 
 export default function KelolaMahasiswaPage() {
   // Search, filter, and tabs state
@@ -41,6 +41,7 @@ export default function KelolaMahasiswaPage() {
     isSubmitting,
     error: apiError,
     addStudent,
+    updateStudent,
     removeStudent,
     refreshStudents
   } = useStudents({
@@ -153,7 +154,7 @@ export default function KelolaMahasiswaPage() {
     try {
       if (editingStudent) {
         // Edit mode
-        await mahasiswaAPI.updateStudent(editingStudent.id, {
+        await updateStudent(editingStudent.id, {
           email: formEmail,
           nim: formNim,
           name: formName,

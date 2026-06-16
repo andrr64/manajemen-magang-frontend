@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import React, { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -26,8 +27,8 @@ import {
   FileCheck
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
-import { useStudentReferenceLetters } from "@/modules/surat-keterangan/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudentReferenceLetters } from "@/modules/surat_keterangan/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
 import { mediaAPI } from "@/modules/media/api";
 
@@ -176,7 +177,7 @@ export default function MentorReferenceLetterDetailPage({ params }: PageProps) {
       setIsSuccess(true);
 
       setTimeout(() => {
-        router.push("/dashboard/mentor/surat-keterangan");
+        router.push(WEB_ROUTES.MENTOR_SURAT_KETERANGAN);
       }, 2000);
     } catch (err: any) {
       setIsSubmitting(false);

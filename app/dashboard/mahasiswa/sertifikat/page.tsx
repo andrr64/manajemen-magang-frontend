@@ -14,7 +14,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
-import { useStudentDetail } from "@/modules/mahasiswa/hooks";
+import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
 
 export default function StudentSertifikatPage() {
   const { certificate, isLoading: isCertLoading } = useCertificate();

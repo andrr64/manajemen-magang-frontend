@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { use, useState } from "react";
 import Link from "next/link";
@@ -25,7 +25,7 @@ import {
   BadgeCheck,
   Zap,
 } from "lucide-react";
-import { useStudentDetail } from "@/modules/mahasiswa/hooks";
+import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
 
 interface PageProps {
   params: Promise<{ id: string }>;

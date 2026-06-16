@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import React, { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -24,7 +25,7 @@ import {
 } from "lucide-react";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
 import { mediaAPI } from "@/modules/media/api";
 
@@ -171,7 +172,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
       setIsSuccess(true);
 
       setTimeout(() => {
-        router.push("/dashboard/mentor/sertifikat");
+        router.push(WEB_ROUTES.MENTOR_SERTIFIKAT);
       }, 2000);
     } catch (err: any) {
       setIsSubmitting(false);

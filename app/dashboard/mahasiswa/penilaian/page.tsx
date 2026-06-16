@@ -15,7 +15,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useAssessment } from "@/modules/penilaian/hooks";
-import { useStudentDetail } from "@/modules/mahasiswa/hooks";
+import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
 
 interface AssessmentItem {
   id: string;

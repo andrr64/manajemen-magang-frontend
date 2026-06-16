@@ -1,4 +1,5 @@
 "use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,7 +15,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push("/login");
+      router.push(WEB_ROUTES.LOGIN);
     }
   }, [isLoading, isAuthenticated, router]);
 
@@ -53,7 +54,7 @@ export function RoleGuard({
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push(WEB_ROUTES.LOGIN);
       return;
     }
 
@@ -61,17 +62,17 @@ export function RoleGuard({
       // Redirect unauthorized user to their own dashboard based on their role
       switch (user.role.toLowerCase()) {
         case "mahasiswa":
-          router.push("/dashboard/mahasiswa");
+          router.push(WEB_ROUTES.MAHASISWA_DASHBOARD);
           break;
         case "mentor":
-          router.push("/dashboard/mentor");
+          router.push(WEB_ROUTES.MENTOR_DASHBOARD);
           break;
         case "super-admin":
         case "admin":
-          router.push("/dashboard/super-admin");
+          router.push(WEB_ROUTES.SUPER_ADMIN_DASHBOARD);
           break;
         default:
-          router.push("/");
+          router.push(WEB_ROUTES.HOME);
       }
     }
   }, [isLoading, isAuthenticated, user, allowedRoles, router]);

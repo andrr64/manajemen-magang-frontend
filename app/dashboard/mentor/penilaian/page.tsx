@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { studentsData, Student } from "../data-mahasiswa/studentsData";
 import { useStudentAssessments, usePenilaianStats } from "@/modules/penilaian/hooks";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 
 export default function MentorPenilaianPage() {
   const [searchQuery, setSearchQuery] = useState("");

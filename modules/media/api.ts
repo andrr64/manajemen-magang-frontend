@@ -1,4 +1,5 @@
-import { executeHybridRequest } from "../api-client";
+﻿import { executeHybridRequest } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { UploadResponse, DeleteResponse } from "./types";
 
 // Base URL for constructing direct links to media files
@@ -12,7 +13,7 @@ export const mediaAPI = {
 
     return executeHybridRequest<UploadResponse>(
       `Upload file: ${file.name}`,
-      "/api/media/upload",
+      API_ROUTES.MEDIA_UPLOAD,
       {
         method: "POST",
         body: formData,
@@ -32,7 +33,7 @@ export const mediaAPI = {
   deleteFile: async (key: string) => {
     return executeHybridRequest<DeleteResponse>(
       `Delete file: ${key}`,
-      `/api/media/${key}`,
+      API_ROUTES.MEDIA_FILE(key),
       {
         method: "DELETE",
       },
@@ -49,6 +50,6 @@ export const mediaAPI = {
   // Helper to get the full URL of a media file by its key
   getFileUrl: (key: string): string => {
     if (!key) return "";
-    return `${BASE_URL}/api/media/${key}`;
+    return `${BASE_URL}${API_ROUTES.MEDIA_FILE(key)}`;
   }
 };

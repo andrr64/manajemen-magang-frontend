@@ -21,11 +21,11 @@ import {
   Zap,
   Loader2
 } from "lucide-react";
-import { useDashboardMahasiswaStats } from "@/modules/dashboard-mahasiswa/hooks";
-import { useStudentDetail, useSisaWaktuMagang } from "@/modules/mahasiswa/hooks";
-import { useActivities } from "@/modules/kegiatan/hooks";
+import { useDashboardMahasiswaStats } from "@/modules/dashboard_mahasiswa/hooks";
+import { useStudentDetail, useSisaWaktuMagang } from "@/modules/data_mahasiswa/hooks";
+import { useActivities } from "@/modules/data_kegiatan/hooks";
 import { useIam } from "@/modules/iam/hooks";
-import { useTotalKehadiran } from "@/modules/absensi/hooks";
+import { useTotalKehadiran } from "@/modules/data_absensi/hooks";
 
 export default function StudentDashboardHome() {
   const [isCheckedIn, setIsCheckedIn] = useState(true);

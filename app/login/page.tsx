@@ -1,4 +1,5 @@
 "use client";
+import { WEB_ROUTES } from "@/modules/web-routes";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      router.push("/dashboard");
+      router.push(WEB_ROUTES.DASHBOARD);
     } catch (err: any) {
       setErrorMsg(err.message || "Akses ditolak. Kredensial tidak valid.");
       setIsSubmitting(false);

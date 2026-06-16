@@ -1,4 +1,5 @@
-import { executeHybridRequest, mockDB } from "../api-client";
+﻿import { executeHybridRequest, mockDB } from "../api-client";
+import { API_ROUTES } from "../api-routes";
 import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianResponse, PenilaianStatResponse } from "./types";
 
 const INITIAL_ASSESSMENTS: AssessmentItem[] = [
@@ -236,7 +237,7 @@ export const penilaianAPI = {
   getAssessments: async () => {
     return executeHybridRequest<AssessmentItem[]>(
       "Get student assessment list",
-      "/api/penilaian",
+      API_ROUTES.PENILAIAN_LIST,
       {
         method: "GET"
       },
@@ -258,7 +259,7 @@ export const penilaianAPI = {
   getGradeSummary: async () => {
     return executeHybridRequest<GradeSummary>(
       "Calculate grade statistics",
-      "/api/penilaian",
+      API_ROUTES.PENILAIAN_LIST,
       {
         method: "GET"
       },
@@ -312,7 +313,7 @@ export const penilaianAPI = {
 
     return executeHybridRequest<boolean>(
       `Submit grades for student ID: ${payload.studentId}`,
-      "/api/penilaian",
+      API_ROUTES.PENILAIAN_LIST,
       {
         method: "POST",
         body: JSON.stringify({
@@ -398,7 +399,7 @@ export const penilaianAPI = {
     if (status && status !== "Semua") queryParams.append("status", status);
     if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
 
-    const url = `/api/penilaian?${queryParams.toString()}`;
+    const url = `${API_ROUTES.PENILAIAN_LIST}?${queryParams.toString()}`;
     return executeHybridRequest<any[]>(
       "Get student assessment list with filters",
       url,
@@ -445,7 +446,7 @@ export const penilaianAPI = {
     const queryParams = new URLSearchParams();
     if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
 
-    const url = `/api/penilaian/statistik?${queryParams.toString()}`;
+    const url = `${API_ROUTES.PENILAIAN_STATISTIK}?${queryParams.toString()}`;
     return executeHybridRequest<PenilaianStatResponse>(
       "Get assessment statistics",
       url,

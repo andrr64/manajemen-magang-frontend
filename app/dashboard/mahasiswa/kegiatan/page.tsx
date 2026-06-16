@@ -17,7 +17,7 @@ import {
   FileCheck,
   Loader2
 } from "lucide-react";
-import { useActivities } from "@/modules/kegiatan/hooks";
+import { useActivities } from "@/modules/data_kegiatan/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
 
 export default function StudentActivitiesPage() {

@@ -15,7 +15,7 @@ import {
   UserX,
   File as FileIcon
 } from "lucide-react";
-import { useSubmitAbsensi, useRiwayatAbsensi, useStatistikKehadiran } from "@/modules/absensi/hooks";
+import { useSubmitAbsensi, useRiwayatAbsensi, useStatistikKehadiran } from "@/modules/data_absensi/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
 
 export default function StudentAttendancePage() {

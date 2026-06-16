@@ -22,7 +22,7 @@ import {
   Scale
 } from "lucide-react";
 import { studentsData, Student } from "./data-mahasiswa/studentsData";
-import { useStudents } from "@/modules/mahasiswa/hooks";
+import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useIam } from "@/modules/iam/hooks";
 
 export default function DashboardHome() {
