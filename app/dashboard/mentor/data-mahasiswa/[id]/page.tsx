@@ -265,10 +265,10 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
 
             <div className="space-y-3">
               {[
-                { icon: School, label: "Universitas", value: student.university },
-                { icon: Mail, label: "Email", value: student.email, href: `mailto:${student.email}` },
-                { icon: Phone, label: "No. Telp", value: student.phone, href: `tel:${student.phone.replace(/[^0-9+]/g, "")}` },
-                { icon: MapPin, label: "Alamat", value: student.address },
+                { icon: School, label: "Universitas", value: student.university || "-" },
+                { icon: Mail, label: "Email", value: student.email || "-", href: student.email ? `mailto:${student.email}` : undefined },
+                { icon: Phone, label: "No. Telp", value: student.phone || "-", href: student.phone ? `tel:${(student.phone || "").replace(/[^0-9+]/g, "")}` : undefined },
+                { icon: MapPin, label: "Alamat", value: student.address || "-" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/10 dark:border-[#2F578A]/30 hover:border-[#36ADA3]/40 transition-colors group">
                   <div className="w-8 h-8 rounded-xl bg-[#121358]/10 dark:bg-[#36ADA3]/10 flex items-center justify-center flex-shrink-0">

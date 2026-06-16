@@ -311,12 +311,12 @@ export default function DashboardHome() {
                   {/* Column 5: No Telp */}
                   <td className="py-4 px-4 text-[#2F578A] dark:text-[#F1F5F9]/80 border border-[#2F578A]/20 dark:border-[#2F578A]/40 text-center">
                     <a 
-                      href={`tel:${student.phone.replace(/[^0-9+]/g, '')}`}
+                      href={`tel:${(student.phone || "").replace(/[^0-9+]/g, '')}`}
                       className="inline-flex items-center gap-1 hover:text-[#36ADA3] dark:hover:text-[#36ADA3] font-bold"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Phone className="w-3.5 h-3.5 text-[#2F578A] dark:text-[#F1F5F9]/70" />
-                      <span>{student.phone}</span>
+                      <span>{student.phone || "-"}</span>
                     </a>
                   </td>
 
