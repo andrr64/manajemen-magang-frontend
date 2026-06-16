@@ -342,10 +342,10 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Hadir", count: student.attendance.present, bg: "from-[#36ADA3]/10 to-[#36ADA3]/5", border: "border-[#36ADA3]/30", text: "text-[#36ADA3]", dot: "bg-[#36ADA3]" },
-                { label: "Sakit", count: student.attendance.sick, bg: "from-amber-500/10 to-amber-500/5", border: "border-amber-400/30", text: "text-amber-500", dot: "bg-amber-500" },
-                { label: "Izin", count: student.attendance.leave, bg: "from-[#2F578A]/10 to-[#2F578A]/5", border: "border-[#2F578A]/30", text: "text-[#2F578A] dark:text-blue-300", dot: "bg-[#2F578A]" },
-                { label: "Alfa", count: student.attendance.absent, bg: "from-rose-500/10 to-rose-500/5", border: "border-rose-400/30", text: "text-rose-500", dot: "bg-rose-500" },
+                { label: "Hadir", count: (student?.attendance?.present || 0), bg: "from-[#36ADA3]/10 to-[#36ADA3]/5", border: "border-[#36ADA3]/30", text: "text-[#36ADA3]", dot: "bg-[#36ADA3]" },
+                { label: "Sakit", count: (student?.attendance?.sick || 0), bg: "from-amber-500/10 to-amber-500/5", border: "border-amber-400/30", text: "text-amber-500", dot: "bg-amber-500" },
+                { label: "Izin", count: (student?.attendance?.leave || 0), bg: "from-[#2F578A]/10 to-[#2F578A]/5", border: "border-[#2F578A]/30", text: "text-[#2F578A] dark:text-blue-300", dot: "bg-[#2F578A]" },
+                { label: "Alfa", count: (student?.attendance?.absent || 0), bg: "from-rose-500/10 to-rose-500/5", border: "border-rose-400/30", text: "text-rose-500", dot: "bg-rose-500" },
               ].map((att, i) => (
                 <div key={i} className={`p-4 rounded-2xl bg-gradient-to-br ${att.bg} border ${att.border} flex flex-col gap-1`}>
                   <div className="flex items-center gap-1.5">
@@ -438,7 +438,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
 
             {/* Timeline */}
             <div className="relative pl-8 space-y-4 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-[#36ADA3] before:via-[#2F578A]/40 before:to-transparent">
-              {dummyLogbooks.map((log, idx) => (
+              {dummyLogbooks?.map((log, idx) => (
                 <div key={log.week} className="relative group">
                   {/* dot */}
                   <span

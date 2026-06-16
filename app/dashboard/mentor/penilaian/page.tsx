@@ -42,7 +42,7 @@ export default function MentorPenilaianPage() {
 
   // Map student evaluation list response to view models
   const enrichedStudents = useMemo(() => {
-    return studentsList.map(student => {
+    return studentsList?.map(student => {
       const assessment = assessments.find(a => String(a.mahasiswaId) === String(student.id) || a.nim === student.nim);
       return {
         id: student.id,
@@ -211,7 +211,7 @@ export default function MentorPenilaianPage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredStudents.map((student) => {
+              ) : filteredStudents?.map((student) => {
                 const isGraded = student.penilaianId !== null && student.penilaianId !== undefined;
                 
                 return (
@@ -221,7 +221,7 @@ export default function MentorPenilaianPage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/penilaian/${student.id}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
-                          {student.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
+                          {(student?.name || "U").split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">

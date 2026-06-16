@@ -260,7 +260,7 @@ export default function MentorDataMahasiswaPage() {
 
   // Extract unique universities for filter dropdown (Dynamic from universitas module)
   const uniqueUniversities = useMemo(() => {
-    return ["Semua", ...universitasList.map(u => u.nameUniversity)];
+    return ["Semua", ...universitasList?.map(u => u.nameUniversity)];
   }, [universitasList]);
 
   // Pagination logic
@@ -472,7 +472,7 @@ export default function MentorDataMahasiswaPage() {
                     className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white appearance-none"
                   >
                     <option value={0} disabled>Pilih Universitas...</option>
-                    {universitasList.map(u => (
+                    {universitasList?.map(u => (
                       <option key={u.id} value={u.id}>{u.nameUniversity}</option>
                     ))}
                   </select>
@@ -777,7 +777,7 @@ export default function MentorDataMahasiswaPage() {
               onChange={(e) => { setUnivFilter(e.target.value); setPage(1); }}
               className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] text-[#232F72]/80 dark:text-[#F1F5F9]"
             >
-              {uniqueUniversities.map((univ) => (
+              {uniqueUniversities?.map((univ) => (
                 <option key={univ} value={univ}>
                   {univ === "Semua" ? "Semua Universitas" : univ}
                 </option>
@@ -849,7 +849,7 @@ export default function MentorDataMahasiswaPage() {
                     </div>
                   </td>
                 </tr>
-              ) : pagedStudents.map((student) => (
+              ) : pagedStudents?.map((student) => (
                 <tr 
                   key={student.id} 
                   className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer"
@@ -858,7 +858,7 @@ export default function MentorDataMahasiswaPage() {
                   <td className="py-4 pl-4 pr-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <Link href={`/dashboard/mentor/data-mahasiswa/${student.id}`} className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-sm shadow-md shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
-                        {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                        {(student?.name || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
                         <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">
@@ -902,7 +902,7 @@ export default function MentorDataMahasiswaPage() {
                   {/* Column 5: No HP */}
                   <td className="py-4 px-3 text-[#2F578A] dark:text-[#F1F5F9]/80 font-semibold border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <a 
-                      href={`tel:${student.phone.replace(/[^0-9+]/g, '')}`}
+                      href={`tel:${(student?.phone || "").replace(/[^0-9+]/g, '')}`}
                       className="inline-flex items-center gap-1 hover:text-[#232F72] dark:text-[#FFFFFF] dark:hover:text-[#232F72] dark:text-[#FFFFFF]"
                       onClick={(e) => e.stopPropagation()}
                     >

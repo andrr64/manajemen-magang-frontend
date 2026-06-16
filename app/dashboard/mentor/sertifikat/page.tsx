@@ -39,7 +39,7 @@ export default function MentorCertificatePage() {
 
   // Map student info for display
   const enrichedCertificates = useMemo(() => {
-    return certificates.map(cert => {
+    return certificates?.map(cert => {
       // Get numeric student ID fallback based on name or NIM
       const student = studentsList.find(s => s.nim === cert.nim || s.name === cert.namaMahasiswa);
       const studentId = student ? student.id : 1;
@@ -197,7 +197,7 @@ export default function MentorCertificatePage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredCertificates.map((cert) => {
+              ) : filteredCertificates?.map((cert) => {
                 const isUploaded = cert.status === "Sudah Diunggah";
                 
                 return (
@@ -207,7 +207,7 @@ export default function MentorCertificatePage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/sertifikat/${cert.studentId}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${cert.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
-                          {cert.studentName.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
+                          {(cert?.studentName || "U").split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">

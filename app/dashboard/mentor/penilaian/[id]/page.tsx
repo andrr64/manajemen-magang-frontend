@@ -422,7 +422,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
           <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm bg-white dark:bg-[#070e24]/40 text-center space-y-4">
             <div className="relative inline-block mx-auto">
               <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-2xl shadow-lg`}>
-                {student.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
+                {(student?.name || "U").split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
               </div>
               <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] border-2 border-white dark:border-slate-900 shadow">
                 {student.id}
@@ -515,7 +515,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
               <div className="space-y-6">
                 
                 {/* Loop of the 7 criteria columns */}
-                {assessmentCriteria.map((c, index) => {
+                {assessmentCriteria?.map((c, index) => {
                   const score = grades[c.id] || 0;
                   const attachment = attachments[c.id] || null;
                   const feedback = feedbacks[c.id] || "";

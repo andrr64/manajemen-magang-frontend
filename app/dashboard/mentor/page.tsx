@@ -261,7 +261,7 @@ export default function DashboardHome() {
               </tr>
             </thead>
             <tbody className="text-xs">
-              {filteredStudents.map((student) => (
+              {filteredStudents?.map((student) => (
                 <tr key={student.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group cursor-pointer border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
                   
                   {/* Column 1: Nama (Avatar initials, name, link to detail data-mahasiswa) */}

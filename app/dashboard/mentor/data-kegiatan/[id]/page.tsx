@@ -198,7 +198,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
             <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm bg-white dark:bg-[#070e24]/40 text-center space-y-4">
               <div className="relative inline-block mx-auto">
                 <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-2xl shadow-lg`}>
-                  {student.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                  {(student?.name || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                 </div>
                 <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] border-2 border-white dark:border-slate-900">
                   {student.id}
@@ -235,7 +235,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                  <a href={`tel:${student.phone.replace(/[^0-9+]/g, '')}`} className="hover:underline hover:text-indigo-500">{student.phone}</a>
+                  <a href={`tel:${(student?.phone || "").replace(/[^0-9+]/g, '')}`} className="hover:underline hover:text-indigo-500">{student.phone}</a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Briefcase className="w-4 h-4 text-indigo-500 flex-shrink-0" />
@@ -256,19 +256,19 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-4 gap-1.5 text-center text-[10px] font-bold">
                 <div className="p-2 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 rounded-lg">
                   <p>Hadir</p>
-                  <p className="text-xs font-black mt-0.5">{student.attendance.present}</p>
+                  <p className="text-xs font-black mt-0.5">{(student?.attendance?.present || 0)}</p>
                 </div>
                 <div className="p-2 bg-amber-50 dark:bg-amber-950/20 text-amber-600 rounded-lg">
                   <p>Sakit</p>
-                  <p className="text-xs font-black mt-0.5">{student.attendance.sick}</p>
+                  <p className="text-xs font-black mt-0.5">{(student?.attendance?.sick || 0)}</p>
                 </div>
                 <div className="p-2 bg-blue-50 dark:bg-blue-950/20 text-blue-600 rounded-lg">
                   <p>Izin</p>
-                  <p className="text-xs font-black mt-0.5">{student.attendance.leave}</p>
+                  <p className="text-xs font-black mt-0.5">{(student?.attendance?.leave || 0)}</p>
                 </div>
                 <div className="p-2 bg-rose-50 dark:bg-rose-950/20 text-rose-600 rounded-lg">
                   <p>Alfa</p>
-                  <p className="text-xs font-black mt-0.5">{student.attendance.absent}</p>
+                  <p className="text-xs font-black mt-0.5">{(student?.attendance?.absent || 0)}</p>
                 </div>
               </div>
             </div>
@@ -415,7 +415,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
             
             {/* Thread feed */}
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-              {comments.map((comment, index) => (
+              {comments?.map((comment, index) => (
                 <div 
                   key={index}
                   className={`p-3 rounded-2xl border text-xs leading-relaxed space-y-1 ${

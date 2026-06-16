@@ -38,7 +38,7 @@ export default function MentorReferenceLetterPage() {
 
   // Map student info
   const enrichedLetters = useMemo(() => {
-    return letters.map(letLog => {
+    return letters?.map(letLog => {
       const student = studentsList.find(s => s.nim === letLog.nim || s.name === letLog.namaMahasiswa);
       const studentId = student ? student.id : letLog.mahasiswaId;
       
@@ -196,7 +196,7 @@ export default function MentorReferenceLetterPage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredLetters.map((letLog) => {
+              ) : filteredLetters?.map((letLog) => {
                 const isUploaded = letLog.status === "Sudah Diunggah";
                 
                 return (
@@ -206,7 +206,7 @@ export default function MentorReferenceLetterPage() {
                     <td className="py-4 pl-4">
                       <Link href={`/dashboard/mentor/surat-keterangan/${letLog.studentId}`} className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${letLog.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-sm group-hover:scale-105 transition-transform`}>
-                          {letLog.studentName.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
+                          {(letLog?.studentName || "U").split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#FFFFFF] transition-colors leading-tight">

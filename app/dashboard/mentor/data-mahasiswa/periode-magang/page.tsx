@@ -39,7 +39,7 @@ export default function MentorInternshipPeriodPage() {
   
   // Map student info with periods directly from studentsList
   const enrichedPeriods = useMemo(() => {
-    return studentsList.map(student => {
+    return studentsList?.map(student => {
       return {
         studentId: student.id,
         startDate: student.tanggalMulai || "2026-02-01",
@@ -300,7 +300,7 @@ export default function MentorInternshipPeriodPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-              {filteredPeriods.map((p) => {
+              {filteredPeriods?.map((p) => {
                 const status = calculatePeriodStatus(p.startDate, p.endDate);
                 
                 return (
@@ -310,7 +310,7 @@ export default function MentorInternshipPeriodPage() {
                     <td className="py-4 pl-4">
                       <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${p.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-indigo-500/10`}>
-                          {p.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                          {(p?.studentName || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                         </div>
                         <div>
                           <p className="font-extrabold text-slate-900 dark:text-white leading-tight">

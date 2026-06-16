@@ -64,7 +64,7 @@ export default function MentorActivitiesPage() {
 
   // Map activities to actual student profile info
   const enrichedActivities = useMemo(() => {
-    return activities.map(act => {
+    return activities?.map(act => {
       const student = studentsList.find(s => String(s.id) === String(act.studentId));
       return {
         ...act,
@@ -355,7 +355,7 @@ export default function MentorActivitiesPage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredActivities.map((act, index) => (
+              ) : filteredActivities?.map((act, index) => (
                 <tr key={act.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group">
                   
                   {/* Column 1: No. */}
@@ -367,7 +367,7 @@ export default function MentorActivitiesPage() {
                   <td className="py-4">
                     <Link href={`/dashboard/mentor/data-kegiatan/${act.id}`} className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${act.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
-                        {act.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                        {(act?.studentName || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
                         <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">

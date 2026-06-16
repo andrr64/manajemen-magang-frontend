@@ -56,7 +56,7 @@ export default function MentorAttendancePage() {
 
   // Map attendance logs to actual student profile info
   const enrichedLogs = useMemo(() => {
-    return attendanceLogs.map(log => {
+    return attendanceLogs?.map(log => {
       const student = studentsList.find(s => String(s.id) === String(log.studentId));
       
       // Calculate presence status matching rendering expectations ("Hadir" | "Belum Check-Out" | "Sakit" | "Izin" | "Alfa")
@@ -379,14 +379,14 @@ export default function MentorAttendancePage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredLogs.map((log) => (
+              ) : filteredLogs?.map((log) => (
                 <tr key={log.id} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#121358]/50 transition-colors group">
                   
                   {/* Student Name */}
                   <td className="py-4 pl-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${log.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10`}>
-                        {log.studentName.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                        {(log?.studentName || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
                         <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] leading-tight">

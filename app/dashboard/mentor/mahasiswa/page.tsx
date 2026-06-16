@@ -103,7 +103,7 @@ export default function MentorStudentsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-900 text-xs">
-            {filteredStudents.map((student) => (
+            {filteredStudents?.map((student) => (
               <tr key={student.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors">
                 <td className="py-4.5">
                   <p className="font-bold text-slate-900 dark:text-white">{student.name}</p>

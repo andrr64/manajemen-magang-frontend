@@ -72,7 +72,7 @@ export default function MentorProfilePage() {
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-tr from-[#2F578A] to-cyan-400 rounded-2xl blur-sm opacity-60 animate-pulse" />
               <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#121358] border border-[#2F578A]/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
-                {profile.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
+                {(profile?.name || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
               </div>
             </div>
             <div>
