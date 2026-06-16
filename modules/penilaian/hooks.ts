@@ -17,7 +17,6 @@ export function useAssessment() {
       setAssessments(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat detail komponen penilaian.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
@@ -67,7 +66,6 @@ export function useGrades() {
       setSummary(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat rekap nilai.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
@@ -99,7 +97,6 @@ export function useStudentAssessments() {
       setAssessments(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat daftar penilaian mahasiswa.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
@@ -127,7 +124,6 @@ export function usePenilaianStats(namaMahasiswa?: string) {
       setStats(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat statistik penilaian.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);

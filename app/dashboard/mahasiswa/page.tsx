@@ -34,14 +34,14 @@ export default function StudentDashboardHome() {
   // Get current logged-in user
   const { user } = useIam();
 
-  // Hardcode ID 1 as simulation for the logged in student
-  const { stats, isLoading } = useDashboardMahasiswaStats(1);
+  // Fetch data using the real logged in student's ID
+  const { stats, isLoading } = useDashboardMahasiswaStats(user?.id);
 
   // Retrieve student API data
-  const { student: apiStudent, isLoading: isStudentLoading } = useStudentDetail(1);
+  const { student: apiStudent, isLoading: isStudentLoading } = useStudentDetail(user?.id);
   const { activities, isLoading: isActivitiesLoading } = useActivities();
 
-  const { total, isLoading: isTotalKehadiranLoading } = useTotalKehadiran(1);
+  const { total, isLoading: isTotalKehadiranLoading } = useTotalKehadiran(user?.id);
   
   // Ambil sisa waktu magang dari server backend
   const { sisaWaktu: sisaWaktuServer, isLoading: isSisaWaktuLoading } = useSisaWaktuMagang();

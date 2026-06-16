@@ -18,7 +18,6 @@ export function useReferenceLetter() {
       setLetter(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat surat keterangan magang.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
@@ -112,7 +111,6 @@ export function useStudentReferenceLetters() {
       setStatistics(statsRes.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat daftar surat keterangan magang.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);

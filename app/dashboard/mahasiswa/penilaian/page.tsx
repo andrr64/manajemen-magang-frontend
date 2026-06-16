@@ -217,7 +217,7 @@ export default function StudentPenilaianPage() {
               ) : filteredAssessments.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
-                    Tidak ada parameter penilaian magang yang cocok dengan kriteria pencarian.
+                    {assessments.length === 0 ? "Belum ada penilaian." : "Tidak ada parameter penilaian magang yang cocok dengan kriteria pencarian."}
                   </td>
                 </tr>
               ) : (
@@ -309,20 +309,22 @@ export default function StudentPenilaianPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         
         {/* Mentor Signature & Identity */}
-        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex items-center gap-4">
-          <div className="p-3.5 bg-[#2F578A]/10 dark:bg-[#232F72]/50 text-[#36ADA3] rounded-2xl border border-[#2F578A]/20">
-            <User className="w-6 h-6" />
+        {assessments.length > 0 && (
+          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex items-center gap-4">
+            <div className="p-3.5 bg-[#2F578A]/10 dark:bg-[#232F72]/50 text-[#36ADA3] rounded-2xl border border-[#2F578A]/20">
+              <User className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-black uppercase tracking-wider block">TIM PENILAI INDEPENDEN</span>
+              <h5 className="font-black text-sm text-[#232F72] dark:text-white mt-1">
+                Mentor Pembimbing
+              </h5>
+              <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/70 mt-0.5 leading-normal">
+                Dosen Pembimbing Akademik Utama • {user?.universitas || "Universitas"}
+              </p>
+            </div>
           </div>
-          <div>
-            <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-black uppercase tracking-wider block">TIM PENILAI INDEPENDEN</span>
-            <h5 className="font-black text-sm text-[#232F72] dark:text-white mt-1">
-              Mentor Pembimbing
-            </h5>
-            <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/70 mt-0.5 leading-normal">
-              Dosen Pembimbing Akademik Utama • {user?.universitas || "Universitas"}
-            </p>
-          </div>
-        </div>
+        )}
 
         {/* Rubric grading scales */}
         <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex items-center gap-4">

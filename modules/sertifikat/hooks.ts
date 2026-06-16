@@ -19,7 +19,6 @@ export function useCertificate() {
       setCertificate(response.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat informasi sertifikat.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
@@ -96,7 +95,6 @@ export function useStudentCertificates() {
       setStatistics(statsRes.data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat daftar sertifikat bimbingan.";
-      notifier.error(errMsg);
       setError(errMsg);
     } finally {
       setIsLoading(false);
