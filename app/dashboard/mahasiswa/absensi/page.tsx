@@ -351,12 +351,14 @@ export default function StudentAttendancePage() {
                 <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end">
                   <button
                     type="submit"
-                    disabled={isSubmitting || isUploading}
-                    className="w-full sm:w-auto px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white font-black rounded-2xl shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] transition-all text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                    disabled={isSubmitting || isUploading || !attachmentKey}
+                    className="w-full sm:w-auto px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/50 disabled:cursor-not-allowed text-white font-black rounded-2xl shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] disabled:shadow-none transition-all text-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                   >
                     {isSubmitting
                       ? <><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> Mengirim...</>
-                      : <><FileCheck className="w-4 h-4" /> Kirim Laporan {status === "izin" ? "Izin" : "Sakit"}</>
+                      : !attachmentKey 
+                        ? <><UploadCloud className="w-4 h-4" /> Unggah Dokumen Dahulu</>
+                        : <><FileCheck className="w-4 h-4" /> Kirim Laporan {status === "izin" ? "Izin" : "Sakit"}</>
                     }
                   </button>
                 </div>
