@@ -1,22 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Clock, 
-  Check, 
-  FileText, 
-  UploadCloud, 
-  Calendar, 
-  Sparkles, 
-  CheckCircle,
+import {
+  Clock,
+  FileText,
+  UploadCloud,
+  Calendar,
+  Sparkles,
   AlertCircle,
   FileCheck,
   X,
-  UserX,
   File as FileIcon
 } from "lucide-react";
 import { useSubmitAbsensi, useRiwayatAbsensi, useStatistikKehadiran } from "@/modules/data_absensi/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
+import { SuccessToast } from "@/components/shared";
 
 export default function StudentAttendancePage() {
   const [status, setStatus] = useState<"hadir" | "izin" | "sakit">("hadir");
@@ -112,17 +110,7 @@ export default function StudentAttendancePage() {
     <div className="space-y-6 relative pb-10">
       
       {/* SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-850 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
-          <div className="p-1.5 bg-white/20 rounded-lg">
-            <Check className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-xs font-black block">Presensi Berhasil Dikirim</span>
-            <span className="text-[10px] opacity-90 font-bold block mt-0.5">Laporan presensi Anda hari ini telah disimpan di sistem!</span>
-          </div>
-        </div>
-      )}
+      <SuccessToast variant="mahasiswa" show={showToast} message="Laporan presensi Anda hari ini telah disimpan di sistem!" title="Presensi Berhasil Dikirim" icon={<FileCheck className="w-5 h-5 text-white" />} />
 
       {/* TOP STATS DISPLAY */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

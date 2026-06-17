@@ -2,18 +2,17 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { 
-  Search, 
-  Mail, 
-  Phone, 
-  School, 
-  User, 
-  ChevronRight, 
-  Filter, 
+import {
+  Search,
+  Mail,
+  Phone,
+  School,
+  User,
+  ChevronRight,
+  Filter,
   RefreshCw,
   TrendingUp,
   Award,
-  CheckCircle,
   ExternalLink,
   UserPlus,
   Calendar,
@@ -28,6 +27,7 @@ import { Student } from "@/modules/data_mahasiswa/types";
 import { useStudents, useStudentStats } from "@/modules/data_mahasiswa/hooks";
 import { mahasiswaAPI } from "@/modules/data_mahasiswa/api";
 import { useUniversitas } from "@/modules/universitas/hooks";
+import { SuccessToast, DeleteConfirmModal, Modal, ModalHeader, TableLoadingRow, TableEmptyRow, PageHeader, DashboardPagination } from "@/components/shared";
 
 export default function MentorDataMahasiswaPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -299,79 +299,25 @@ export default function MentorDataMahasiswaPage() {
     <div className="space-y-6 relative">
       
       {/* FLOAT SUCCESS TOAST */}
-      {showPeriodToast && (
-        <div className="fixed bottom-6 right-6 z-55 p-4 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 rounded-2xl shadow-xl flex items-center gap-3 animate-float max-w-sm">
-          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-          <span className="text-xs font-bold leading-normal">{showPeriodToast}</span>
-        </div>
-      )}
+      <SuccessToast show={!!showPeriodToast} message={showPeriodToast} />
 
       {/* DELETE CONFIRMATION MODAL */}
-      {deletingStudent && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn" onClick={() => setDeletingStudent(null)}>
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl text-center space-y-6 animate-float"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-center mx-auto shadow-md">
-              <Trash2 className="w-8 h-8" />
-            </div>
-            <div className="space-y-2">
-              <h4 className="font-extrabold text-lg text-[#232F72] dark:text-[#FFFFFF]">Hapus Data Mahasiswa?</h4>
-              <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold leading-relaxed">
-                Apakah Anda yakin ingin menghapus data mahasiswa bimbingan bernama <strong className="text-[#232F72] dark:text-[#FFFFFF]">{deletingStudent.name}</strong>? Tindakan ini tidak dapat dibatalkan.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-3 text-xs">
-              <button
-                type="button"
-                onClick={() => setDeletingStudent(null)}
-                className="px-5 py-2.5 rounded-xl border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72]/80 dark:text-[#F1F5F9] font-bold hover:bg-[#F8FAFC] dark:hover:bg-[#121358] cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-550 disabled:bg-rose-500/70 text-white font-extrabold rounded-xl shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer transition-all"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Menghapus...
-                  </>
-                ) : (
-                  "Ya, Hapus Data"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        show={!!deletingStudent}
+        title="Hapus Data Mahasiswa?"
+        body={<>Apakah Anda yakin ingin menghapus data mahasiswa bimbingan bernama <strong className="text-[#232F72] dark:text-[#FFFFFF]">{deletingStudent?.name}</strong>? Tindakan ini tidak dapat dibatalkan.</>}
+        isDeleting={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingStudent(null)}
+      />
 
       {/* EDIT STUDENT DETAILS MODAL */}
-      {editingStudent && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn" onClick={() => setEditingStudent(null)}>
-          <form 
-            onSubmit={handleSaveEdit}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-2xl space-y-5 animate-float max-h-[90vh] overflow-y-auto"
-          >
-            {/* Modal Header */}
-            <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-[#2F578A]">
-              <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-[#FFFFFF] rounded-xl">
-                <Pencil className="w-5.5 h-5.5" />
-              </div>
-              <div>
-                <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] leading-tight">
-                  Edit Data Mahasiswa
-                </h4>
-                <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5">
-                  Ubah rincian informasi data mahasiswa {editingStudent.name} secara aman.
-                </p>
-              </div>
-            </div>
+      <Modal show={!!editingStudent} onClose={() => setEditingStudent(null)} maxWidth="max-w-2xl" cardClassName="space-y-5">
+        <form
+          onSubmit={handleSaveEdit}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ModalHeader icon={<Pencil className="w-5 h-5" />} title="Edit Data Mahasiswa" subtitle={`Ubah rincian informasi data mahasiswa ${editingStudent?.name} secara aman.`} />
 
             {/* Error Message */}
             {editError && (
@@ -576,9 +522,8 @@ export default function MentorDataMahasiswaPage() {
               </button>
             </div>
 
-          </form>
-        </div>
-      )}
+        </form>
+      </Modal>
 
       {/* EDIT MODAL DIALOG (YYYY-MM-DD Date picker) */}
       {editingStudentId !== null && (
@@ -676,37 +621,22 @@ export default function MentorDataMahasiswaPage() {
       )}
       
       {/* HEADER SECTION WITH METRIC BADGES */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
-            Data Mahasiswa Bimbingan Magang
-          </h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-1">
-            Kelola, monitor progres, dan lihat data lengkap mahasiswa yang Anda bimbing di berbagai industri mitra.
-          </p>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={resetFilters}
-            className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Reset Filter
-          </button>
-          
-
-
-          <Link
-            href="/dashboard/mentor/data-mahasiswa/tambah-mahasiswa"
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30 active:scale-95 transition-all cursor-pointer"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            Tambah Mahasiswa
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Data Mahasiswa Bimbingan Magang"
+        subtitle="Kelola, monitor progres, dan lihat data lengkap mahasiswa yang Anda bimbing di berbagai industri mitra."
+        action={
+          <>
+            <button onClick={resetFilters} className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm">
+              <RefreshCw className="w-3.5 h-3.5" />
+              Reset Filter
+            </button>
+            <Link href="/dashboard/mentor/data-mahasiswa/tambah-mahasiswa" className="flex items-center gap-1.5 px-4 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30 active:scale-95 transition-all cursor-pointer">
+              <UserPlus className="w-3.5 h-3.5" />
+              Tambah Mahasiswa
+            </Link>
+          </>
+        }
+      />
 
       {/* QUICK STATUS STATS GRID */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -841,14 +771,7 @@ export default function MentorDataMahasiswaPage() {
             </thead>
             <tbody className="text-xs">
               {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center">
-                    <div className="flex flex-col items-center justify-center gap-2 text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
-                      <Loader2 className="w-8 h-8 animate-spin text-[#232F72] dark:text-[#FFFFFF]" />
-                      <span className="text-xs font-bold">Memuat data mahasiswa bimbingan...</span>
-                    </div>
-                  </td>
-                </tr>
+                <TableLoadingRow colSpan={7} text="Memuat data mahasiswa bimbingan..." />
               ) : pagedStudents?.map((student) => (
                 <tr 
                   key={student.id} 
@@ -968,22 +891,12 @@ export default function MentorDataMahasiswaPage() {
               ))}
 
               {pagedStudents.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-16 text-center">
-                    <div className="max-w-md mx-auto space-y-2">
-                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-extrabold text-sm">Tidak ada mahasiswa yang cocok</p>
-                      <p className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50 text-xs">
-                        Silakan sesuaikan kriteria pencarian atau atur ulang filter Anda menggunakan tombol di atas.
-                      </p>
-                      <button 
-                        onClick={resetFilters}
-                        className="px-3.5 py-1.5 bg-[#F8FAFC] dark:bg-[#232F72] text-[#232F72] dark:text-[#FFFFFF] text-xs font-bold rounded-xl mt-2 cursor-pointer border border-[#2F578A]/30 hover:bg-[#F1F5F9] dark:hover:bg-[#232F72] transition-all"
-                      >
-                        Setel Ulang Semua Filter
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                <TableEmptyRow
+                  colSpan={8}
+                  title="Tidak ada mahasiswa yang cocok"
+                  description="Silakan sesuaikan kriteria pencarian atau atur ulang filter Anda menggunakan tombol di atas."
+                  onReset={resetFilters}
+                />
               )}
             </tbody>
           </table>
@@ -991,60 +904,13 @@ export default function MentorDataMahasiswaPage() {
 
         {/* PAGINATION PANEL */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-slate-100 dark:border-[#2F578A] pt-4 mt-4 flex-wrap gap-3">
-            <span className="text-[11px] font-semibold text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
-              Halaman {page} dari {totalPages}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <button 
-                onClick={() => setPage(1)} 
-                disabled={page === 1} 
-                className="px-3 py-1.5 border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] disabled:opacity-40 disabled:hover:bg-transparent transition-all cursor-pointer"
-              >
-                Awal
-              </button>
-              <button 
-                onClick={() => setPage(Math.max(1, page - 1))} 
-                disabled={page === 1} 
-                className="px-3 py-1.5 border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] disabled:opacity-40 disabled:hover:bg-transparent transition-all cursor-pointer"
-              >
-                Sebelumnya
-              </button>
-              
-              {/* Numeric Page Buttons */}
-              {Array.from({ length: totalPages }).map((_, idx) => {
-                const pageNum = idx + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setPage(pageNum)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-                      page === pageNum
-                        ? "bg-[#232F72] dark:bg-[#232F72] text-[#FFFFFF] shadow-md shadow-[#232F72]/20"
-                        : "border border-[#2F578A]/50 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-[#F8FAFC] dark:hover:bg-[#121358]"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button 
-                onClick={() => setPage(Math.min(totalPages, page + 1))} 
-                disabled={page === totalPages} 
-                className="px-3 py-1.5 border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] disabled:opacity-40 disabled:hover:bg-transparent transition-all cursor-pointer"
-              >
-                Selanjutnya
-              </button>
-              <button 
-                onClick={() => setPage(totalPages)} 
-                disabled={page === totalPages} 
-                className="px-3 py-1.5 border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] disabled:opacity-40 disabled:hover:bg-transparent transition-all cursor-pointer"
-              >
-                Akhir
-              </button>
-            </div>
-          </div>
+          <DashboardPagination
+            page={page}
+            totalPages={totalPages}
+            pageSize={perPage}
+            onPageChange={setPage}
+            onPageSizeChange={(s) => { setPerPage(s); setPage(1); }}
+          />
         )}
       </div>
     </div>

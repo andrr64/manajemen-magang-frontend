@@ -18,6 +18,7 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
+import { SuccessToast } from "@/components/shared";
 
 export default function StudentProfilePage() {
   const { user, updateProfile } = useIam();
@@ -80,17 +81,7 @@ export default function StudentProfilePage() {
     <div className="space-y-6 relative pb-10">
       
       {/* GLOWING FLOATING TOAST NOTIFICATION */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-850 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
-          <div className="p-1.5 bg-white/20 rounded-lg">
-            <Check className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-xs font-black block">Pembaruan Sukses</span>
-            <span className="text-[10px] opacity-90 font-bold block mt-0.5">Profil Anda berhasil diperbarui di sistem!</span>
-          </div>
-        </div>
-      )}
+      <SuccessToast variant="mahasiswa" show={showToast} message="Profil Anda berhasil diperbarui di sistem!" title="Pembaruan Sukses" />
 
       {/* STUNNING TOP PROFILE HERO BANNER */}
       <div className="relative rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#121358]/20">

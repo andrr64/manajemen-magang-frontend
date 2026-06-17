@@ -4,15 +4,13 @@ import { WEB_ROUTES } from "@/modules/web-routes";
 import React, { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  ArrowLeft, 
-  School, 
-  FileBadge, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  Upload, 
-  Check, 
+import {
+  School,
+  FileBadge,
+  CheckCircle,
+  Clock,
+  Upload,
+  Check,
   RefreshCw,
   Sparkles,
   Paperclip,
@@ -23,6 +21,7 @@ import {
   CalendarCheck,
   FileCheck
 } from "lucide-react";
+import { BackNavBar, PageLoader, NotFoundBlock, SuccessModal, ModalActions } from "@/components/shared";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
@@ -183,33 +182,18 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
   // Render 404 block if student not found
   if (!student) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4">
-        <div className="p-4 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-full inline-block border border-rose-100 dark:border-rose-900/40">
-          <AlertCircle className="w-10 h-10 animate-bounce" />
-        </div>
-        <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Mahasiswa Tidak Ditemukan</h4>
-        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-          Data mahasiswa dengan ID #{unwrappedParams.id} tidak terdaftar di sistem penerbitan sertifikat magang.
-        </p>
-        <Link 
-          href="/dashboard/mentor/sertifikat"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md transition-all mt-4 cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Kembali ke Daftar Sertifikat
-        </Link>
-      </div>
+      <NotFoundBlock
+        title="Mahasiswa Tidak Ditemukan"
+        description={`Data mahasiswa dengan ID #${unwrappedParams.id} tidak terdaftar di sistem penerbitan sertifikat magang.`}
+        backHref="/dashboard/mentor/sertifikat"
+        backLabel="Kembali ke Daftar Sertifikat"
+      />
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
-        <p className="text-slate-500 dark:text-slate-400 font-extrabold text-sm animate-pulse">
-          Memuat data berkas sertifikat...
-        </p>
-      </div>
+      <PageLoader text="Memuat data berkas sertifikat..." spinnerColor="text-indigo-500" />
     );
   }
 
@@ -225,41 +209,24 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
       )}
 
       {/* SUCCESS MODAL OVERLAY */}
-      {isSuccess && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#070e24] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl text-center space-y-4 animate-float">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 border border-emerald-200/50 dark:border-emerald-900/40 flex items-center justify-center mx-auto shadow-md">
-              <CheckCircle className="w-10 h-10 animate-bounce" />
-            </div>
-            <div className="space-y-1.5">
-              <h4 className="font-black text-lg text-slate-900 dark:text-white">Sertifikat Berhasil Disimpan!</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                Lampiran sertifikat magang untuk bimbingan <strong>{student.name}</strong> berhasil dikunci dan diverifikasi oleh sistem.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-[11px] font-bold text-slate-400 dark:text-slate-500">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-500" />
-              Mengalihkan kembali ke daftar sertifikat...
-            </div>
-          </div>
-        </div>
-      )}
+      <SuccessModal
+        show={isSuccess}
+        title="Sertifikat Berhasil Disimpan!"
+        description={`Lampiran sertifikat magang untuk bimbingan ${student.name} berhasil dikunci dan diverifikasi oleh sistem.`}
+        variant="indigo"
+      />
 
       {/* TOP NAVIGATION BAR */}
-      <div className="flex items-center justify-between">
-        <Link 
-          href="/dashboard/mentor/sertifikat"
-          className="inline-flex items-center gap-2 px-3.5 py-2 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-[#070e24]/40 transition-all cursor-pointer hover:scale-[1.02] active:scale-95 shadow-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Batal & Kembali
-        </Link>
-
-        <span className="text-xs text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-          Unggah Lampiran Berkas Sertifikat
-        </span>
-      </div>
+      <BackNavBar
+        href="/dashboard/mentor/sertifikat"
+        label="Batal & Kembali"
+        rightContent={
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            Unggah Lampiran Berkas Sertifikat
+          </span>
+        }
+      />
 
       {/* TWO-COLUMN GRID LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -475,32 +442,14 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
               )}
 
               {/* Form Action buttons */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-end gap-3 flex-wrap">
-                <Link
-                  href="/dashboard/mentor/sertifikat"
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer"
-                >
-                  Batal
-                </Link>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || fileKey === null || isHookSubmitting || isUploading}
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/65 text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
-                >
-                  {isSubmitting || isHookSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      Menyimpan...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4 text-white" />
-                      Simpan & Terapkan
-                    </>
-                  )}
-                </button>
-              </div>
+              <ModalActions
+                cancelHref="/dashboard/mentor/sertifikat"
+                submitLabel="Simpan & Terapkan"
+                submittingLabel="Menyimpan..."
+                isSubmitting={isSubmitting || isHookSubmitting || isUploading || fileKey === null}
+                submitIcon={<Check className="w-4 h-4 text-white" />}
+                variant="indigo"
+              />
 
             </form>
           </div>

@@ -16,6 +16,7 @@ import {
   KeyRound
 } from "lucide-react";
 import { useIam } from "@/modules/iam/hooks";
+import { SuccessToast } from "@/components/shared";
 
 export default function MentorProfilePage() {
   const { user, isLoading, updateProfile } = useIam();
@@ -83,17 +84,7 @@ export default function MentorProfilePage() {
     <div className="space-y-6 relative pb-10">
 
       {/* TOAST */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-800 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
-          <div className="p-1.5 bg-white/20 rounded-lg">
-            <Check className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-xs font-black block">Pembaruan Sukses</span>
-            <span className="text-[10px] opacity-90 font-bold block mt-0.5">Profil Anda berhasil diperbarui di sistem!</span>
-          </div>
-        </div>
-      )}
+      <SuccessToast show={showToast} message="Profil Anda berhasil diperbarui di sistem!" title="Pembaruan Sukses" />
 
       {/* HERO BANNER */}
       <div className="relative rounded-3xl bg-gradient-to-r from-[#0d1637] via-[#102058] to-[#091129] border border-[#2F578A]/20 dark:border-[#2F578A]/40 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#232F72]/10">

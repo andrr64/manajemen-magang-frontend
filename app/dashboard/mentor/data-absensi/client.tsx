@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { 
-  Search, 
-  Clock, 
-  Calendar, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  Download, 
-  FileSpreadsheet, 
-  UserCheck, 
+import {
+  Search,
+  Clock,
+  Calendar,
+  XCircle,
+  AlertCircle,
+  Download,
+  FileSpreadsheet,
+  UserCheck,
   Coffee,
   Check,
   RefreshCw,
@@ -21,6 +20,7 @@ import { useAttendance } from "@/modules/data_absensi/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { AttendanceLog } from "@/modules/data_absensi/types";
 import { mediaAPI } from "@/modules/media/api";
+import { SuccessToast, PageHeader, StatsGrid, StatItem } from "@/components/shared";
 
 export default function MentorAttendancePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -252,69 +252,42 @@ export default function MentorAttendancePage() {
       )}
 
       {/* FLOAT SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 rounded-2xl shadow-xl flex items-center gap-3 animate-float max-w-sm">
-          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-          <span className="text-xs font-bold leading-normal">{showToast}</span>
-        </div>
-      )}
+      <SuccessToast show={!!showToast} message={showToast} />
 
       {/* HEADER BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
-            Monitoring Absensi Harian Mahasiswa
-          </h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-1">
-            Pantau kehadiran real-time, waktu check-in/out, durasi kerja, dan koordinat GPS penempatan magang mahasiswa.
-          </p>
-        </div>
-
-        {/* Export Button */}
-        <button 
-          onClick={handleExport}
-          disabled={isExporting}
-          className="flex items-center gap-1.5 px-4.5 py-2.5 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md disabled:bg-[#F1F5F9]0/70 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30"
-        >
-          {isExporting ? (
-            <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              Mengekspor Laporan...
-            </>
-          ) : (
-            <>
-              <Download className="w-3.5 h-3.5" />
-              Ekspor Rekap Absensi
-            </>
-          )}
-        </button>
-      </div>
+      <PageHeader
+        title="Monitoring Absensi Harian Mahasiswa"
+        subtitle="Pantau kehadiran real-time, waktu check-in/out, durasi kerja, dan koordinat GPS penempatan magang mahasiswa."
+        action={
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-1.5 px-4.5 py-2.5 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md disabled:bg-[#F1F5F9]0/70 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30"
+          >
+            {isExporting ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                Mengekspor Laporan...
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                Ekspor Rekap Absensi
+              </>
+            )}
+          </button>
+        }
+      />
 
       {/* ATTENDANCE ANALYTICS METRICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {[
-          { label: "Hadir Hari Ini", value: stats.present, suffix: `/${stats.total}`, desc: "Mahasiswa On-Duty", icon: UserCheck, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
-          { label: "Belum Check-Out", value: stats.pendingCheckout, suffix: `/${stats.total}`, desc: "Batas Waktu: 17:00", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" },
-          { label: "Sakit / Izin", value: stats.off, suffix: `/${stats.total}`, desc: "Dengan Dokumen Sah", icon: Coffee, color: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40" }
-        ].map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <div key={index} className={`p-4 rounded-2xl border ${item.color} flex justify-between items-start shadow-sm`}>
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold tracking-wider opacity-85 block">{item.label}</span>
-                <div className="flex items-baseline gap-1.5 mt-2">
-                  <span className="text-2xl font-black tracking-tight">{item.value}</span>
-                  <span className="text-xs font-bold opacity-75">{item.suffix}</span>
-                </div>
-                <span className="text-[10px] font-semibold opacity-75 block pt-1">{item.desc}</span>
-              </div>
-              <div className="p-2 bg-white/40 dark:bg-black/20 rounded-xl">
-                <Icon className="w-4 h-4" />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {(() => {
+        const statsConfig: StatItem[] = [
+          { label: "Hadir Hari Ini", value: stats.present, desc: "Mahasiswa On-Duty", colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: UserCheck },
+          { label: "Belum Check-Out", value: stats.pendingCheckout, desc: "Batas Waktu: 17:00", colorClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40", icon: Clock },
+          { label: "Sakit / Izin", value: stats.off, desc: "Dengan Dokumen Sah", colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40", icon: Coffee },
+        ];
+        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2 lg:grid-cols-3" />;
+      })()}
 
       {/* FILTER PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">

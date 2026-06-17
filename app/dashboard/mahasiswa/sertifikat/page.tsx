@@ -1,20 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Award, 
-  Download, 
-  Eye, 
-  CheckCircle2, 
-  FileText, 
-  Calendar, 
-  ShieldCheck, 
+import {
+  Award,
+  Download,
+  Eye,
+  CheckCircle2,
+  FileText,
+  Calendar,
+  ShieldCheck,
   Loader2,
   X,
   Sparkles
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
 import { useIamStore } from "@/modules/iam/store";
+import { PageLoader, SuccessToast } from "@/components/shared";
 
 export default function StudentSertifikatPage() {
   const { certificate, isLoading } = useCertificate();
@@ -44,14 +45,7 @@ export default function StudentSertifikatPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <Loader2 className="w-10 h-10 text-[#36ADA3] animate-spin" />
-        <p className="text-[#2F578A] dark:text-[#F1F5F9]/70 font-extrabold text-sm animate-pulse">
-          Memuat berkas sertifikat kelulusan...
-        </p>
-      </div>
-    );
+    return <PageLoader text="Memuat berkas sertifikat kelulusan..." spinnerColor="text-[#36ADA3]" />;
   }
 
   if (!certificate || certificate.status !== "Issued") {
@@ -86,17 +80,7 @@ export default function StudentSertifikatPage() {
     <div className="space-y-6 relative pb-10">
       
       {/* FLOATING SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-850 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
-          <div className="p-1.5 bg-white/20 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-xs font-black block">Unduhan Berhasil</span>
-            <span className="text-[10px] opacity-90 font-bold block mt-0.5">Sertifikat Magang PDF telah berhasil diunduh ke perangkat Anda!</span>
-          </div>
-        </div>
-      )}
+      <SuccessToast variant="mahasiswa" show={showToast} message="Sertifikat Magang PDF telah berhasil diunduh ke perangkat Anda!" title="Unduhan Berhasil" icon={<CheckCircle2 className="w-5 h-5 text-white" />} />
 
       {/* HEADER PAGE */}
       <div>

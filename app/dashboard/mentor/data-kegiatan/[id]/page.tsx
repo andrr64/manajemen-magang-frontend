@@ -2,17 +2,16 @@
 
 import React, { use, useState, useMemo } from "react";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Mail, 
-  Phone, 
-  School, 
-  User, 
-  Calendar, 
-  Briefcase, 
-  MessageSquare, 
-  CheckCircle, 
-  Clock, 
+import {
+  Mail,
+  Phone,
+  School,
+  User,
+  Calendar,
+  Briefcase,
+  MessageSquare,
+  CheckCircle,
+  Clock,
   AlertCircle,
   FileText,
   Paperclip,
@@ -23,6 +22,7 @@ import {
   Activity,
   Trash2
 } from "lucide-react";
+import { BackNavBar, NotFoundBlock } from "@/components/shared";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { ActivityLog } from "../client";
 import { useMentorActivities } from "../../../../../modules/data_kegiatan/hooks";
@@ -142,22 +142,12 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
   // Render 404 block if activity not found
   if (!activity) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4">
-        <div className="p-4 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-full inline-block border border-rose-100 dark:border-rose-900/40">
-          <AlertCircle className="w-10 h-10 animate-bounce" />
-        </div>
-        <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Kegiatan Tidak Ditemukan</h4>
-        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-          Data log kegiatan dengan ID #{activityIdStr} tidak terdaftar di sistem bimbingan magang.
-        </p>
-        <Link 
-          href="/dashboard/mentor/data-kegiatan"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md transition-all mt-4 cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Kembali ke Daftar Kegiatan
-        </Link>
-      </div>
+      <NotFoundBlock
+        title="Kegiatan Tidak Ditemukan"
+        description={`Data log kegiatan dengan ID #${activityIdStr} tidak terdaftar di sistem bimbingan magang.`}
+        backHref="/dashboard/mentor/data-kegiatan"
+        backLabel="Kembali ke Daftar Kegiatan"
+      />
     );
   }
 
@@ -173,20 +163,16 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
       )}
 
       {/* TOP NAVIGATION BAR */}
-      <div className="flex items-center justify-between">
-        <Link 
-          href="/dashboard/mentor/data-kegiatan"
-          className="inline-flex items-center gap-2 px-3.5 py-2 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-[#070e24]/40 transition-all cursor-pointer hover:scale-[1.02] active:scale-95 shadow-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Kembali ke Log Kegiatan
-        </Link>
-
-        <span className="text-xs text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-          Detail Kegiatan #{activity.id}
-        </span>
-      </div>
+      <BackNavBar
+        href="/dashboard/mentor/data-kegiatan"
+        label="Kembali ke Log Kegiatan"
+        rightContent={
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            Detail Kegiatan #{activity.id}
+          </span>
+        }
+      />
 
       {/* TWO-COLUMN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

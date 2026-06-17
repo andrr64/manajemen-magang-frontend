@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  Upload, 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  Calendar, 
-  Clock, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Calendar,
+  Clock,
   Download,
   Filter,
   X,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useActivities } from "@/modules/data_kegiatan/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
+import { SuccessToast, DashboardPagination } from "@/components/shared";
 
 export default function StudentActivitiesPage() {
   const {
@@ -137,17 +138,7 @@ export default function StudentActivitiesPage() {
     <div className="space-y-6 relative pb-10">
       
       {/* FLOATING SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 bg-emerald-550 dark:bg-[#062419] border border-emerald-450 dark:border-emerald-850 text-white rounded-2xl shadow-2xl flex items-center gap-3 animate-float max-w-sm">
-          <div className="p-1.5 bg-white/20 rounded-lg">
-            <FileCheck className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-xs font-black block">Aksi Sukses</span>
-            <span className="text-[10px] opacity-90 font-bold block mt-0.5">{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <SuccessToast variant="mahasiswa" show={showToast} message={toastMessage} title="Aksi Sukses" icon={<FileCheck className="w-5 h-5 text-white" />} />
 
       {/* TOP HEADER & ACTION BANNER */}
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -433,37 +424,8 @@ export default function StudentActivitiesPage() {
       </div>
 
       {/* PAGINATION */}
-      {filteredActivities.length > 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-          <div className="flex items-center gap-2 text-xs text-[#2F578A] dark:text-[#F1F5F9]/60 font-semibold">
-            <span>Baris per halaman:</span>
-            <select
-              value={perPage}
-              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
-              className="px-2 py-1 rounded-lg border border-[#2F578A]/30 dark:border-[#2F578A]/50 bg-white dark:bg-[#232F72]/30 text-[#232F72] dark:text-white text-xs font-bold focus:outline-none"
-            >
-              {[5, 10, 20].map(n => <option key={n} value={n}>{n}</option>)}
-            </select>
-            <span className="ml-2">
-              {Math.min((page - 1) * perPage + 1, filteredActivities.length)}–{Math.min(page * perPage, filteredActivities.length)} dari {filteredActivities.length}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <button onClick={() => setPage(1)} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Awal</button>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Sebelumnya</button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1).reduce<(number | string)[]>((acc, p, i, arr) => {
-              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("...");
-              acc.push(p);
-              return acc;
-            }, []).map((p, i) => typeof p === "string" ? (
-              <span key={`ellipsis-${i}`} className="px-2 text-[#2F578A] dark:text-[#F1F5F9]/50 text-xs font-bold">…</span>
-            ) : (
-              <button key={p} onClick={() => setPage(p as number)} className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${page === p ? "bg-[#36ADA3] text-white border-[#36ADA3] shadow-[0_0_8px_rgba(54,173,163,0.3)]" : "border-[#2F578A]/30 dark:border-[#2F578A]/50 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50"}`}>{p}</button>
-            ))}
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Selanjutnya</button>
-            <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="px-3 py-1.5 rounded-xl text-xs font-bold border border-[#2F578A]/30 dark:border-[#2F578A]/50 disabled:opacity-40 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/50 transition-all">Akhir</button>
-          </div>
-        </div>
+      {totalPages > 1 && (
+        <DashboardPagination page={page} totalPages={totalPages} pageSize={perPage} onPageChange={setPage} onPageSizeChange={(s) => { setPerPage(s); setPage(1); }} variant="mahasiswa" />
       )}
 
     </div>

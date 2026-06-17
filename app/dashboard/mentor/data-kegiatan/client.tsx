@@ -20,6 +20,7 @@ import {
 import { useMentorActivities } from "../../../../modules/data_kegiatan/hooks";
 import { useStudents } from "../../../../modules/data_mahasiswa/hooks";
 import { DataTable } from "@/components/ui/data-table";
+import { SuccessToast, PageHeader, StatsGrid, StatItem } from "@/components/shared";
 
 export interface ActivityLog {
   id: number;
@@ -196,56 +197,32 @@ export default function MentorActivitiesPage() {
       )}
 
       {/* FLOAT SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 rounded-2xl shadow-xl flex items-center gap-3 animate-float max-w-sm">
-          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-          <span className="text-xs font-bold leading-normal">{showToast}</span>
-        </div>
-      )}
+      <SuccessToast show={!!showToast} message={showToast} />
 
       {/* HEADER BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
-            Log Kegiatan & Laporan Mahasiswa
-          </h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-1">
-            Validasi pekerjaan harian mahasiswa bimbingan Anda, kelola lampiran file, dan lakukan tindakan persetujuan atau penghapusan log.
-          </p>
-        </div>
-        <button
-          onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
-          className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          Reset Filter
-        </button>
-      </div>
+      <PageHeader
+        title="Log Kegiatan & Laporan Mahasiswa"
+        subtitle="Validasi pekerjaan harian mahasiswa bimbingan Anda, kelola lampiran file, dan lakukan tindakan persetujuan atau penghapusan log."
+        action={
+          <button
+            onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
+            className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Reset Filter
+          </button>
+        }
+      />
 
       {/* ACTIVITY STATISTICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {[
-          { label: "Total Kegiatan", value: stats.total, desc: "Tercatat Minggu Ini", icon: Activity, color: "text-[#232F72] dark:text-[#FFFFFF] bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/30" },
-          { label: "Disetujui Mentor", value: stats.approved, desc: "Ceklis Validasi", icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40" },
-          { label: "Perlu Tinjauan", value: stats.pending, desc: "Menunggu Approval", icon: Clock, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40" }
-        ].map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <div key={index} className={`p-4 rounded-2xl border ${item.color} flex justify-between items-start shadow-sm`}>
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold tracking-wider opacity-85 block">{item.label}</span>
-                <div className="flex items-baseline mt-2">
-                  <span className="text-2xl font-black tracking-tight">{item.value}</span>
-                </div>
-                <span className="text-[10px] font-semibold opacity-75 block pt-1.5">{item.desc}</span>
-              </div>
-              <div className="p-2 bg-white/40 dark:bg-black/20 rounded-xl">
-                <Icon className="w-4 h-4" />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {(() => {
+        const statsConfig: StatItem[] = [
+          { label: "Total Kegiatan", value: stats.total, desc: "Tercatat Minggu Ini", colorClass: "text-[#232F72] dark:text-[#FFFFFF] bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/30", icon: Activity },
+          { label: "Disetujui Mentor", value: stats.approved, desc: "Ceklis Validasi", colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: CheckCircle },
+          { label: "Perlu Tinjauan", value: stats.pending, desc: "Menunggu Approval", colorClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40", icon: Clock },
+        ];
+        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2 lg:grid-cols-3" />;
+      })()}
 
       {/* FILTER & SEARCH PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
