@@ -13,7 +13,8 @@ export default function TambahKegiatanPage() {
   const { addActivity } = useActivities();
   const { upload, isUploading } = useFileUpload({ maxSizeMB: 10, allowedTypes: ["application/pdf", "image/jpeg", "image/png"] });
 
-  const [newTitle, setNewTitle] = useState("");
+  const [newTitle,      setNewTitle]      = useState("");
+  const [newKeterangan, setNewKeterangan] = useState("");
   const [newDate,  setNewDate]  = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -43,7 +44,7 @@ export default function TambahKegiatanPage() {
         const results = await Promise.all(selectedFiles.map(f => upload(f)));
         fileKeys = results.map(r => r.key);
       }
-      await addActivity({ title: newTitle, date: newDate, time: newTime, fileKeys });
+      await addActivity({ title: newTitle, keterangan: newKeterangan, date: newDate, time: newTime, fileKeys });
       notifier.success("Kegiatan baru berhasil ditambahkan!");
       router.push("/dashboard/mahasiswa/kegiatan");
     } catch (err: any) {
@@ -81,6 +82,18 @@ export default function TambahKegiatanPage() {
               onChange={e => setNewTitle(e.target.value)}
               placeholder="Contoh: Membuat API Endpoint Get data-mahasiswa..."
               className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
+            />
+          </div>
+
+          {/* Keterangan */}
+          <div className="space-y-2.5">
+            <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Keterangan / Deskripsi Kegiatan</label>
+            <textarea
+              rows={3}
+              value={newKeterangan}
+              onChange={e => setNewKeterangan(e.target.value)}
+              placeholder="Jelaskan apa yang dikerjakan pada kegiatan ini..."
+              className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors resize-none text-xs font-semibold"
             />
           </div>
 

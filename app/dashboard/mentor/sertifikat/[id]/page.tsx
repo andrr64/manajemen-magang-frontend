@@ -16,9 +16,7 @@ import {
   Paperclip,
   Trash2,
   Loader2,
-  Briefcase,
   Download,
-  CalendarCheck,
   FileCheck
 } from "lucide-react";
 import { BackNavBar, PageLoader, NotFoundBlock, ModalActions } from "@/components/shared";
@@ -226,8 +224,8 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
               <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${student.avatarColor} text-white font-extrabold flex items-center justify-center text-2xl shadow-lg`}>
                 {(student?.name || "U").split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
               </div>
-              <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] border-2 border-white dark:border-slate-900 shadow">
-                {student.id}
+              <span className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-[9px] border-2 border-white dark:border-slate-900 shadow">
+                {matchedCert?.statusSertifikat === "SUDAH_DIUNGGAH" ? "✓" : "?"}
               </span>
             </div>
 
@@ -243,18 +241,12 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
             <hr className="border-slate-100 dark:border-slate-800/60" />
 
             <div className="text-left space-y-2.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-              <div className="flex items-center gap-2">
-                <School className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                <span className="text-slate-800 dark:text-white truncate">{student.university}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                <span className="text-slate-700 dark:text-slate-300 font-bold truncate">{student.company}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarCheck className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                <span className="text-[11px] truncate">Program Magang Semester Genap</span>
-              </div>
+              {student.university && (
+                <div className="flex items-center gap-2">
+                  <School className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                  <span className="text-slate-800 dark:text-white truncate">{student.university}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -378,12 +370,8 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
                       <p className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">Diberikan Kepada:</p>
                       <h5 className="font-extrabold text-sm">{student.name}</h5>
                       <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase pt-1">
-                        NIM: {student.nim} • {student.university}
+                        NIM: {student.nim}{student.university ? ` • ${student.university}` : ""}
                       </p>
-                    </div>
-
-                    <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 max-w-sm">
-                      Diterbitkan Atas Selesainya Magang Di: <strong className="text-slate-700 dark:text-slate-350">{student.company}</strong>
                     </div>
 
                     <div className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-1.5 border border-emerald-100/30 rounded-xl mt-1">

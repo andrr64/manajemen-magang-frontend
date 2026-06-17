@@ -1,223 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import {
-  Award,
-  Download,
-  Eye,
-  CheckCircle2,
-  Calendar,
-  ShieldCheck,
-  Loader2,
+  Award, Download, Calendar, User,
+  CheckCircle2, AlertCircle, Loader2, FileText, Clock,
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
-import { useIamStore } from "@/modules/iam/store";
-import { PageLoader, SuccessToast } from "@/components/shared";
+import { mediaAPI } from "@/modules/media/api";
+
+function formatDate(iso: string | null) {
+  if (!iso) return "-";
+  return new Date(iso + "T00:00:00").toLocaleDateString("id-ID", {
+    day: "numeric", month: "long", year: "numeric",
+  });
+}
+
+function formatDateTime(iso: string | null) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("id-ID", {
+    day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
 
 export default function StudentSertifikatPage() {
-  const { certificate, isLoading } = useCertificate();
-  const { user } = useIamStore();
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-
-  const handleDownload = () => {
-    if (!certificate) return;
-    setIsDownloading(true);
-    
-    // Simulate premium download loader
-    setTimeout(() => {
-      setIsDownloading(false);
-      setShowToast(true);
-      
-      // Simulate file download trigger
-      const link = document.createElement("a");
-      link.href = certificate.downloadUrl || "#";
-      link.setAttribute("download", `Sertifikat_Magang_${certificate.recipient.replace(" ", "_")}.pdf`);
-      document.body.appendChild(link);
-      document.body.removeChild(link);
-
-      setTimeout(() => setShowToast(false), 4000);
-    }, 1500);
-  };
+  const { certificate, isLoading, error } = useCertificate();
 
   if (isLoading) {
-    return <PageLoader text="Memuat berkas sertifikat kelulusan..." spinnerColor="text-[#36ADA3]" />;
-  }
-
-  if (!certificate || certificate.status !== "Issued") {
     return (
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Sertifikat Kelulusan</h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau berkas sertifikat resmi yang telah diunggah oleh mentor bimbingan Anda.</p>
-        </div>
-        
-        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-8 md:p-12 shadow-xl bg-white dark:bg-[#121358] text-center max-w-2xl mx-auto space-y-6">
-          <div className="w-20 h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 border border-amber-200/40 dark:border-amber-900/40 flex items-center justify-center mx-auto shadow-md">
-            <Award className="w-10 h-10 animate-bounce" />
-          </div>
-          <div className="space-y-2">
-            <h4 className="font-black text-lg text-[#232F72] dark:text-white">Sertifikat Magang Belum Diterbitkan</h4>
-            <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold leading-relaxed max-w-md mx-auto">
-              Dokumen formal kelulusan magang Anda saat ini sedang diproses oleh Dosen Pembimbing Akademik atau Mentor Industri Anda. 
-            </p>
-            <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 max-w-sm mx-auto pt-2">
-              Segera setelah berkas sertifikat ditandatangani dan diunggah oleh mentor, dokumen PDF resmi Anda akan langsung tersedia di halaman ini.
-            </p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center gap-3 text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span className="text-sm font-bold">Memuat sertifikat...</span>
         </div>
       </div>
     );
   }
 
-  const certificateInfo = certificate;
+  // Tidak ada periode magang aktif
+  if (!certificate) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-xl font-black text-[#232F72] dark:text-white">Sertifikat Kelulusan</h3>
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas sertifikat yang diunggah oleh mentor bimbingan Anda.</p>
+        </div>
+        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-12 bg-white dark:bg-[#121358] text-center space-y-4 max-w-md">
+          <Award className="w-12 h-12 text-[#2F578A]/40 mx-auto" />
+          <p className="font-extrabold text-sm text-[#232F72] dark:text-white">Tidak ada periode magang aktif</p>
+          <p className="text-xs text-[#2F578A]/70 dark:text-[#F1F5F9]/50">Data sertifikat hanya tersedia untuk mahasiswa yang sedang aktif menjalani magang.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const sudahDiunggah = certificate.statusSertifikat === "SUDAH_DIUNGGAH";
+  const downloadUrl   = sudahDiunggah && certificate.url ? mediaAPI.getFileUrl(certificate.url) : null;
 
   return (
-    <div className="space-y-6 relative pb-10">
-      
-      {/* FLOATING SUCCESS TOAST */}
-      <SuccessToast variant="mahasiswa" show={showToast} message="Sertifikat Magang PDF telah berhasil diunduh ke perangkat Anda!" title="Unduhan Berhasil" icon={<CheckCircle2 className="w-5 h-5 text-white" />} />
+    <div className="space-y-6 pb-10 max-w-2xl">
 
-      {/* HEADER PAGE */}
       <div>
-        <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Sertifikat Kelulusan</h3>
-        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau berkas sertifikat resmi yang telah diunggah oleh mentor bimbingan Anda.</p>
+        <h3 className="text-xl font-black text-[#232F72] dark:text-white">Sertifikat Kelulusan</h3>
+        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas sertifikat yang diunggah oleh mentor bimbingan Anda.</p>
       </div>
 
-      {/* MAIN TWO-COLUMN SPLIT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        {/* LEFT COLUMN: CERTIFICATE MOCKUP & ACTIONS (7 Cols) */}
-        <div className="lg:col-span-7 flex flex-col justify-between">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] flex flex-col justify-between space-y-6 h-full relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#36ADA3]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#2F578A]/10 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Visual Certificate Mockup Container */}
-            <div className="relative border-4 border-double border-amber-500/30 bg-gradient-to-tr from-[#F8FAFC] to-white dark:from-[#232F72] dark:to-[#121358] p-6 rounded-2xl text-center shadow-inner overflow-hidden select-none group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
-              
-              <div className="space-y-4">
-                {/* Logo & Emblem */}
-                <div className="flex justify-center">
-                  <div className="p-2.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full border border-amber-500/20 shadow-md">
-                    <Award className="w-8 h-8" />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[9px] uppercase tracking-widest text-[#2F578A] dark:text-[#F1F5F9]/60 font-black">Sertifikat Penghargaan Resmi</span>
-                  <h4 className="text-lg md:text-xl font-black text-amber-600 dark:text-amber-500 tracking-tight">CERTIFICATE OF COMPLETION</h4>
-                  <p className="text-[8px] text-[#2F578A] dark:text-[#F1F5F9]/50 mt-0.5">Diberikan Kepada Mahasiswa:</p>
-                </div>
-
-                <div className="py-2.5">
-                  <h2 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-wide border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 pb-2 inline-block px-8 max-w-full truncate">
-                    {certificateInfo.recipient}
-                  </h2>
-                  <p className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/70 mt-2 font-semibold">
-                    NIM. {user?.nim || "-"} • {user?.universitas || "Universitas"}
-                  </p>
-                </div>
-
-                <div className="max-w-md mx-auto">
-                  <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/70 leading-relaxed font-semibold">
-                    Telah menyelesaikan program magang industri sebagai <strong className="text-[#232F72] dark:text-white">{certificateInfo.role}</strong> di mitra kerja <strong className="text-[#232F72] dark:text-white">{certificateInfo.company}</strong> yang diunggah oleh Dosen Pembimbing Akademik.
-                  </p>
-                </div>
-
-                {/* Decorative signatures placeholder */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[9px] font-bold">
-                  <div>
-                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/50 block font-normal">Dosen Pembimbing</span>
-                    <span className="text-[#232F72] dark:text-white block mt-2 font-black italic">
-                      Dosen Pembimbing
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/50 block font-normal">Industry Advisor</span>
-                    <span className="text-[#232F72] dark:text-white block mt-2 font-black italic">
-                      Perwakilan {certificateInfo.company}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* TWO MAIN ACTIONS (Melihat/Review & Download) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              
-              {/* Action 1: Melihat / Review */}
-              <Link
-                href="/dashboard/mahasiswa/sertifikat/pratinjau"
-                className="px-5 py-3.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/60 text-[#232F72] dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 border border-[#2F578A]/30 dark:border-[#2F578A]/50"
-              >
-                <Eye className="w-4 h-4 text-[#36ADA3]" />
-                Melihat / Review
-              </Link>
-
-              {/* Action 2: Download */}
-              <button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="px-5 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95"
-              >
-                {isDownloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    Mengunduh...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 text-white" />
-                    Unduh Sertifikat
-                  </>
-                )}
-              </button>
-
-            </div>
-
-          </div>
+      {/* Status banner */}
+      <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border ${
+        sudahDiunggah
+          ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+          : "bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40 text-amber-700 dark:text-amber-400"
+      }`}>
+        {sudahDiunggah
+          ? <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+          : <Clock className="w-5 h-5 flex-shrink-0" />
+        }
+        <div>
+          <p className="font-extrabold text-sm">{sudahDiunggah ? "Sertifikat Telah Diunggah" : "Menunggu Sertifikat dari Mentor"}</p>
+          <p className="text-[10px] font-semibold opacity-80 mt-0.5">
+            {sudahDiunggah ? "Anda dapat mengunduh berkas sertifikat di bawah ini." : "Mentor Anda belum mengunggah berkas sertifikat."}
+          </p>
         </div>
-
-        {/* RIGHT COLUMN: CERTIFICATE SPECIFICATIONS (5 Cols) */}
-        <div className="lg:col-span-5">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6 h-full flex flex-col justify-between">
-            
-            <div className="space-y-4">
-              <div className="pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
-                <span className="text-xs font-black text-[#232F72] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#36ADA3]" />
-                  Spesifikasi & Keabsahan Dokumen
-                </span>
-              </div>
-
-              <div className="space-y-3.5">
-                {[
-                  { label: "Tanggal Diterbitkan", value: certificateInfo.issueDate, icon: Calendar },
-                  { label: "Format & Ukuran Berkas", value: `${certificateInfo.fileFormat} (${certificateInfo.fileSize})`, icon: Download }
-                ].map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={index} className="p-3.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl border border-[#36ADA3]/20">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-black uppercase tracking-wider">{item.label}</span>
-                      </div>
-                      <span className="text-xs font-black text-[#232F72] dark:text-white text-right truncate max-w-[180px]">{item.value}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-          </div>
-        </div>
-
       </div>
+
+      {/* Metadata card */}
+      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+          <p className="text-[10px] font-black uppercase tracking-wider text-[#2F578A]/80 dark:text-[#F1F5F9]/50">Informasi Sertifikat</p>
+        </div>
+        <div className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/30">
+          {[
+            { label: "Nama Mahasiswa", value: certificate.namaMahasiswa, icon: User },
+            { label: "NIM",            value: certificate.nim,            icon: FileText },
+            { label: "Periode Magang", value: `${formatDate(certificate.tanggalMulai)} — ${formatDate(certificate.tanggalBerakhir)}`, icon: Calendar },
+            { label: "Mentor Pembimbing", value: certificate.namaMentor ?? "Belum ada data mentor", icon: Award },
+            ...(sudahDiunggah ? [{ label: "Diunggah Pada", value: formatDateTime(certificate.createdAt), icon: CheckCircle2 }] : []),
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="flex items-center gap-4 px-5 py-3.5">
+              <div className="p-2 bg-[#F1F5F9] dark:bg-[#232F72]/50 text-[#36ADA3] rounded-xl flex-shrink-0">
+                <Icon className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#2F578A]/70 dark:text-[#F1F5F9]/50">{label}</p>
+                <p className="text-xs font-extrabold text-[#232F72] dark:text-white mt-0.5 truncate">{value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Download button */}
+      {sudahDiunggah && downloadUrl && (
+        <a
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-2xl text-xs font-black shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] transition-all active:scale-95"
+        >
+          <Download className="w-4 h-4" />
+          Unduh / Buka Sertifikat
+        </a>
+      )}
 
     </div>
   );

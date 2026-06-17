@@ -34,8 +34,11 @@ export interface SertifikatResponse {
   mahasiswaId: string;
   nim: string;
   namaMahasiswa: string;
-  url: string;
-  statusSertifikat: string;
+  tanggalMulai: string | null;
+  tanggalBerakhir: string | null;
+  namaMentor: string | null;
+  url: string | null;
+  statusSertifikat: "SUDAH_DIUNGGAH" | "BELUM_DIUNGGAH";
   createdAt: string | null;
 }
 

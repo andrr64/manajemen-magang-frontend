@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search, Clock, Calendar, CalendarCheck, CalendarDays,
-  XCircle, AlertCircle, Download, FileSpreadsheet,
+  XCircle, AlertCircle, Download,
   UserCheck, Coffee, Check, RefreshCw, Eye, Trash2,
   ClipboardList, Loader2, ChevronLeft, ChevronRight,
 } from "lucide-react";
@@ -119,9 +119,6 @@ export default function MentorAttendancePage() {
   const [searchQuery,  setSearchQuery]  = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isExporting,  setIsExporting]  = useState(false);
-  const [viewingLeaveDoc, setViewingLeaveDoc] = useState<{
-    studentName: string; type: "Sakit" | "Izin"; documentUrl?: string | null
-  } | null>(null);
 
   const todayStr = useMemo(() => new Date().toLocaleDateString("id-ID", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -162,12 +159,12 @@ export default function MentorAttendancePage() {
     return matchSearch && matchStatus;
   });
 
-  const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", initialUrl?: string | null) => {
+  const getDocumentUrl = async (logId: string | number, fallbackKey?: string | null): Promise<string | null> => {
     try {
       const key = await getSuratKeterangan(logId);
-      setViewingLeaveDoc({ studentName, type, documentUrl: key ? mediaAPI.getFileUrl(key) : null });
+      return key ? mediaAPI.getFileUrl(key) : null;
     } catch {
-      setViewingLeaveDoc({ studentName, type, documentUrl: initialUrl ? mediaAPI.getFileUrl(initialUrl) : null });
+      return fallbackKey ? mediaAPI.getFileUrl(fallbackKey) : null;
     }
   };
 
@@ -209,41 +206,6 @@ export default function MentorAttendancePage() {
   return (
     <div className="space-y-6 relative">
 
-      {/* LEAVE DOCUMENT MODAL */}
-      {viewingLeaveDoc && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setViewingLeaveDoc(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 animate-float">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2F578A]">
-              <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-xl ${viewingLeaveDoc.type === "Sakit" ? "bg-sky-50 dark:bg-sky-950/40 border border-sky-200/30 text-sky-600" : "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/30 text-blue-600"}`}>
-                  <FileSpreadsheet className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white">Surat Keterangan {viewingLeaveDoc.type}</h4>
-                  <p className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold mt-0.5">{viewingLeaveDoc.studentName}</p>
-                </div>
-              </div>
-              <button onClick={() => setViewingLeaveDoc(null)} className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72] rounded-xl text-[#2F578A]/80 cursor-pointer transition-colors">
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9] dark:bg-[#232F72] rounded-2xl p-4 min-h-[180px] flex flex-col items-center justify-center">
-              {viewingLeaveDoc.documentUrl
-                ? <img src={viewingLeaveDoc.documentUrl} alt="Lampiran" className="max-w-full max-h-[260px] object-contain rounded-xl" />
-                : <div className="text-center space-y-2"><AlertCircle className="w-8 h-8 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mx-auto" /><p className="text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">Tidak ada lampiran</p></div>
-              }
-            </div>
-            <div className="flex items-center justify-end gap-3 text-xs">
-              {viewingLeaveDoc.documentUrl && (
-                <a href={viewingLeaveDoc.documentUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72] dark:text-[#F1F5F9] font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-[#232F72] transition-all inline-flex items-center gap-1 cursor-pointer">
-                  <Eye className="w-3.5 h-3.5" /> Buka Asli
-                </a>
-              )}
-              <button onClick={() => setViewingLeaveDoc(null)} className="px-5 py-2 bg-[#232F72] hover:brightness-110 text-white font-extrabold rounded-xl shadow-md active:scale-95 transition-all cursor-pointer">Selesai</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <SuccessToast show={!!toastMsg} message={toastMsg} />
 
@@ -530,16 +492,19 @@ export default function MentorAttendancePage() {
                       </td>
                       <td className="py-4" onClick={e => e.stopPropagation()}>
                         {(log.displayType === "Sakit" || log.displayType === "Izin") ? (
-                          <button
-                            onClick={() => handleViewDocument(log.id, log.studentName, log.displayType as "Sakit" | "Izin", log.document)}
-                            disabled={!log.document}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#2F578A]/30 rounded-xl text-[9px] font-black transition-all ${
-                              !log.document
-                                ? "bg-slate-100 dark:bg-[#121358]/50 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60"
-                                : "bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white cursor-pointer active:scale-95"
-                            }`}>
-                            <Eye className="w-3.5 h-3.5" /> Lihat Surat
-                          </button>
+                          log.document ? (
+                            <button
+                              onClick={async () => {
+                                const url = await getDocumentUrl(log.id, log.document);
+                                if (url) window.open(url, "_blank");
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#2F578A]/30 rounded-xl text-[9px] font-black bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white cursor-pointer active:scale-95 transition-all"
+                            >
+                              <Eye className="w-3.5 h-3.5" /> Unduh Surat
+                            </button>
+                          ) : (
+                            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500">Tidak ada</span>
+                          )
                         ) : <span className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">-</span>}
                       </td>
                       <td className="py-4 pr-4 text-right" onClick={e => e.stopPropagation()}>

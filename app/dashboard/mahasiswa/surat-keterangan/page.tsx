@@ -1,222 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import {
-  FileText,
-  Download,
-  Eye,
-  CheckCircle2,
-  Calendar,
-  ShieldCheck,
-  Loader2,
-  Building
+  Award, Download, Calendar, User,
+  CheckCircle2, Loader2, FileText, Clock,
 } from "lucide-react";
 import { useReferenceLetter } from "@/modules/surat_keterangan/hooks";
-import { PageLoader, SuccessToast } from "@/components/shared";
+import { mediaAPI } from "@/modules/media/api";
+
+function formatDate(iso: string | null) {
+  if (!iso) return "-";
+  return new Date(iso + "T00:00:00").toLocaleDateString("id-ID", {
+    day: "numeric", month: "long", year: "numeric",
+  });
+}
+
+function formatDateTime(iso: string | null) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("id-ID", {
+    day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
 
 export default function StudentSuratKeteranganPage() {
-  const { letter: letterInfo, isLoading } = useReferenceLetter();
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-
-  const handleDownload = () => {
-    if (!letterInfo) return;
-    setIsDownloading(true);
-    setTimeout(() => {
-      setIsDownloading(false);
-      setShowToast(true);
-
-      if (letterInfo.downloadUrl) {
-        const link = document.createElement("a");
-        link.href = letterInfo.downloadUrl;
-        link.setAttribute("download", `Surat_Keterangan_Magang_${letterInfo.recipient.replace(" ", "_")}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      setTimeout(() => setShowToast(false), 4000);
-    }, 1500);
-  };
+  const { letter, isLoading } = useReferenceLetter();
 
   if (isLoading) {
-    return <PageLoader text="Memuat berkas surat keterangan magang..." spinnerColor="text-[#36ADA3]" />;
-  }
-
-  if (!letterInfo || letterInfo.status !== "Issued") {
     return (
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Surat Keterangan Magang</h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau surat keterangan resmi penyelesaian praktikum kerja magang dari mitra industri.</p>
-        </div>
-        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-8 md:p-12 shadow-xl bg-white dark:bg-[#121358] text-center max-w-2xl mx-auto space-y-6">
-          <div className="w-20 h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 border border-amber-200/40 dark:border-amber-900/40 flex items-center justify-center mx-auto shadow-md">
-            <FileText className="w-10 h-10 animate-bounce" />
-          </div>
-          <div className="space-y-2">
-            <h4 className="font-black text-lg text-[#232F72] dark:text-white">Surat Keterangan Belum Diterbitkan</h4>
-            <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold leading-relaxed max-w-md mx-auto">
-              Dokumen formal surat keterangan magang Anda saat ini sedang diproses oleh Mentor atau HRD mitra industri Anda.
-            </p>
-            <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 max-w-sm mx-auto pt-2">
-              Segera setelah berkas ditandatangani dan diunggah, dokumen PDF resmi Anda akan langsung tersedia di halaman ini.
-            </p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center gap-3 text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span className="text-sm font-bold">Memuat surat keterangan...</span>
         </div>
       </div>
     );
   }
 
+  // Tidak ada periode magang aktif
+  if (!letter) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-xl font-black text-[#232F72] dark:text-white">Surat Keterangan Magang</h3>
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas resmi penyelesaian praktikum kerja magang Anda.</p>
+        </div>
+        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-12 bg-white dark:bg-[#121358] text-center space-y-4 max-w-md">
+          <FileText className="w-12 h-12 text-[#2F578A]/40 mx-auto" />
+          <p className="font-extrabold text-sm text-[#232F72] dark:text-white">Tidak ada periode magang aktif</p>
+          <p className="text-xs text-[#2F578A]/70 dark:text-[#F1F5F9]/50">Data surat keterangan hanya tersedia untuk mahasiswa yang sedang aktif menjalani magang.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const sudahDiunggah = letter.statusSurat === "Sudah Diunggah" || letter.statusSurat === "SUDAH_DIUNGGAH";
+  const downloadUrl   = sudahDiunggah && letter.url && letter.url !== "-" ? mediaAPI.getFileUrl(letter.url) : null;
+
   return (
-    <div className="space-y-6 relative pb-10">
+    <div className="space-y-6 pb-10 max-w-2xl">
 
-      {/* FLOATING SUCCESS TOAST */}
-      <SuccessToast variant="mahasiswa" show={showToast} message="Surat Keterangan Magang PDF telah berhasil diunduh ke perangkat Anda!" title="Unduhan Berhasil" icon={<CheckCircle2 className="w-5 h-5 text-white" />} />
-
-      {/* HEADER PAGE */}
       <div>
-        <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Surat Keterangan Magang</h3>
-        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Unduh atau tinjau surat keterangan resmi penyelesaian praktikum kerja magang dari mitra industri.</p>
+        <h3 className="text-xl font-black text-[#232F72] dark:text-white">Surat Keterangan Magang</h3>
+        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas surat keterangan yang diunggah oleh HRD atau Mentor bimbingan Anda.</p>
       </div>
 
-      {/* MAIN TWO-COLUMN SPLIT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        {/* LEFT COLUMN: LETTER MOCKUP & ACTIONS (7 Cols) */}
-        <div className="lg:col-span-7 flex flex-col justify-between">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] flex flex-col justify-between space-y-6 h-full relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#36ADA3]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#2F578A]/10 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Visual Letter Mockup Container */}
-            <div className="relative border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 bg-gradient-to-tr from-[#F8FAFC] to-white dark:from-[#232F72] dark:to-[#121358] p-8 rounded-2xl shadow-inner text-left select-none overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-[#36ADA3]/5 rounded-full blur-xl pointer-events-none" />
-              
-              <div className="space-y-6 text-xs text-[#232F72] dark:text-[#F1F5F9]/90">
-                {/* Letter Header / Kop Surat */}
-                <div className="pb-4 border-b-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-[#36ADA3] text-white rounded-xl shadow-md">
-                      <Building className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-[#232F72] dark:text-white uppercase leading-none">{letterInfo.company}</h4>
-                      <span className="text-[7.5px] text-[#2F578A] dark:text-[#F1F5F9]/60 block mt-0.5">Corporate HRD Department • Jakarta, Indonesia</span>
-                    </div>
-                  </div>
-                  <span className="text-[8px] text-[#36ADA3] font-extrabold uppercase tracking-widest">Digital Copy</span>
-                </div>
-
-                {/* Letter Title */}
-                <div className="text-center space-y-1 py-1">
-                  <h3 className="text-sm font-black text-[#232F72] dark:text-white uppercase tracking-wider underline">SURAT KETERANGAN MAGANG</h3>
-                  <p className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/60 leading-none">Nomor: {letterInfo.number}</p>
-                </div>
-
-                {/* Letter Body */}
-                <div className="space-y-3 font-semibold leading-relaxed text-[11px] text-[#2F578A] dark:text-[#F1F5F9]/80 text-justify">
-                  <p>
-                    Yang bertanda tangan di bawah ini menerangkan bahwa Mahasiswa berikut:
-                  </p>
-                  
-                  <div className="pl-4 space-y-1 text-[#232F72] dark:text-white font-extrabold text-[10.5px]">
-                    <div className="grid grid-cols-3">
-                      <span>Nama Lengkap</span>
-                      <span className="col-span-2">: {letterInfo.recipient}</span>
-                    </div>
-                  </div>
-
-                  <p>
-                    Telah melaksanakan kegiatan Praktek Kerja Lapangan (Magang) Industri pada divisi <strong className="text-[#232F72] dark:text-white">{letterInfo.role}</strong> terhitung sejak tanggal 1 Februari 2026 sampai dengan 31 Juli 2026. Selama magang yang bersangkutan menunjukkan kinerja yang memuaskan dan berdedikasi tinggi.
-                  </p>
-                </div>
-
-                {/* Signature Block */}
-                <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end text-[9.5px] font-bold">
-                  <div className="text-right">
-                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal">Jakarta, {letterInfo.issueDate}</span>
-                    <span className="text-[#2F578A] dark:text-[#F1F5F9]/60 block font-normal mt-0.5">Human Resources Director</span>
-                    <span className="text-[#232F72] dark:text-white block mt-8 font-black italic">{letterInfo.hrName}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ACTIONS: MELIHAT/REVIEW & DOWNLOAD */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              
-              {/* Action 1: Melihat / Review */}
-              <Link
-                href="/dashboard/mahasiswa/surat-keterangan/pratinjau"
-                className="px-5 py-3.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/60 text-[#232F72] dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 border border-[#2F578A]/30 dark:border-[#2F578A]/50"
-              >
-                <Eye className="w-4 h-4 text-[#36ADA3]" />
-                Melihat / Review
-              </Link>
-
-              {/* Action 2: Download */}
-              <button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="px-5 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:bg-[#36ADA3]/70 text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95"
-              >
-                {isDownloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    Mengunduh...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 text-white" />
-                    Unduh Berkas PDF
-                  </>
-                )}
-              </button>
-
-            </div>
-
-          </div>
+      {/* Status banner */}
+      <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border ${
+        sudahDiunggah
+          ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+          : "bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40 text-amber-700 dark:text-amber-400"
+      }`}>
+        {sudahDiunggah
+          ? <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+          : <Clock className="w-5 h-5 flex-shrink-0" />
+        }
+        <div>
+          <p className="font-extrabold text-sm">{sudahDiunggah ? "Surat Keterangan Telah Diunggah" : "Menunggu Surat Keterangan dari Mentor"}</p>
+          <p className="text-[10px] font-semibold opacity-80 mt-0.5">
+            {sudahDiunggah ? "Anda dapat mengunduh berkas surat keterangan di bawah ini." : "Mentor Anda belum mengunggah berkas surat keterangan magang."}
+          </p>
         </div>
-
-        {/* RIGHT COLUMN: DOCUMENT DETAILS (5 Cols) */}
-        <div className="lg:col-span-5">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6 h-full flex flex-col justify-between">
-            
-            <div className="space-y-4">
-              <div className="pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
-                <span className="text-xs font-black text-[#232F72] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#36ADA3]" />
-                  Spesifikasi Surat Keterangan
-                </span>
-              </div>
-
-              <div className="space-y-3.5">
-                {[
-                  { label: "Tanggal Diterbitkan", value: letterInfo.issueDate, icon: Calendar },
-                  { label: "Ukuran & Format", value: `${letterInfo.fileFormat} (${letterInfo.fileSize})`, icon: Download }
-                ].map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={index} className="p-3.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl border border-[#36ADA3]/20">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-black uppercase tracking-wider">{item.label}</span>
-                      </div>
-                      <span className="text-xs font-black text-[#232F72] dark:text-white text-right truncate max-w-[180px]">{item.value}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-          </div>
-        </div>
-
       </div>
+
+      {/* Metadata card */}
+      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+          <p className="text-[10px] font-black uppercase tracking-wider text-[#2F578A]/80 dark:text-[#F1F5F9]/50">Informasi Surat Keterangan</p>
+        </div>
+        <div className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/30">
+          {[
+            { label: "Nama Mahasiswa", value: letter.namaMahasiswa, icon: User },
+            { label: "NIM",            value: letter.nim,            icon: FileText },
+            { label: "Periode Magang", value: `${formatDate(letter.tanggalMulai)} — ${formatDate(letter.tanggalBerakhir)}`, icon: Calendar },
+            { label: "Mentor Pembimbing", value: letter.namaMentor ?? "Belum ada data mentor", icon: Award },
+            ...(sudahDiunggah && letter.createdAt ? [{ label: "Diunggah Pada", value: formatDateTime(letter.createdAt), icon: CheckCircle2 }] : []),
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="flex items-center gap-4 px-5 py-3.5">
+              <div className="p-2 bg-[#F1F5F9] dark:bg-[#232F72]/50 text-[#36ADA3] rounded-xl flex-shrink-0">
+                <Icon className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#2F578A]/70 dark:text-[#F1F5F9]/50">{label}</p>
+                <p className="text-xs font-extrabold text-[#232F72] dark:text-white mt-0.5 truncate">{value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Download button */}
+      {sudahDiunggah && downloadUrl && (
+        <a
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-2xl text-xs font-black shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] transition-all active:scale-95"
+        >
+          <Download className="w-4 h-4" />
+          Unduh / Buka Surat Keterangan
+        </a>
+      )}
 
     </div>
   );

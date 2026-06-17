@@ -15,7 +15,8 @@ import {
   Activity,
   Trash2,
   ChevronRight,
-  XCircle
+  XCircle,
+  RotateCcw,
 } from "lucide-react";
 import { useMentorActivities } from "../../../../modules/data_kegiatan/hooks";
 import { useStudents } from "../../../../modules/data_mahasiswa/hooks";
@@ -41,7 +42,7 @@ export default function MentorActivitiesPage() {
   const [showToast, setShowToast] = useState("");
   const [viewingActivityFile, setViewingActivityFile] = useState<{ studentName: string; activityName: string; fileUrls: string[] } | null>(null);
 
-  const { activities, isLoading, approveActivity, rejectActivity, getFileUrls } = useMentorActivities();
+  const { activities, isLoading, approveActivity, revokeActivity, rejectActivity, getFileUrls } = useMentorActivities();
   const { rawStudents } = useStudents();
   const studentsList = rawStudents;
 
@@ -82,7 +83,7 @@ export default function MentorActivitiesPage() {
 
   const handleCeklisActivity = async (actId: any, studentName: string) => {
     try {
-      await approveActivity(Number(actId));
+      await approveActivity(actId);
       setShowToast(`Kegiatan mahasiswa ${studentName} berhasil disetujui (ceklis)!`);
       setTimeout(() => setShowToast(""), 4000);
     } catch (err: any) {
@@ -90,10 +91,22 @@ export default function MentorActivitiesPage() {
     }
   };
 
+  const handleRevokeActivity = async (actId: any, studentName: string) => {
+    if (confirm(`Cabut persetujuan kegiatan ${studentName}? Status akan kembali ke "Menunggu".`)) {
+      try {
+        await revokeActivity(actId);
+        setShowToast(`Persetujuan kegiatan ${studentName} berhasil dicabut.`);
+        setTimeout(() => setShowToast(""), 4000);
+      } catch (err: any) {
+        alert(err.message || "Gagal mencabut persetujuan.");
+      }
+    }
+  };
+
   const handleHapusActivity = async (actId: any, studentName: string) => {
     if (confirm(`Apakah Anda yakin ingin menghapus log kegiatan dari ${studentName}?`)) {
       try {
-        await rejectActivity(Number(actId));
+        await rejectActivity(actId);
         setShowToast(`Log kegiatan ${studentName} berhasil dihapus dari sistem.`);
         setTimeout(() => setShowToast(""), 4000);
       } catch (err: any) {
@@ -325,18 +338,23 @@ export default function MentorActivitiesPage() {
             align: "center",
             render: (act) => (
               <div className="inline-flex items-center justify-center gap-1.5">
-                <button
-                  onClick={() => handleCeklisActivity(act.id, act.studentName)}
-                  disabled={act.status === "Disetujui"}
-                  className={`p-1.5 border rounded-xl transition-all cursor-pointer ${
-                    act.status === "Disetujui"
-                      ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-500 border-emerald-200/40 dark:border-emerald-900/40 opacity-70 cursor-not-allowed"
-                      : "bg-white hover:bg-emerald-50 border-[#2F578A]/50 dark:bg-slate-900 dark:border-[#2F578A] text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-300 hover:scale-105 active:scale-95 shadow-sm"
-                  }`}
-                  title={act.status === "Disetujui" ? "Sudah disetujui" : "Setujui Kegiatan"}
-                >
-                  <Check className="w-4 h-4 font-bold" />
-                </button>
+                {act.status === "Dalam Review" ? (
+                  <button
+                    onClick={() => handleCeklisActivity(act.id, act.studentName)}
+                    className="p-1.5 bg-white hover:bg-emerald-50 border border-[#2F578A]/50 dark:bg-slate-900 dark:border-[#2F578A] text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-300 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
+                    title="Setujui Kegiatan"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleRevokeActivity(act.id, act.studentName)}
+                    className="p-1.5 bg-amber-50 hover:bg-amber-500 dark:bg-amber-950/20 hover:text-white border border-amber-200/50 dark:border-amber-900/40 text-amber-600 dark:text-amber-400 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
+                    title="Cabut Persetujuan"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                )}
                 <button
                   onClick={() => handleHapusActivity(act.id, act.studentName)}
                   className="p-1.5 bg-white hover:bg-rose-50 border border-[#2F578A]/50 dark:bg-slate-900 dark:border-[#2F578A] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"

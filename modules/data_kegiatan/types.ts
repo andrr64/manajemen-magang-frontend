@@ -11,6 +11,7 @@ export interface ActivityResponse {
   waktu: string;
   fileUrls: string[];
   status: string;
+  namaMentor: string | null;
 }
 
 export interface ActivityStatResponse {
@@ -31,6 +32,7 @@ export interface Activity {
   time: string;
   fileUrls: string[];
   status: "Disetujui" | "Belum Disetujui" | "Ditolak";
+  namaMentor: string | null;
 }
 
 export interface ActivityLog {
@@ -49,6 +51,7 @@ export interface ActivityLog {
 
 export interface CreateActivityRequest {
   title: string;
+  keterangan?: string;
   date: string;
   time: string;
   fileKeys?: string[];

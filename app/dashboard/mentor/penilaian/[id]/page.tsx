@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { BackNavBar, PageLoader, NotFoundBlock, ModalActions } from "@/components/shared";
 import { studentsData } from "../../data-mahasiswa/studentsData";
-import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
+import { useStudentAssessments } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useIam } from "@/modules/iam/hooks";
 
@@ -47,16 +47,10 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   const unwrappedParams = use(params);
   
   // Instantiating real evaluation API hook and student assessments list
-  const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
-  const { submitGrades } = useAssessment();
+  const { assessments, isLoading, isSubmitting, submitGrades } = useStudentAssessments();
   const { rawStudents } = useStudents();
   const { user: authUser } = useIam();
   const studentsList = rawStudents;
-
-  // Fetch once on mount
-  useEffect(() => {
-    refreshAssessments();
-  }, [refreshAssessments]);
 
   // Find target assessment record
   const assessmentRecord = useMemo(() => {
@@ -121,33 +115,23 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
     kinerja: null, kedisiplinan: null, tanggungjawab: null, komunikasi: null, sikap: null, kerapihan: null, absensi: null, kerjasama: null
   });
 
-  // Short descriptive comments for each criteria
-  const [feedbacks, setFeedbacks] = useState<Record<string, string>>({
-    kinerja: "Kualitas penulisan kode sangat bersih, dokumentasi teratur.",
-    kedisiplinan: "Sopan santun dan kepatuhan SOP kantor sangat baik.",
-    tanggungjawab: "Menuntaskan tugas backend API sesuai target.",
-    komunikasi: "Responsif saat dipanggil rapat koordinasi.",
-    sikap: "Selalu bersikap profesional dan saling menghargai.",
-    kerapihan: "Selalu berpakaian rapi dan profesional saat On-site.",
-    absensi: "Kehadiran sangat konsisten, selalu check-in tepat waktu.",
-    kerjasama: "Aktif berkoordinasi dalam tim agile sprint."
-  });
+  const [catatan, setCatatan] = useState<string>("");
 
-  // Reactively prefill grades and feedback when assessmentRecord or mockStudent becomes available
   useEffect(() => {
-    if (assessmentRecord) {
-      const isAlreadyGraded = assessmentRecord.nilaiTotal !== null && assessmentRecord.nilaiTotal !== undefined;
-      if (isAlreadyGraded) {
-        setGrades({
-          kinerja: assessmentRecord.kinerja ?? 80,
-          kedisiplinan: assessmentRecord.kedisiplinan ?? 80,
-          tanggungjawab: assessmentRecord.tanggungJawab ?? 80,
-          komunikasi: assessmentRecord.komunikasi ?? 80,
-          sikap: assessmentRecord.sikap ?? 80,
-          kerapihan: assessmentRecord.kerapihan ?? 80,
-          absensi: assessmentRecord.absensi ?? 80,
-          kerjasama: assessmentRecord.kerjasama ?? 80,
-        });
+    if (assessmentRecord && assessmentRecord.statusPenilaian === "SUDAH_DINILAI") {
+      setGrades({
+        kinerja: assessmentRecord.kinerja || 0,
+        kedisiplinan: assessmentRecord.kedisiplinan || 0,
+        tanggungjawab: assessmentRecord.tanggungJawab || 0,
+        komunikasi: assessmentRecord.komunikasi || 0,
+        sikap: assessmentRecord.sikap || 0,
+        kerapihan: assessmentRecord.kerapihan || 0,
+        absensi: assessmentRecord.absensi || 0,
+        kerjasama: assessmentRecord.kerjasama || 0,
+      });
+
+      // Simulation of attached documents if any (frontend only visual feature)
+      if (Object.keys(attachments).length === 0) {
         setAttachments({
           kinerja: "bukti_tugas_laporan.pdf",
           kedisiplinan: null,
@@ -159,16 +143,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
           kerjasama: "penilaian_peer_to_peer.docx"
         });
         if (assessmentRecord.catatan) {
-          setFeedbacks({
-            kinerja: assessmentRecord.catatan,
-            kedisiplinan: assessmentRecord.catatan,
-            tanggungjawab: assessmentRecord.catatan,
-            komunikasi: assessmentRecord.catatan,
-            sikap: assessmentRecord.catatan,
-            kerapihan: assessmentRecord.catatan,
-            absensi: assessmentRecord.catatan,
-            kerjasama: assessmentRecord.catatan,
-          });
+          setCatatan(assessmentRecord.catatan);
         }
       }
     } else if (mockStudent && mockStudent.grade !== null) {
@@ -195,8 +170,6 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   const [uploadingCriteria, setUploadingCriteria] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // General Page Action States
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [successToast, setSuccessToast] = useState("");
 
   // Grade adjustment handler
@@ -204,10 +177,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
     setGrades(prev => ({ ...prev, [criteriaId]: value }));
   };
 
-  // Feedback note change handler
-  const handleFeedbackChange = (criteriaId: string, value: string) => {
-    setFeedbacks(prev => ({ ...prev, [criteriaId]: value }));
-  };
+
 
   // Simulated Custom File Upload Action for EACH criteria slot
   const handleAttachmentUpload = (criteriaId: string, criteriaLabel: string) => {
@@ -294,31 +264,26 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
   // Form Submission
   const handleSaveAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!student) return;
-
-    setIsSubmitting(true);
-
-    // Remove unused gradesList
-
+    if (!student || !assessmentRecord?.periodeMagangId) {
+      alert("Data periode magang mahasiswa tidak ditemukan.");
+      return;
+    }
     try {
       await submitGrades({
-        periodeMagangId: assessmentRecord?.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
-        mentorId: assessmentRecord?.mentorId || authUser?.id || "",
-        kinerja: grades.kinerja || 0,
-        kedisiplinan: grades.kedisiplinan || 0,
+        periodeMagangId: assessmentRecord.periodeMagangId,
+        mentorId: authUser?.id || "",
+        kinerja:       grades.kinerja       || 0,
+        kedisiplinan:  grades.kedisiplinan  || 0,
         tanggungJawab: grades.tanggungjawab || 0,
-        komunikasi: grades.komunikasi || 0,
-        sikap: grades.sikap || 0,
-        kerapihan: grades.kerapihan || 0,
-        absensi: grades.absensi || 0,
-        kerjasama: grades.kerjasama || 0,
-        catatan: feedbacks.kinerja || feedbacks.kedisiplinan || feedbacks.tanggungjawab || "Performa magang memuaskan."
+        komunikasi:    grades.komunikasi    || 0,
+        sikap:         grades.sikap         || 0,
+        kerapihan:     grades.kerapihan     || 0,
+        absensi:       grades.absensi       || 0,
+        kerjasama:     grades.kerjasama     || 0,
+        catatan: catatan || "-",
       });
-
-      setIsSubmitting(false);
       router.push(WEB_ROUTES.MENTOR_PENILAIAN);
     } catch (err: any) {
-      setIsSubmitting(false);
       alert(err.message || "Gagal menyimpan evaluasi.");
     }
   };
@@ -471,7 +436,6 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                 {assessmentCriteria?.map((c, index) => {
                   const score = grades[c.id] || 0;
                   const attachment = attachments[c.id] || null;
-                  const feedback = feedbacks[c.id] || "";
                   
                   return (
                     <div 
@@ -521,19 +485,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                         </span>
                       </div>
 
-                      {/* Criteria feedback remark notes */}
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                          Catatan Umpan Balik Kriteria
-                        </label>
-                        <input
-                          type="text"
-                          value={feedback}
-                          onChange={(e) => handleFeedbackChange(c.id, e.target.value)}
-                          placeholder="e.g. Masukkan deskripsi alasan pemberian nilai..."
-                          className="w-full px-3 py-2 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                        />
-                      </div>
+
 
 
 
@@ -541,6 +493,19 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                   );
                 })}
 
+              </div>
+
+              {/* General Feedback / Catatan */}
+              <div className="p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 space-y-2">
+                <label className="text-xs font-extrabold uppercase text-indigo-700 dark:text-indigo-400 tracking-wider flex items-center gap-2">
+                  Catatan Evaluasi / Pesan Mentor
+                </label>
+                <textarea
+                  value={catatan}
+                  onChange={(e) => setCatatan(e.target.value)}
+                  placeholder="Berikan umpan balik menyeluruh terkait performa mahasiswa magang..."
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-800 focus:border-indigo-500 rounded-xl text-sm font-medium focus:outline-none transition-all resize-none min-h-[100px] text-slate-800 dark:text-slate-200"
+                ></textarea>
               </div>
 
               {/* Form buttons */}

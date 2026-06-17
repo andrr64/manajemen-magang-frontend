@@ -4,7 +4,7 @@ import { LetterInfo, RequestLetterPayload, VerifyLetterResponse, SuratKeterangan
 import { suratKeteranganAPI } from "./api";
 
 export function useReferenceLetter() {
-  const [letter, setLetter] = useState<LetterInfo | null>(null);
+  const [letter, setLetter] = useState<SuratKeteranganResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [verificationResult, setVerificationResult] = useState<VerifyLetterResponse | null>(null);
@@ -33,7 +33,7 @@ export function useReferenceLetter() {
     setError(null);
     try {
       const response = await suratKeteranganAPI.requestLetter(payload);
-      setLetter(response.data);
+      setLetter(response.data as unknown as SuratKeteranganResponse);
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal memohon surat keterangan magang baru.";
@@ -66,7 +66,7 @@ export function useReferenceLetter() {
     setError(null);
     try {
       const response = await suratKeteranganAPI.signLetter(payload);
-      setLetter(response.data);
+      setLetter(response.data as unknown as SuratKeteranganResponse);
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menyetujui dan menandatangani surat.";

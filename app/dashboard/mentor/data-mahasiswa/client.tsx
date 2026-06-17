@@ -26,7 +26,7 @@ export default function MentorDataMahasiswaPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const { students: filteredStudents, isLoading } = useStudents({
+  const { students: filteredStudents, isLoading, updateStudent } = useStudents({
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
     universitas: univFilter !== "Semua" ? univFilter : undefined,
     status: statusFilter !== "Semua" ? statusFilter : undefined,
@@ -249,12 +249,9 @@ export default function MentorDataMahasiswaPage() {
                         {(student?.name || "U").split(" ").map(n=>n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
-                        <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] dark:group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">
+                        <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] group-hover:text-[#232F72] dark:text-[#FFFFFF] transition-colors leading-tight">
                           {student.name}
                         </p>
-                        <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5">
-                          Aktif: {student.lastActive}
-                        </span>
                       </div>
                     </Link>
                   </td>
@@ -315,12 +312,40 @@ export default function MentorDataMahasiswaPage() {
  
                   {/* Column 7: Periode Magang */}
                   <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
-                    <div className="flex items-center gap-2 group/period">
-                      <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
+                    <div className="flex flex-col gap-1.5 group/period">
+                      <div className="flex text-slate-850 dark:text-slate-200 font-bold items-center gap-1">
                         <span className="text-[11px] font-mono leading-none">{student.tanggalMulai || "-"}</span>
-                        <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-bold uppercase tracking-wider my-0.5 text-center">s.d.</span>
+                        <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-bold uppercase tracking-wider text-center">-</span>
                         <span className="text-[11px] font-mono leading-none">{student.tanggalBerakhir || "-"}</span>
                       </div>
+                      <select 
+                        className="px-2 py-0.5 text-[10px] font-bold rounded-md border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 w-fit cursor-pointer outline-none focus:ring-1 focus:ring-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors uppercase tracking-wider"
+                        value={student.statusPeriode || (student.status === "Selesai" ? "selesai" : "aktif")}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={async (e) => {
+                          try {
+                            const newStatus = e.target.value;
+                            await updateStudent(student.id, { 
+                              email: student.email,
+                              nim: student.nim,
+                              nama: student.name,
+                              noHp: student.phone,
+                              idUniversity: student.idUniversity ?? undefined,
+                              periode: { 
+                                tanggalMulai: student.tanggalMulai || "2026-02-01", 
+                                tanggalBerakhir: student.tanggalBerakhir || "2026-07-31", 
+                                status: newStatus 
+                              } 
+                            });
+                          } catch (err) {
+                            console.error(err);
+                          }
+                        }}
+                      >
+                        <option value="aktif">AKTIF</option>
+                        <option value="selesai">SELESAI</option>
+                        <option value="batal">BATAL</option>
+                      </select>
                     </div>
                   </td>
 

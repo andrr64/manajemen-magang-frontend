@@ -105,6 +105,24 @@ export function useMentorActivities() {
     }
   };
 
+  const revokeActivity = async (activityId: number | string) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const res = await kegiatanAPI.approveMentorActivity(activityId, "Dalam Review");
+      setActivities(prev => prev.map(a => String(a.id) === String(activityId) ? res.data : a));
+      notifier.success("Persetujuan kegiatan berhasil dicabut.");
+      return res.data;
+    } catch (err: any) {
+      const msg = err.message || "Gagal mencabut persetujuan kegiatan.";
+      notifier.error(msg);
+      setError(msg);
+      throw new Error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const rejectActivity = async (activityId: number | string) => {
     setIsSubmitting(true);
     setError(null);
@@ -127,7 +145,7 @@ export function useMentorActivities() {
     return (activity.attachments ?? []).map(key => mediaAPI.getFileUrl(key));
   };
 
-  return { activities, isLoading, isSubmitting, error, approveActivity, rejectActivity, getFileUrls, refreshActivities: fetchActivities };
+  return { activities, isLoading, isSubmitting, error, approveActivity, revokeActivity, rejectActivity, getFileUrls, refreshActivities: fetchActivities };
 }
 
 export function useActivityStats(status?: string, namaMahasiswa?: string) {

@@ -5,7 +5,7 @@ import { sertifikatAPI } from "./api";
 
 // Student Hook - View and download own certificate
 export function useCertificate() {
-  const [certificate, setCertificate] = useState<CertificateInfo | null>(null);
+  const [certificate, setCertificate] = useState<SertifikatResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [verificationResult, setVerificationResult] = useState<VerifyCertificateResponse | null>(null);
@@ -15,8 +15,8 @@ export function useCertificate() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await sertifikatAPI.getCertificate();
-      setCertificate(response.data);
+      const { data } = await sertifikatAPI.getCertificate();
+      setCertificate(data);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat informasi sertifikat.";
       setError(errMsg);
@@ -50,7 +50,7 @@ export function useCertificate() {
     setError(null);
     try {
       const response = await sertifikatAPI.issueCertificate(payload);
-      setCertificate(response.data);
+      setCertificate(response.data as unknown as SertifikatResponse);
       return response.data;
     } catch (err: any) {
       const errMsg = err.message || "Gagal menerbitkan sertifikat.";
@@ -62,16 +62,15 @@ export function useCertificate() {
     }
   };
 
-  return {
-    certificate,
-    isLoading,
+  return { 
+    certificate, 
+    isLoading, 
     isSubmitting,
     verificationResult,
-    error,
-    verifyCode,
-    uploadCertificate,
+    error, 
     refreshCertificate: fetchCertificate,
-    clearVerification: () => setVerificationResult(null)
+    verifyCode,
+    uploadCertificate
   };
 }
 

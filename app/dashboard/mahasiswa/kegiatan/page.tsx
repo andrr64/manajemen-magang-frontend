@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Search,
@@ -11,8 +12,6 @@ import {
   AlertCircle,
   Calendar,
   Clock,
-  Download,
-  Filter,
   X,
   FileCheck,
   Loader2
@@ -24,6 +23,7 @@ import Link from "next/link";
 import { SuccessToast, DashboardPagination } from "@/components/shared";
 
 export default function StudentActivitiesPage() {
+  const router = useRouter();
   const {
     activities,
     isLoading,
@@ -177,20 +177,21 @@ export default function StudentActivitiesPage() {
       {/* CORE DATA TABLE */}
       <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358] overflow-hidden">
         <div className="overflow-x-auto w-full">
-          <table className="w-full min-w-[800px] border-collapse">
+          <table className="w-full min-w-[960px] border-collapse">
             <thead>
               <tr className="border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[10px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/60 uppercase tracking-widest text-left">
-                <th className="pb-3.5 pl-4 font-bold w-16">NO</th>
+                <th className="pb-3.5 pl-4 font-bold w-14">NO</th>
                 <th className="pb-3.5 font-bold">Nama Kegiatan</th>
-                <th className="pb-3.5 font-bold">Waktu</th>
-                <th className="pb-3.5 font-bold text-center w-80">upload file</th>
-                <th className="pb-3.5 pr-4 font-bold text-center w-28">Aksi</th>
+                <th className="pb-3.5 font-bold w-40">Waktu</th>
+                <th className="pb-3.5 font-bold w-48">Keterangan</th>
+                <th className="pb-3.5 font-bold text-center w-44">Lampiran</th>
+                <th className="pb-3.5 pr-4 font-bold text-center w-20">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/30 text-xs">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
+                  <td colSpan={6} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Loader2 className="w-8 h-8 animate-spin text-[#36ADA3]" />
                       Memuat daftar kegiatan...
@@ -199,13 +200,17 @@ export default function StudentActivitiesPage() {
                 </tr>
               ) : filteredActivities.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
+                  <td colSpan={6} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     Tidak ada jurnal kegiatan magang yang cocok dengan kriteria pencarian.
                   </td>
                 </tr>
               ) : (
                 pagedActivities.map((act, index) => (
-                  <tr key={act.id} className="hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-colors group">
+                  <tr
+                    key={act.id}
+                    onClick={() => router.push(`/dashboard/mahasiswa/kegiatan/${act.id}`)}
+                    className="hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-colors group cursor-pointer"
+                  >
                   
                   {/* Column 1: Nomor */}
                   <td className="py-4 pl-4 font-extrabold text-[#2F578A] dark:text-[#F1F5F9]/60">
@@ -215,73 +220,75 @@ export default function StudentActivitiesPage() {
                   {/* Column 2: Nama Kegiatan */}
                   <td className="py-4 max-w-[320px]">
                     <div className="pr-4">
-                      <p className="font-extrabold text-[#232F72] dark:text-white leading-normal">
+                      <Link href={`/dashboard/mahasiswa/kegiatan/${act.id}`} className="font-extrabold text-[#232F72] dark:text-white leading-normal hover:text-[#36ADA3] dark:hover:text-[#36ADA3] transition-colors block">
                         {act.title}
-                      </p>
+                      </Link>
+                      <span className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border ${
+                        act.status === "Disetujui" ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/30" :
+                        act.status === "Ditolak"   ? "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200/30" :
+                        "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200/30"
+                      }`}>
+                        {act.status === "Belum Disetujui" ? "Menunggu" : act.status}
+                      </span>
                     </div>
                   </td>
 
                   {/* Column 3: Waktu */}
                   <td className="py-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-[#232F72] dark:text-[#F1F5F9] font-bold">
-                        <Calendar className="w-3.5 h-3.5 text-[#36ADA3]" />
+                      <div className="flex items-center gap-1 text-[#232F72] dark:text-[#F1F5F9] font-bold whitespace-nowrap">
+                        <Calendar className="w-3.5 h-3.5 text-[#36ADA3] flex-shrink-0" />
                         <span>{act.date}</span>
                       </div>
                       <div className="flex items-center gap-1 text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60">
-                        <Clock className="w-3 h-3" />
+                        <Clock className="w-3 h-3 flex-shrink-0" />
                         <span>{act.time}</span>
                       </div>
                     </div>
                   </td>
 
-                  {/* Column 4: Upload File Tugas (Attachment) */}
-                  <td className="py-4 text-center">
+                  {/* Column 4: Keterangan */}
+                  <td className="py-4 max-w-[180px]">
+                    <p className="text-[11px] font-semibold text-[#232F72]/70 dark:text-[#F1F5F9]/60 line-clamp-2 leading-relaxed">
+                      {act.deskripsi || <span className="italic text-[#2F578A]/40">—</span>}
+                    </p>
+                  </td>
+
+                  {/* Column 5: Lampiran */}
+                  <td className="py-4 text-center" onClick={e => e.stopPropagation()}>
                     {act.fileUrls && act.fileUrls.length > 0 ? (
-                      /* File already uploaded block */
-                      <div className="inline-flex items-center gap-2.5 p-2 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 dark:border-[#36ADA3]/40 rounded-2xl group transition-all hover:bg-[#36ADA3]/20">
-                        <div className="p-2 bg-[#36ADA3] text-white rounded-xl">
-                          <FileText className="w-4 h-4" />
-                        </div>
-                        <div className="text-left max-w-[120px]">
-                          <p className="text-[10px] font-black text-[#232F72] dark:text-white truncate" title={act.fileUrls[0]}>
-                            {act.fileUrls[0].substring(0, 15)}...
-                          </p>
-                          <span className="text-[9px] font-bold text-[#36ADA3]">Lampiran Tersimpan</span>
-                        </div>
-                        <button
-                          onClick={() => {}} // Download functionality placeholder
-                          className="ml-2 p-1.5 text-slate-400 hover:text-[#36ADA3] hover:bg-white dark:hover:bg-[#121358] rounded-lg transition-all"
-                          title="Unduh File"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                        </button>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 rounded-xl">
+                        <FileText className="w-3.5 h-3.5 text-[#36ADA3]" />
+                        <span className="text-[10px] font-black text-[#36ADA3]">
+                          {act.fileUrls.length > 2
+                            ? `(${act.fileUrls.length} file)`
+                            : `${act.fileUrls.length} berkas`}
+                        </span>
                       </div>
                     ) : (
-                      /* Upload trigger block */
                       <div className="relative inline-block">
                         <input
                           type="file"
-                          onChange={(e) => handleUploadFile(act.id, e)}
+                          onChange={e => handleUploadFile(act.id, e)}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
-                        <button className="px-4 py-2.5 bg-[#F8FAFC] hover:bg-[#36ADA3] hover:border-[#36ADA3] hover:text-white dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl text-[10px] font-black uppercase text-[#2F578A] dark:text-[#F1F5F9]/80 flex items-center gap-1.5 transition-all">
-                          <Upload className="w-3.5 h-3.5" />
-                          Unggah File Tugas
+                        <button className="px-3 py-2 bg-[#F8FAFC] hover:bg-[#36ADA3] hover:text-white dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-xl text-[10px] font-black text-[#2F578A] dark:text-[#F1F5F9]/80 flex items-center gap-1.5 transition-all whitespace-nowrap">
+                          <Upload className="w-3 h-3" />
+                          Unggah
                         </button>
                       </div>
                     )}
                   </td>
 
-                  {/* Column 5: Hapus Kegiatan */}
-                  <td className="py-4 pr-4 text-center">
+                  {/* Column 6: Hapus */}
+                  <td className="py-4 pr-4 text-center" onClick={e => e.stopPropagation()}>
                     <button
                       onClick={() => handleDeleteActivity(act.id)}
                       disabled={isSubmitting}
                       className={`p-2 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-500 hover:text-white text-rose-600 dark:text-rose-400 rounded-xl border border-rose-100 dark:border-rose-900/30 transition-all cursor-pointer ${isSubmitting ? "opacity-50 cursor-wait" : "hover:scale-[1.03]"}`}
                       title="Hapus kegiatan"
                     >
-                      <Trash2 className="w-4.5 h-4.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
 

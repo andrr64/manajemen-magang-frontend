@@ -41,7 +41,7 @@ export default function MentorCertificatePage() {
       return {
         studentId,
         fileName: cert.url && cert.url !== "-" ? cert.url.split("/").pop() || "sertifikat.pdf" : null,
-        status: cert.statusSertifikat === "Sudah Diunggah" ? "Sudah Diunggah" : "Belum Diunggah",
+        status: cert.statusSertifikat === "SUDAH_DIUNGGAH" ? "Sudah Diunggah" : "Belum Diunggah",
         studentName: cert.namaMahasiswa,
         studentNim: cert.nim,
         studentAvatar: student ? student.avatarColor : "from-slate-400 to-slate-500",

@@ -28,13 +28,14 @@ function mapBackendActivityToFrontend(item: ActivityResponse): Activity {
   };
 
   return {
-    id:       item.id,
-    title:    item.judul || "Kegiatan",
-    deskripsi: item.deskripsi || "",
-    date:     formatDate(item.waktu || new Date().toISOString()),
-    time:     "08:00 - 17:00 WIB",
-    fileUrls: item.fileUrls ?? [],
-    status:   statusMap[item.status?.toLowerCase()] ?? "Belum Disetujui",
+    id:         item.id,
+    title:      item.judul || "Kegiatan",
+    deskripsi:  item.deskripsi || "",
+    date:       formatDate(item.waktu || new Date().toISOString()),
+    time:       "08:00 - 17:00 WIB",
+    fileUrls:   item.fileUrls ?? [],
+    status:     statusMap[item.status?.toLowerCase()] ?? "Belum Disetujui",
+    namaMentor: item.namaMentor ?? null,
   };
 }
 
@@ -85,7 +86,7 @@ export const kegiatanAPI = {
         method: "POST",
         body: JSON.stringify({
           judul:     payload.title,
-          deskripsi: "Aktivitas magang harian mahasiswa.",
+          deskripsi: payload.keterangan?.trim() || "",
           fileUrls:  payload.fileKeys ?? [],
         }),
       }

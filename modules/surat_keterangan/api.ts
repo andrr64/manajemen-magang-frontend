@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { LetterInfo, RequestLetterPayload, VerifyLetterResponse, SuratKeteranganResponse, SuratKeteranganStatResponse } from "./types";
 import { mediaAPI } from "../media/api";
@@ -21,17 +21,11 @@ function mapBackendLetterToFrontend(item: any): LetterInfo {
 
 export const suratKeteranganAPI = {
   getLetter: async () => {
-    return executeHybridRequest<LetterInfo>(
+    return executeHybridRequest<SuratKeteranganResponse>(
       "Get student reference letter details",
       API_ROUTES.SURAT_KETERANGAN_MAHASISWA,
       { method: "GET" }
-    ).then((res) => {
-      const item = res.data as any;
-      return {
-        ...res,
-        data: item ? mapBackendLetterToFrontend(item) : null as any
-      };
-    });
+    );
   },
 
   requestLetter: async (payload: RequestLetterPayload) => {

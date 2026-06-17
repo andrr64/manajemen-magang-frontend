@@ -41,6 +41,9 @@ export interface SuratKeteranganResponse {
   url: string;
   statusSurat: string;
   createdAt: string | null;
+  tanggalMulai: string | null;
+  tanggalBerakhir: string | null;
+  namaMentor: string | null;
 }
 
 export interface SuratKeteranganStatResponse {

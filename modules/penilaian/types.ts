@@ -25,24 +25,26 @@ export interface GradeSummary {
 
 
 export interface PenilaianResponse {
-  id: string;
+  id: string | null;
   periodeMagangId: string;
   mahasiswaId: string;
   nim: string;
   namaMahasiswa: string;
-  mentorId: string;
-  namaMentor: string;
-  kinerja: number;
-  kedisiplinan: number;
-  tanggungJawab: number;
-  komunikasi: number;
-  sikap: number;
-  kerapihan: number;
-  absensi: number;
-  kerjasama: number;
-  nilaiTotal: number;
-  catatan: string;
-  statusPenilaian: string;
+  tanggalMulai: string | null;   // YYYY-MM-DD
+  tanggalBerakhir: string | null;
+  mentorId: string | null;
+  namaMentor: string | null;
+  kinerja: number | null;
+  kedisiplinan: number | null;
+  tanggungJawab: number | null;
+  komunikasi: number | null;
+  sikap: number | null;
+  kerapihan: number | null;
+  absensi: number | null;
+  kerjasama: number | null;
+  nilaiTotal: number | null;
+  catatan: string | null;
+  statusPenilaian: "SUDAH_DINILAI" | "BELUM_DINILAI";
 }
 
 export interface PenilaianRequest {

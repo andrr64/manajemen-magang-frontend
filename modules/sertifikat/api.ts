@@ -22,19 +22,19 @@ export function mapBackendSertifikatToFrontend(item: any): CertificateInfo {
 }
 
 export const sertifikatAPI = {
-  // Student - Get their own certificate
-  getCertificate: async () => {
-    return executeHybridRequest<CertificateInfo>(
-      "Get student certificate details",
-      API_ROUTES.SERTIFIKAT_MAHASISWA,
-      { method: "GET" }
-    ).then((res) => {
-      const item = res.data as any;
-      return {
-        ...res,
-        data: item ? mapBackendSertifikatToFrontend(item) : null as any
-      };
-    });
+  // Student - Get their own certificate (raw SertifikatResponse)
+  getCertificate: async (): Promise<{ data: SertifikatResponse | null }> => {
+    try {
+      const res = await executeHybridRequest<SertifikatResponse>(
+        "Get student certificate details",
+        API_ROUTES.SERTIFIKAT_MAHASISWA,
+        { method: "GET" }
+      );
+      return { data: res.data as unknown as SertifikatResponse };
+    } catch (err: any) {
+      if (err?.status === 404) return { data: null };
+      throw err;
+    }
   },
 
   // Mentor - List all student certificates
