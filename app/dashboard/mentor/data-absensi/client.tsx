@@ -179,8 +179,11 @@ export default function MentorAttendancePage() {
   };
 
   const handleVerifyLog = async (logId: string | number, studentName: string) => {
-    try { await verify(logId, "Diverifikasi"); toast(`Absensi ${studentName} disetujui!`); }
-    catch (err: any) { alert(err.message || "Gagal menyetujui."); }
+    try {
+      await verify(logId, "Diverifikasi");
+      await refreshHistory(statusFilter, searchQuery);
+      toast(`Absensi ${studentName} disetujui!`);
+    } catch (err: any) { alert(err.message || "Gagal menyetujui."); }
   };
 
   const handleTolakLog = async (logId: string | number, studentName: string) => {

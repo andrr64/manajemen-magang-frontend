@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Upload, X, Loader2, ArrowLeft } from "lucide-react";
+import { Plus, Upload, X, Loader2, ArrowLeft, FileIcon, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useActivities } from "@/modules/data_kegiatan/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
@@ -10,43 +10,40 @@ import { notifier } from "@/modules/notifier";
 
 export default function TambahKegiatanPage() {
   const router = useRouter();
-  const { addActivity, uploadAttachment } = useActivities();
-  const { upload } = useFileUpload();
+  const { addActivity } = useActivities();
+  const { upload, isUploading } = useFileUpload({ maxSizeMB: 10, allowedTypes: ["application/pdf", "image/jpeg", "image/png"] });
 
   const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState(() => {
+  const [newDate,  setNewDate]  = useState(() => {
     const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   });
-  const [newTime, setNewTime] = useState("08:00 - 17:00 WIB");
-  const [newFile, setNewFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newTime,       setNewTime]       = useState("08:00 - 17:00 WIB");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isSubmitting,  setIsSubmitting]  = useState(false);
 
-  const handleAddActivity = async (e: React.FormEvent) => {
+  const handleAddFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    setSelectedFiles(prev => {
+      const existing = new Set(prev.map(f => f.name + f.size));
+      return [...prev, ...files.filter(f => !existing.has(f.name + f.size))];
+    });
+    e.target.value = "";
+  };
+
+  const removeFile = (idx: number) => setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDate) return;
-
     setIsSubmitting(true);
     try {
-      const newActivity = await addActivity({
-        title: newTitle,
-        date: newDate,
-        time: newTime
-      });
-
-      if (newFile && newActivity && newActivity.id) {
-        try {
-          const sizeMB = (newFile.size / 1024 / 1024).toFixed(1);
-          const { key } = await upload(newFile);
-          await uploadAttachment(newActivity.id, key, newFile.name, `${sizeMB} MB`);
-        } catch (uploadErr: any) {
-          notifier.error("Kegiatan ditambahkan, tetapi gagal mengunggah berkas.");
-        }
+      let fileKeys: string[] = [];
+      if (selectedFiles.length > 0) {
+        const results = await Promise.all(selectedFiles.map(f => upload(f)));
+        fileKeys = results.map(r => r.key);
       }
-
+      await addActivity({ title: newTitle, date: newDate, time: newTime, fileKeys });
       notifier.success("Kegiatan baru berhasil ditambahkan!");
       router.push("/dashboard/mahasiswa/kegiatan");
     } catch (err: any) {
@@ -59,7 +56,7 @@ export default function TambahKegiatanPage() {
   return (
     <div className="space-y-6 relative pb-10 max-w-3xl">
       <div className="flex items-center gap-4">
-        <Link 
+        <Link
           href="/dashboard/mahasiswa/kegiatan"
           className="p-2 bg-white dark:bg-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-xl text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-all cursor-pointer"
         >
@@ -67,24 +64,27 @@ export default function TambahKegiatanPage() {
         </Link>
         <div>
           <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Tambah Kegiatan Magang</h3>
-          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Catat aktivitas harian dan unggah berkas tugas Anda.</p>
+          <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Catat aktivitas harian dan unggah berkas pendukung.</p>
         </div>
       </div>
 
       <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 bg-white dark:bg-[#121358] shadow-xl">
-        <form onSubmit={handleAddActivity} className="space-y-6 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]">
+        <form onSubmit={handleSubmit} className="space-y-6 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]">
+
+          {/* Judul */}
           <div className="space-y-2.5">
             <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Nama / Judul Kegiatan <span className="text-[#36ADA3]">*</span></label>
             <input
               type="text"
               required
               value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
+              onChange={e => setNewTitle(e.target.value)}
               placeholder="Contoh: Membuat API Endpoint Get data-mahasiswa..."
               className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
             />
           </div>
 
+          {/* Tanggal + Waktu */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2.5">
               <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Tanggal Kegiatan <span className="text-[#36ADA3]">*</span></label>
@@ -92,84 +92,93 @@ export default function TambahKegiatanPage() {
                 type="date"
                 required
                 value={newDate}
-                onChange={(e) => setNewDate(e.target.value)}
+                onChange={e => setNewDate(e.target.value)}
                 className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
               />
             </div>
-
             <div className="space-y-2.5">
               <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Durasi / Waktu <span className="text-[#36ADA3]">*</span></label>
               <input
                 type="text"
                 required
                 value={newTime}
-                onChange={(e) => setNewTime(e.target.value)}
+                onChange={e => setNewTime(e.target.value)}
                 placeholder="Contoh: 08:00 - 17:00 WIB"
                 className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
               />
             </div>
           </div>
 
-          <div className="space-y-2.5">
-            <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Lampiran / Berkas Pendukung (Opsional)</label>
-            <div className="relative">
-              <input
-                type="file"
-                id="new-activity-file"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setNewFile(e.target.files[0]);
-                  } else {
-                    setNewFile(null);
-                  }
-                }}
-                className="hidden"
-              />
-              <label 
-                htmlFor="new-activity-file"
-                className="flex items-center gap-4 px-5 py-4 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl cursor-pointer hover:border-[#36ADA3] dark:hover:border-[#36ADA3] transition-colors"
-              >
-                <div className="p-3 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl">
-                  <Upload className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  {newFile ? (
-                    <>
-                      <span className="text-[#232F72] dark:text-[#F1F5F9] font-bold text-sm truncate block">{newFile.name}</span>
-                      <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 block mt-0.5">
-                        Ukuran: {(newFile.size / 1024 / 1024).toFixed(1)} MB
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-[#2F578A] dark:text-[#F1F5F9]/70 font-bold text-sm block">Pilih berkas untuk diunggah...</span>
-                      <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 block mt-0.5">Maks. 10MB (PDF/JPG/PNG)</span>
-                    </>
-                  )}
-                </div>
-              </label>
+          {/* Multi-file upload */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Lampiran / Berkas Pendukung (Opsional — bisa lebih dari satu)</label>
+              <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/40">PDF, JPG, PNG — maks 10MB per file</span>
             </div>
+
+            {/* Daftar file terpilih */}
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                {selectedFiles.map((f, i) => (
+                  <div key={i} className="flex items-center justify-between gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
+                        <FileIcon className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#232F72] dark:text-white truncate">{f.name}</p>
+                        <span className="text-[9px] text-[#2F578A] dark:text-[#F1F5F9]/50">{(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      className="p-1.5 text-[#2F578A]/60 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Tombol tambah file */}
+            <label className="flex items-center gap-3 px-5 py-4 bg-[#F8FAFC] dark:bg-[#232F72]/20 border-2 border-dashed border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl cursor-pointer hover:border-[#36ADA3] dark:hover:border-[#36ADA3] transition-colors">
+              <input type="file" multiple accept=".pdf,.png,.jpg,.jpeg" onChange={handleAddFile} className="hidden" />
+              <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
+                <Upload className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[#232F72] dark:text-white">
+                  {selectedFiles.length > 0 ? "Tambah berkas lagi..." : "Pilih berkas untuk diunggah..."}
+                </p>
+                {selectedFiles.length > 0 && (
+                  <span className="text-[9px] text-[#36ADA3] font-bold">{selectedFiles.length} berkas dipilih</span>
+                )}
+              </div>
+            </label>
           </div>
 
+          {/* Tombol aksi */}
           <div className="pt-4 flex justify-end gap-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40">
-            <Link 
+            <Link
               href="/dashboard/mahasiswa/kegiatan"
-              className="px-5 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 hover:bg-[#2F578A]/10 border border-[#2F578A]/30 dark:border-[#2F578A]/50 text-[#232F72] dark:text-white rounded-xl shadow-sm font-black flex items-center justify-center cursor-pointer transition-all active:scale-95"
+              className="px-5 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 hover:bg-[#2F578A]/10 border border-[#2F578A]/30 dark:border-[#2F578A]/50 text-[#232F72] dark:text-white rounded-xl font-black flex items-center justify-center cursor-pointer transition-all active:scale-95"
             >
               Batal
             </Link>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`px-6 py-3 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-xl shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] font-black flex items-center justify-center gap-2 transition-all active:scale-95 ${isSubmitting ? "opacity-75 cursor-not-allowed shadow-none" : ""}`}
+              disabled={isSubmitting || isUploading}
+              className="px-6 py-3 bg-[#36ADA3] hover:bg-[#2eb1a6] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl shadow-[0_0_15px_rgba(54,173,163,0.3)] font-black flex items-center justify-center gap-2 transition-all active:scale-95"
             >
-              {isSubmitting ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
-              ) : (
-                <><Plus className="w-4 h-4" /> Simpan Kegiatan</>
-              )}
+              {isSubmitting || isUploading
+                ? <><Loader2 className="w-4 h-4 animate-spin" /> {isUploading ? "Mengunggah..." : "Menyimpan..."}</>
+                : <><Plus className="w-4 h-4" /> Simpan Kegiatan</>
+              }
             </button>
           </div>
+
         </form>
       </div>
     </div>

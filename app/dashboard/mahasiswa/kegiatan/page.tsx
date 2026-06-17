@@ -18,6 +18,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useActivities } from "@/modules/data_kegiatan/hooks";
+import { kegiatanAPI } from "@/modules/data_kegiatan/api";
 import { useFileUpload } from "@/modules/media/hooks";
 import Link from "next/link";
 import { SuccessToast, DashboardPagination } from "@/components/shared";
@@ -28,8 +29,8 @@ export default function StudentActivitiesPage() {
     isLoading,
     isSubmitting,
     addActivity,
-    uploadAttachment,
-    deleteActivity
+    deleteActivity,
+    refreshActivities
   } = useActivities();
 
   // Filter states
@@ -58,8 +59,9 @@ export default function StudentActivitiesPage() {
 
       try {
         const { key } = await upload(file);
-        await uploadAttachment(activityId, key, file.name, `${sizeMB} MB`);
+        await kegiatanAPI.addFilesToActivity(activityId, [key]);
         triggerToast(`Berkas "${file.name}" berhasil diunggah!`);
+        refreshActivities(); // Reload to show the new attachment
       } catch (err: any) {
         triggerToast(err.message || "Gagal mengunggah berkas.");
       }
@@ -82,7 +84,12 @@ export default function StudentActivitiesPage() {
     return activities.filter(act => {
       const matchesSearch = act.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             act.date.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "Semua" || act.status === statusFilter;
+      let matchesStatus = true;
+      if (statusFilter === "Sudah Diunggah") {
+        matchesStatus = act.fileUrls && act.fileUrls.length > 0;
+      } else if (statusFilter === "Belum Unggah") {
+        matchesStatus = !act.fileUrls || act.fileUrls.length === 0;
+      }
       return matchesSearch && matchesStatus;
     });
   }, [activities, searchQuery, statusFilter]);
@@ -150,7 +157,7 @@ export default function StudentActivitiesPage() {
                 : "bg-[#F8FAFC] dark:bg-[#232F72]/30 text-[#2F578A] dark:text-[#F1F5F9]/60 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/60"
             }`}
           >
-            Sudah Diunggah ({activities.filter(a => a.status === "Sudah Diunggah").length})
+            Sudah Diunggah ({activities.filter(a => a.fileUrls && a.fileUrls.length > 0).length})
           </button>
 
           <button
@@ -161,7 +168,7 @@ export default function StudentActivitiesPage() {
                 : "bg-[#F8FAFC] dark:bg-[#232F72]/30 text-[#2F578A] dark:text-[#F1F5F9]/60 hover:bg-[#2F578A]/10 dark:hover:bg-[#232F72]/60"
             }`}
           >
-            Belum Diunggah ({activities.filter(a => a.status === "Belum Unggah").length})
+            Belum Diunggah ({activities.filter(a => !a.fileUrls || a.fileUrls.length === 0).length})
           </button>
         </div>
 
@@ -230,19 +237,25 @@ export default function StudentActivitiesPage() {
 
                   {/* Column 4: Upload File Tugas (Attachment) */}
                   <td className="py-4 text-center">
-                    {act.fileName ? (
+                    {act.fileUrls && act.fileUrls.length > 0 ? (
                       /* File already uploaded block */
-                      <div className="inline-flex items-center gap-2.5 p-2 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 rounded-2xl max-w-xs text-left">
+                      <div className="inline-flex items-center gap-2.5 p-2 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 dark:border-[#36ADA3]/40 rounded-2xl group transition-all hover:bg-[#36ADA3]/20">
                         <div className="p-2 bg-[#36ADA3] text-white rounded-xl">
                           <FileText className="w-4 h-4" />
                         </div>
-                        <div className="min-w-0 pr-1">
-                          <p className="text-[11px] font-extrabold text-[#36ADA3] dark:text-[#36ADA3] truncate max-w-[150px]">{act.fileName}</p>
-                          <span className="text-[9px] text-[#36ADA3]/80 block">{act.fileSize} • Terlampir</span>
+                        <div className="text-left max-w-[120px]">
+                          <p className="text-[10px] font-black text-[#232F72] dark:text-white truncate" title={act.fileUrls[0]}>
+                            {act.fileUrls[0].substring(0, 15)}...
+                          </p>
+                          <span className="text-[9px] font-bold text-[#36ADA3]">Lampiran Tersimpan</span>
                         </div>
-                        <div className="p-1 bg-white/40 dark:bg-[#36ADA3]/30 rounded-lg">
-                          <CheckCircle2 className="w-4 h-4 text-[#36ADA3]" />
-                        </div>
+                        <button
+                          onClick={() => {}} // Download functionality placeholder
+                          className="ml-2 p-1.5 text-slate-400 hover:text-[#36ADA3] hover:bg-white dark:hover:bg-[#121358] rounded-lg transition-all"
+                          title="Unduh File"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     ) : (
                       /* Upload trigger block */

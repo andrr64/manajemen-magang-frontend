@@ -1,6 +1,6 @@
 import { notifier } from "@/modules/notifier";
 import { useState, useEffect, useCallback } from "react";
-import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianStatResponse } from "./types";
+import { AssessmentItem, GradeSummary, PenilaianStatResponse, PenilaianResponse, PenilaianRequest } from "./types";
 import { penilaianAPI } from "./api";
 
 export function useAssessment() {
@@ -27,7 +27,7 @@ export function useAssessment() {
     fetchAssessments();
   }, [fetchAssessments]);
 
-  const submitGrades = async (payload: SubmitGradeRequest) => {
+  const submitGrades = async (payload: PenilaianRequest) => {
     setIsSubmitting(true);
     setError(null);
     try {
@@ -85,7 +85,7 @@ export function useGrades() {
 }
 
 export function useStudentAssessments() {
-  const [assessments, setAssessments] = useState<any[]>([]);
+  const [assessments, setAssessments] = useState<PenilaianResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 

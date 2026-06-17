@@ -1,3 +1,7 @@
+// =====================================================================
+// BACKEND SCHEMAS
+// =====================================================================
+
 export interface ActivityResponse {
   id: string;
   mahasiswaId: string;
@@ -5,7 +9,7 @@ export interface ActivityResponse {
   judul: string;
   deskripsi: string;
   waktu: string;
-  fileUrl: string | null;
+  fileUrls: string[];
   status: string;
 }
 
@@ -15,14 +19,18 @@ export interface ActivityStatResponse {
   ditolak: number;
 }
 
+// =====================================================================
+// FRONTEND SHAPES
+// =====================================================================
+
 export interface Activity {
   id: number | string;
   title: string;
+  deskripsi: string;
   date: string;
   time: string;
-  fileName: string | null;
-  fileSize: string | null;
-  status: "Belum Unggah" | "Sudah Diunggah";
+  fileUrls: string[];
+  status: "Disetujui" | "Belum Disetujui" | "Ditolak";
 }
 
 export interface ActivityLog {
@@ -32,29 +40,23 @@ export interface ActivityLog {
   studentNim: string;
   date: string;
   week: string;
-  topic: string; // matches topic in StudentDashboardHome
-  title: string; // matches title in StudentActivitiesPage
+  topic: string;
+  title: string;
   hours: number;
-  fileUrl: string | null;
-  fileName: string | null;
-  fileSize: string | null;
+  fileUrls: string[];
   status: "Menunggu" | "Disetujui" | "Ditolak";
-  notes?: string;
 }
 
 export interface CreateActivityRequest {
   title: string;
   date: string;
   time: string;
-  fileKey?: string | null;
-  fileName?: string | null;
-  fileSize?: string | null;
+  fileKeys?: string[];
 }
 
 export interface ApproveActivityRequest {
   id: number | string;
   status: "Disetujui" | "Ditolak";
-  notes?: string;
 }
 
 export interface ActivityStat {

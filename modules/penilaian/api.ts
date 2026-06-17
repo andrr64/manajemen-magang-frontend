@@ -1,6 +1,6 @@
-﻿import { executeHybridRequest } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
-import { AssessmentItem, GradeSummary, SubmitGradeRequest, PenilaianResponse, PenilaianStatResponse } from "./types";
+import { AssessmentItem, GradeSummary, PenilaianResponse, PenilaianRequest, PenilaianStatResponse } from "./types";
 const DEFAULT_STUDENT_ASSESSMENTS = [
   {
     periodeId: "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
@@ -237,30 +237,13 @@ export const penilaianAPI = {
     });
   },
 
-  submitStudentGrades: async (payload: SubmitGradeRequest) => {
-    const getVal = (id: string) => {
-      const g = payload.grades.find(item => String(item.criteriaId).toLowerCase().includes(id));
-      return g ? g.score : 85.0;
-    };
-
+  submitStudentGrades: async (payload: PenilaianRequest) => {
     return executeHybridRequest<boolean>(
-      `Submit grades for student ID: ${payload.studentId}`,
+      `Submit grades for mentor ID: ${payload.mentorId}`,
       API_ROUTES.PENILAIAN_LIST,
       {
         method: "POST",
-        body: JSON.stringify({
-          periodeMagangId: payload.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
-          mentorId: payload.mentorId || "3cb1ab0d-4ea3-4cfb-81d0-d3cdb2413e11",
-          kinerja: getVal("kinerja"),
-          kedisiplinan: getVal("kedisiplinan"),
-          tanggungJawab: getVal("tanggungjawab"),
-          komunikasi: getVal("komunikasi"),
-          sikap: getVal("sikap"),
-          kerapihan: getVal("kerapihan"),
-          absensi: getVal("absensi"),
-          kerjasama: getVal("kerjasama"),
-          catatan: payload.grades[0]?.feedback || "Performa magang sangat memuaskan."
-        })
+        body: JSON.stringify(payload)
       }
     ).then((res) => {
       return {
@@ -276,28 +259,13 @@ export const penilaianAPI = {
     if (namaMahasiswa) queryParams.append("namaMahasiswa", namaMahasiswa);
 
     const url = `${API_ROUTES.PENILAIAN_LIST}?${queryParams.toString()}`;
-    return executeHybridRequest<any[]>(
+    return executeHybridRequest<PenilaianResponse[]>(
       "Get student assessment list with filters",
       url,
       {
         method: "GET"
       }
-    ).then((res) => {
-      if (res.data && Array.isArray(res.data)) {
-        return {
-          ...res,
-          data: res.data.map((item: any) => ({
-            ...item,
-            penilaianId: item.statusPenilaian === "Sudah Dinilai" ? (item.id || item.penilaianId) : null,
-            periodeId: item.periodeMagangId || item.periodeId,
-            periodeMagangId: item.periodeMagangId || item.periodeId,
-            tanggungJawab: item.tanggungJawab !== undefined ? item.tanggungJawab : item.tanggungjawab,
-            tanggungjawab: item.tanggungJawab !== undefined ? item.tanggungJawab : item.tanggungjawab
-          }))
-        };
-      }
-      return res;
-    });
+    );
   },
 
   getPenilaianStatistics: async (namaMahasiswa?: string) => {

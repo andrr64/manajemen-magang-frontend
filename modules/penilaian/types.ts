@@ -22,16 +22,7 @@ export interface GradeSummary {
   status: "Lulus" | "Tidak Lulus" | "Pending";
 }
 
-export interface SubmitGradeRequest {
-  studentId: string | number;
-  periodeMagangId?: string;
-  mentorId?: string;
-  grades: {
-    criteriaId: string | number;
-    score: number;
-    feedback: string;
-  }[];
-}
+
 
 export interface PenilaianResponse {
   id: string;

@@ -39,13 +39,9 @@ export default function MentorActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState("Semua");
 
   const [showToast, setShowToast] = useState("");
-  const [viewingActivityFile, setViewingActivityFile] = useState<{ studentName: string; activityName: string; attachmentName: string } | null>(null);
+  const [viewingActivityFile, setViewingActivityFile] = useState<{ studentName: string; activityName: string; fileUrls: string[] } | null>(null);
 
-  const handleViewActivityFile = (studentName: string, activityName: string, attachmentName: string) => {
-    setViewingActivityFile({ studentName, activityName, attachmentName });
-  };
-
-  const { activities, isLoading, approveActivity, rejectActivity } = useMentorActivities();
+  const { activities, isLoading, approveActivity, rejectActivity, getFileUrls } = useMentorActivities();
   const { rawStudents } = useStudents();
   const studentsList = rawStudents;
 
@@ -109,87 +105,55 @@ export default function MentorActivitiesPage() {
   return (
     <div className="space-y-6 relative">
 
-      {/* PREVIEW ACTIVITY TASK MODAL */}
+      {/* FILE LIST MODAL */}
       {viewingActivityFile !== null && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-55 flex items-center justify-center p-4" onClick={() => setViewingActivityFile(null)}>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 animate-float relative overflow-hidden"
-          >
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#F1F5F9]0/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setViewingActivityFile(null)}>
+          <div onClick={e => e.stopPropagation()} className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2F578A]">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-[#FFFFFF] rounded-xl">
-                  <Activity className="w-5.5 h-5.5" />
+                <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-white rounded-xl">
+                  <Activity className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] leading-tight">
-                    Berkas Tugas Kegiatan
-                  </h4>
-                  <p className="text-[10px] text-slate-455 dark:text-slate-500 font-semibold mt-0.5">
-                    Mahasiswa: {viewingActivityFile.studentName}
-                  </p>
+                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white leading-tight">Berkas Lampiran</h4>
+                  <p className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold mt-0.5">{viewingActivityFile.studentName} · {viewingActivityFile.activityName}</p>
                 </div>
               </div>
-              <button
-                onClick={() => setViewingActivityFile(null)}
-                className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#121358] rounded-xl text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
-              >
-                <XCircle className="w-5.5 h-5.5" />
+              <button onClick={() => setViewingActivityFile(null)} className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72] rounded-xl text-[#2F578A]/80 dark:text-[#F1F5F9]/50 cursor-pointer transition-colors">
+                <XCircle className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 shadow-sm font-sans text-[#232F72] dark:text-[#F1F5F9] relative min-h-[220px] flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="pb-3 border-b border-slate-100 dark:border-[#2F578A]">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 bg-[#F8FAFC] dark:bg-[#232F72] text-[#232F72] dark:text-[#FFFFFF] rounded-md">
-                      Laporan Pekerjaan
-                    </span>
-                    <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-bold font-mono">
-                      {viewingActivityFile.attachmentName}
-                    </span>
-                  </div>
-                  <h5 className="font-extrabold text-xs text-[#232F72] dark:text-[#FFFFFF] mt-2 leading-snug">
-                    {viewingActivityFile.activityName}
-                  </h5>
-                </div>
-
-                <div className="text-[10px] space-y-3 text-[#2F578A] dark:text-[#F1F5F9]/80 leading-relaxed font-normal">
-                  <p>
-                    Berikut merupakan hasil rangkuman, implementasi, dan pengujian teknis yang telah dikerjakan untuk target minggu ini. Pekerjaan mencakup konfigurasi lingkungan kerja, analisis dependensi, penyusunan rancangan logika program, penanganan kasus kegagalan transaksi, hingga integrasi backend dengan antarmuka klien.
-                  </p>
-                  <p className="bg-slate-50 dark:bg-slate-950/40 p-3 border border-slate-150/45 dark:border-slate-850 rounded-xl font-mono text-[9px] text-slate-500 dark:text-slate-450 whitespace-pre-wrap leading-normal">
-                    {"// Hasil Pengujian Log & Verifikasi Berkas"}
-                    Status: Sukses Kompilasi
-                    Checksum MD5: 9a8f7b6c5d4e3f2a1b0c9d8e7f6a5b4c
-                    Uji Beban (Stres-Test): 150 requests/sec, latency &lt; 85ms
-                  </p>
-                  <p>
-                    Lampiran berkas digital lengkap berupa dokumentasi PDF, diagram relasional, atau arsip kode sumber (`zip/tf/docx`) telah terenkripsi dan disimpan di server repositori kampus manajemen magang utama.
-                  </p>
-                </div>
+            {viewingActivityFile.fileUrls.length === 0 ? (
+              <div className="py-8 text-center space-y-2">
+                <AlertCircle className="w-8 h-8 text-[#2F578A]/60 mx-auto" />
+                <p className="text-xs font-bold text-[#232F72] dark:text-white">Tidak ada lampiran</p>
               </div>
-
-              <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-[#2F578A] mt-2 text-[9px]">
-                <div className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">
-                  ID Kegiatan Ref: ACT-00{activities.findIndex(a => a.activityName === viewingActivityFile.activityName) + 1}
-                </div>
-                <div className="text-right">
-                  <p className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]">{viewingActivityFile.studentName}</p>
-                  <p className="text-[8px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50">Pelaksana Program Magang</p>
-                </div>
+            ) : (
+              <div className="space-y-2">
+                {viewingActivityFile.fileUrls.map((url, i) => {
+                  const name = url.split("/").pop() || `berkas-${i + 1}`;
+                  return (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/40 border border-[#2F578A]/20 dark:border-[#2F578A]/50 rounded-2xl hover:border-[#36ADA3] hover:bg-[#36ADA3]/5 transition-all group"
+                    >
+                      <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
+                        <Eye className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold text-[#232F72] dark:text-white truncate group-hover:text-[#36ADA3] transition-colors">{name}</span>
+                    </a>
+                  );
+                })}
               </div>
-            </div>
+            )}
 
-            <div className="flex items-center justify-end gap-3 pt-2 text-xs">
-              <button
-                onClick={() => setViewingActivityFile(null)}
-                className="px-5 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white font-extrabold rounded-xl active:scale-95 transition-all cursor-pointer"
-              >
-                Selesai Membaca
+            <div className="flex justify-end pt-2">
+              <button onClick={() => setViewingActivityFile(null)} className="px-5 py-2 bg-[#232F72] hover:brightness-110 text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer">
+                Tutup
               </button>
             </div>
           </div>
@@ -333,24 +297,27 @@ export default function MentorActivitiesPage() {
             key: "attachment",
             label: "File Kegiatan",
             align: "center",
-            render: (act) => (
-              <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-                {act.attachment ? (
-                  <button
-                    onClick={() => handleViewActivityFile(act.studentName, act.activityName, act.attachment || "tugas_kegiatan.pdf")}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#232F72] dark:bg-[#232F72]/40 hover:text-white dark:hover:bg-[#121358] text-[#232F72] dark:text-[#FFFFFF] border border-[#2F578A]/30 rounded-xl font-bold transition-all text-[10px] hover:scale-[1.02] active:scale-95 shadow-sm cursor-pointer"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span className="max-w-[110px] truncate">{act.attachment}</span>
-                  </button>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-rose-500 px-2 py-1 bg-rose-50 dark:bg-rose-950/20 border border-rose-200/20 rounded-lg">
-                    <AlertCircle className="w-3 h-3" />
-                    Belum Diunggah
-                  </span>
-                )}
-              </div>
-            ),
+            render: (act) => {
+              const fileUrls = getFileUrls(act);
+              return (
+                <div className="flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                  {fileUrls.length > 0 ? (
+                    <button
+                      onClick={() => setViewingActivityFile({ studentName: act.studentName, activityName: act.activityName, fileUrls })}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#232F72] dark:bg-[#232F72]/40 hover:text-white dark:hover:bg-[#121358] text-[#232F72] dark:text-white border border-[#2F578A]/30 rounded-xl font-bold transition-all text-[10px] hover:scale-[1.02] active:scale-95 shadow-sm cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>{fileUrls.length} berkas</span>
+                    </button>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-rose-500 px-2 py-1 bg-rose-50 dark:bg-rose-950/20 border border-rose-200/20 rounded-lg">
+                      <AlertCircle className="w-3 h-3" />
+                      Belum Diunggah
+                    </span>
+                  )}
+                </div>
+              );
+            },
           },
           {
             key: "aksi",

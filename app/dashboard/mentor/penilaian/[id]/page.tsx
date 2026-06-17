@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { WEB_ROUTES } from "@/modules/web-routes";
 
 import React, { use, useState, useMemo, useEffect } from "react";
@@ -298,19 +298,21 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
 
     setIsSubmitting(true);
 
-    // Map form inputs to SubmitGradeRequest payload
-    const gradesList = Object.keys(grades).map(key => ({
-      criteriaId: key,
-      score: grades[key],
-      feedback: feedbacks[key] || "Performa magang sangat memuaskan."
-    }));
+    // Remove unused gradesList
 
     try {
       await submitGrades({
-        studentId: student.id,
-        periodeMagangId: assessmentRecord?.periodeId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
+        periodeMagangId: assessmentRecord?.periodeMagangId || "5c1a8d9b-2e9c-4aa4-8f7b-23fcd10d9e81",
         mentorId: assessmentRecord?.mentorId || authUser?.id || "",
-        grades: gradesList
+        kinerja: grades.kinerja || 0,
+        kedisiplinan: grades.kedisiplinan || 0,
+        tanggungJawab: grades.tanggungjawab || 0,
+        komunikasi: grades.komunikasi || 0,
+        sikap: grades.sikap || 0,
+        kerapihan: grades.kerapihan || 0,
+        absensi: grades.absensi || 0,
+        kerjasama: grades.kerjasama || 0,
+        catatan: feedbacks.kinerja || feedbacks.kedisiplinan || feedbacks.tanggungjawab || "Performa magang memuaskan."
       });
 
       setIsSubmitting(false);
