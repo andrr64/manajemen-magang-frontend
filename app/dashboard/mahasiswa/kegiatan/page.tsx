@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useActivities } from "@/modules/data_kegiatan/hooks";
 import { useFileUpload } from "@/modules/media/hooks";
+import Link from "next/link";
 import { SuccessToast, DashboardPagination } from "@/components/shared";
 
 export default function StudentActivitiesPage() {
@@ -30,13 +31,6 @@ export default function StudentActivitiesPage() {
     uploadAttachment,
     deleteActivity
   } = useActivities();
-
-  // Form states for adding new activity
-  const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("08:00 - 17:00 WIB");
-  const [newFile, setNewFile] = useState<File | null>(null);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,40 +48,6 @@ export default function StudentActivitiesPage() {
     setToastMessage(msg);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
-  };
-
-  // Add new activity
-  const handleAddActivity = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle || !newDate) return;
-
-    try {
-      const newActivity = await addActivity({
-        title: newTitle,
-        date: newDate,
-        time: newTime
-      });
-
-      if (newFile && newActivity && newActivity.id) {
-        try {
-          const sizeMB = (newFile.size / 1024 / 1024).toFixed(1);
-          const { key } = await upload(newFile);
-          await uploadAttachment(newActivity.id, key, newFile.name, `${sizeMB} MB`);
-        } catch (uploadErr: any) {
-          triggerToast("Kegiatan ditambahkan, tetapi gagal mengunggah berkas.");
-          return; // Stop here if upload fails, though activity is added
-        }
-      }
-
-      setNewTitle("");
-      setNewDate("");
-      setNewTime("08:00 - 17:00 WIB");
-      setNewFile(null);
-      setShowAddForm(false);
-      triggerToast("Kegiatan baru berhasil ditambahkan!");
-    } catch (err: any) {
-      triggerToast(err.message || "Gagal menambahkan kegiatan.");
-    }
   };
 
   // Upload file assignment for a specific activity
@@ -145,117 +105,14 @@ export default function StudentActivitiesPage() {
         <div>
           <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Kegiatan Harian Dan Lampiran Tugas</h3>
         </div>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
+        <Link
+          href="/dashboard/mahasiswa/kegiatan/tambah"
           className="px-4 py-2.5 rounded-xl bg-[#36ADA3] hover:bg-[#2eb1a6] text-white text-xs font-black shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Catat Kegiatan Baru
-        </button>
+        </Link>
       </div>
-
-      {/* CONDITIONAL ADD ACTIVITY CARD */}
-      {showAddForm && (
-        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 bg-white dark:bg-[#121358] shadow-xl max-w-xl animate-fadeIn space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
-            <h4 className="font-extrabold text-xs uppercase tracking-wider text-[#232F72] dark:text-[#F1F5F9]">Form Catat Kegiatan Harian Baru</h4>
-            <button onClick={() => {
-              setShowAddForm(false);
-              setNewFile(null);
-            }} className="text-[#2F578A] dark:text-[#F1F5F9]/50 hover:text-[#36ADA3] dark:hover:text-[#36ADA3]">
-              <X className="w-4.5 h-4.5" />
-            </button>
-          </div>
-
-          <form onSubmit={handleAddActivity} className="space-y-4 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]">
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Nama / Judul Kegiatan <span className="text-[#36ADA3]">*</span></label>
-              <input
-                type="text"
-                required
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Contoh: Membuat API Endpoint Get data-mahasiswa..."
-                className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Tanggal Kegiatan <span className="text-[#36ADA3]">*</span></label>
-                <input
-                  type="date"
-                  required
-                  value={newDate}
-                  onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Durasi / Waktu <span className="text-[#36ADA3]">*</span></label>
-                <input
-                  type="text"
-                  required
-                  value={newTime}
-                  onChange={(e) => setNewTime(e.target.value)}
-                  placeholder="Contoh: 08:00 - 17:00 WIB"
-                  className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Lampiran / Berkas Pendukung (Opsional)</label>
-              <div className="relative">
-                <input
-                  type="file"
-                  id="new-activity-file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setNewFile(e.target.files[0]);
-                    } else {
-                      setNewFile(null);
-                    }
-                  }}
-                  className="hidden"
-                />
-                <label 
-                  htmlFor="new-activity-file"
-                  className="flex items-center gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl cursor-pointer hover:border-[#36ADA3] dark:hover:border-[#36ADA3] transition-colors"
-                >
-                  <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl">
-                    <Upload className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 truncate">
-                    {newFile ? (
-                      <span className="text-[#232F72] dark:text-[#F1F5F9] font-semibold">{newFile.name}</span>
-                    ) : (
-                      <span className="text-[#2F578A] dark:text-[#F1F5F9]/50 font-medium">Pilih berkas untuk diunggah...</span>
-                    )}
-                  </div>
-                  {newFile && (
-                    <span className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/50">
-                      {(newFile.size / 1024 / 1024).toFixed(1)} MB
-                    </span>
-                  )}
-                </label>
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`px-5 py-2.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-xl shadow-[0_0_10px_rgba(54,173,163,0.3)] font-black flex items-center justify-center gap-2 ${isSubmitting ? "opacity-75 cursor-wait" : ""}`}
-              >
-                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                Simpan Kegiatan
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* FILTER PANEL */}
       <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-4 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
