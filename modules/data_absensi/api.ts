@@ -9,6 +9,8 @@ import {
   AbsensiResponse,
   AbsensiStatResponse,
   AbsensiMahasiswaStatResponse,
+  AbsensiHarianMentorResponse,
+  AbsensiMentorRequest,
 } from "./types";
 
 // =====================================================================
@@ -48,6 +50,7 @@ function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
   return {
     id:          item.id,
     date:        formatDate(item.tanggal),
+    tanggalISO:  item.tanggal,
     type:        typeMap[item.status?.toLowerCase()] ?? "Hadir",
     checkIn:     "-- : --",
     checkOut:    "-- : --",
@@ -86,6 +89,57 @@ function getCurrentUserId(): string | null {
 // =====================================================================
 
 export const absensiAPI = {
+  // -------------------------------------------------------------------
+  // MENTOR — fitur baru
+  // -------------------------------------------------------------------
+
+  /**
+   * GET /api/absensi/mentor/harian
+   * Semua mahasiswa bimbingan dengan periode mencakup `tanggal`.
+   * Status = hadir/izin/sakit jika sudah dicatat, "alpha" jika belum ada record.
+   */
+  getAbsensiHarianMentor: async (
+    tanggal?: string,
+    index: number = 1,
+    size: number = 20
+  ) => {
+    const q = new URLSearchParams();
+    if (tanggal) q.append("tanggal", tanggal);
+    q.append("index", String(index));
+    q.append("size", String(size));
+
+    return executeHybridRequest<AbsensiHarianMentorResponse[]>(
+      "Get absensi harian mentor",
+      `${API_ROUTES.ABSENSI_MENTOR_HARIAN}?${q.toString()}`,
+      { method: "GET" }
+    );
+  },
+
+  /**
+   * POST /api/absensi/mentor/submit
+   * Mentor mencatat absensi untuk salah satu mahasiswa bimbingannya.
+   */
+  submitAbsensiMentor: async (payload: AbsensiMentorRequest) => {
+    return executeHybridRequest<AbsensiResponse>(
+      `Submit absensi mentor untuk mahasiswa ${payload.mahasiswaId}`,
+      API_ROUTES.ABSENSI_MENTOR_SUBMIT,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mahasiswaId:   payload.mahasiswaId,
+          status:        payload.status,
+          tanggal:       payload.tanggal ?? null,
+          keterangan:    payload.keterangan ?? null,
+          attachmentUrl: payload.attachmentUrl ?? null,
+        }),
+      }
+    ).then(res => ({
+      ...res,
+      data: mapBackendAbsensiToFrontend(res.data),
+    }));
+  },
+
   // -------------------------------------------------------------------
   // 1. List absensi semua mahasiswa (mentor)
   // -------------------------------------------------------------------

@@ -19,6 +19,8 @@ export const API_ROUTES = {
   ABSENSI_TOTAL_KEHADIRAN:     "/api/absensi/total-kehadiran",
   ABSENSI_STATISTIK_KEHADIRAN: "/api/absensi/statistik-kehadiran",
   ABSENSI_CHECKOUT:            "/api/absensi/mahasiswa/checkout",
+  ABSENSI_MENTOR_HARIAN: "/api/absensi/mentor/harian",
+  ABSENSI_MENTOR_SUBMIT: "/api/absensi/mentor/submit",
 
   // ─── KEGIATAN ─────────────────────────────────────────────────────────────
   KEGIATAN_LIST:       "/api/kegiatan",

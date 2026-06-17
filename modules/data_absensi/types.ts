@@ -32,6 +32,7 @@ export interface AbsensiMahasiswaStatResponse {
 export interface AttendanceLog {
   id: string | number;
   date: string;
+  tanggalISO?: string; // YYYY-MM-DD — untuk perbandingan tanggal
   type: "Hadir" | "Izin" | "Sakit" | "Alpha";
   checkIn: string;
   checkOut: string;
@@ -47,6 +48,33 @@ export interface AttendanceLog {
 // =====================================================================
 // MENTOR-SIDE
 // =====================================================================
+
+/**
+ * Matches backend AbsensiHarianMentorResponse.
+ * Satu baris per mahasiswa bimbingan yang periode magangnya mencakup tanggal tsb.
+ * absensiStatus = "alpha" jika belum ada record absensi.
+ */
+export interface AbsensiHarianMentorResponse {
+  mahasiswaId: string;
+  nim: string;
+  nama: string;
+  noHp: string | null;
+  periodeMagangId: string;
+  tanggalMulai: string;    // YYYY-MM-DD
+  tanggalBerakhir: string; // YYYY-MM-DD
+  absensiId: string | null;
+  absensiStatus: "hadir" | "izin" | "sakit" | "alpha";
+}
+
+/** Request body for POST /api/absensi/mentor/submit */
+export interface AbsensiMentorRequest {
+  mahasiswaId: string;
+  status: "hadir" | "izin" | "sakit";
+  /** YYYY-MM-DD — opsional, backend default hari ini */
+  tanggal?: string;
+  keterangan?: string;
+  attachmentUrl?: string | null;
+}
 
 /** Statistik absensi untuk mentor (semua mahasiswa / filter nama) */
 export interface AttendanceSummary {

@@ -21,7 +21,7 @@ import {
   CalendarCheck,
   FileCheck
 } from "lucide-react";
-import { BackNavBar, PageLoader, NotFoundBlock, SuccessModal, ModalActions } from "@/components/shared";
+import { BackNavBar, PageLoader, NotFoundBlock, ModalActions } from "@/components/shared";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentCertificates } from "@/modules/sertifikat/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
@@ -117,7 +117,6 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
 
   // States for final page submission
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   // Trigger file browser input click
   const triggerFileInput = () => {
@@ -168,11 +167,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
       await uploadStudentCertificate(matchedCert.periodeMagangId, fileKey);
 
       setIsSubmitting(false);
-      setIsSuccess(true);
-
-      setTimeout(() => {
-        router.push(WEB_ROUTES.MENTOR_SERTIFIKAT);
-      }, 2000);
+      router.push(WEB_ROUTES.MENTOR_SERTIFIKAT);
     } catch (err: any) {
       setIsSubmitting(false);
       alert(err.message || "Gagal menyimpan berkas.");
@@ -207,14 +202,6 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
           <span className="text-xs font-bold leading-normal">{showToast}</span>
         </div>
       )}
-
-      {/* SUCCESS MODAL OVERLAY */}
-      <SuccessModal
-        show={isSuccess}
-        title="Sertifikat Berhasil Disimpan!"
-        description={`Lampiran sertifikat magang untuk bimbingan ${student.name} berhasil dikunci dan diverifikasi oleh sistem.`}
-        variant="indigo"
-      />
 
       {/* TOP NAVIGATION BAR */}
       <BackNavBar

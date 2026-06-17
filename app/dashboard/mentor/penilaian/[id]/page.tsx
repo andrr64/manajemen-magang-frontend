@@ -24,7 +24,7 @@ import {
   Scale,
   Briefcase
 } from "lucide-react";
-import { BackNavBar, PageLoader, NotFoundBlock, SuccessModal, ModalActions } from "@/components/shared";
+import { BackNavBar, PageLoader, NotFoundBlock, ModalActions } from "@/components/shared";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useAssessment, useStudentAssessments } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
@@ -197,7 +197,6 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
 
   // General Page Action States
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [successToast, setSuccessToast] = useState("");
 
   // Grade adjustment handler
@@ -315,11 +314,7 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
       });
 
       setIsSubmitting(false);
-      setIsSuccess(true);
-
-      setTimeout(() => {
-        router.push(WEB_ROUTES.MENTOR_PENILAIAN);
-      }, 2000);
+      router.push(WEB_ROUTES.MENTOR_PENILAIAN);
     } catch (err: any) {
       setIsSubmitting(false);
       alert(err.message || "Gagal menyimpan evaluasi.");
@@ -355,14 +350,6 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
           <span className="text-xs font-bold leading-normal">{successToast}</span>
         </div>
       )}
-
-      {/* SUCCESS REDIRECT MODAL */}
-      <SuccessModal
-        show={isSuccess}
-        title="Evaluasi Berhasil Disimpan!"
-        description={`Penilaian untuk bimbingan magang ${student.name} dengan nilai rata-rata ${gradingCalculations.average} (${gradingCalculations.predicate}) berhasil disimpan secara permanen.`}
-        variant="indigo"
-      />
 
       {/* NAVIGATION BAR */}
       <BackNavBar

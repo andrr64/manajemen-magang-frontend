@@ -233,3 +233,29 @@ export function useSisaWaktuMagang() {
 
   return { sisaWaktu, isLoading };
 }
+
+// Ambil profil mahasiswa yang sedang login (berdasarkan userId di localStorage)
+export function useMyStudentProfile() {
+  const [profile, setProfile] = useState<Student | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const storage = localStorage.getItem("iam-storage");
+        if (!storage) return;
+        const userId = JSON.parse(storage)?.state?.user?.id;
+        if (!userId) return;
+        const res = await mahasiswaAPI.getStudentById(userId);
+        setProfile(res.data);
+      } catch (err) {
+        console.error("Gagal mengambil profil mahasiswa", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  return { profile, isLoading };
+}

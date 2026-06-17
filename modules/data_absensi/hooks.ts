@@ -4,10 +4,92 @@ import {
   AttendanceLog,
   AttendanceSummary,
   AbsensiMahasiswaStat,
+  AbsensiMentorRequest,
+  AbsensiHarianMentorResponse,
   CheckInRequest,
   SubmitAbsensiRequest,
 } from "./types";
 import { absensiAPI } from "./api";
+
+// =====================================================================
+// useAbsensiHarianMentor — MENTOR: semua mahasiswa + status absensi hari itu
+// =====================================================================
+
+/**
+ * Fetch semua mahasiswa bimbingan yang periode magangnya mencakup tanggal tsb.
+ * absensiStatus = "alpha" jika belum ada record, "hadir"|"izin"|"sakit" jika sudah.
+ */
+export function useAbsensiHarianMentor(tanggal?: string, pageSize: number = 20) {
+  const [data,       setData]       = useState<AbsensiHarianMentorResponse[]>([]);
+  const [page,       setPage]       = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [total,      setTotal]      = useState<number>(0);
+  const [isLoading,  setIsLoading]  = useState<boolean>(true);
+  const [error,      setError]      = useState<string | null>(null);
+
+  const doFetch = useCallback(async (pageIndex: number = 1) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await absensiAPI.getAbsensiHarianMentor(tanggal, pageIndex, pageSize);
+      setData(res.data);
+      setTotal(res.length ?? 0);
+      setTotalPages(res.totalPages ?? 1);
+      setPage(pageIndex);
+    } catch (err: any) {
+      const msg = err.message || "Gagal memuat data absensi harian.";
+      notifier.error(msg);
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tanggal, pageSize]);
+
+  useEffect(() => { doFetch(1); }, [doFetch]);
+
+  return {
+    data,
+    page,
+    totalPages,
+    total,
+    isLoading,
+    error,
+    goToPage:   (p: number) => doFetch(p),
+    refresh:    () => doFetch(page),
+    clearError: () => setError(null),
+  };
+}
+
+// =====================================================================
+// useSubmitAbsensiMentor — MENTOR: catat absensi untuk 1 mahasiswa
+// =====================================================================
+
+export function useSubmitAbsensiMentor() {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error,        setError]        = useState<string | null>(null);
+
+  const submit = async (payload: AbsensiMentorRequest): Promise<AttendanceLog> => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const res = await absensiAPI.submitAbsensiMentor(payload);
+      return res.data;
+    } catch (err: any) {
+      const msg = err.message || "Gagal mencatat absensi. Coba lagi.";
+      setError(msg);
+      throw new Error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return {
+    submit,
+    isSubmitting,
+    error,
+    clearError: () => setError(null),
+  };
+}
 
 // =====================================================================
 // useAttendance — MENTOR: list, verifikasi, hapus, refresh

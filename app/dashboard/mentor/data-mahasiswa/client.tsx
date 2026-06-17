@@ -8,26 +8,15 @@ import {
   Phone,
   School,
   User,
-  ChevronRight,
   Filter,
   RefreshCw,
-  TrendingUp,
-  Award,
-  ExternalLink,
   UserPlus,
-  Calendar,
-  Loader2,
-  Check,
   Pencil,
   Trash2,
-  GraduationCap,
-  AlertTriangle
 } from "lucide-react";
-import { Student } from "@/modules/data_mahasiswa/types";
 import { useStudents, useStudentStats } from "@/modules/data_mahasiswa/hooks";
-import { mahasiswaAPI } from "@/modules/data_mahasiswa/api";
 import { useUniversitas } from "@/modules/universitas/hooks";
-import { SuccessToast, DeleteConfirmModal, Modal, ModalHeader, TableLoadingRow, TableEmptyRow, PageHeader, DashboardPagination } from "@/components/shared";
+import { SuccessToast, TableLoadingRow, TableEmptyRow, PageHeader, DashboardPagination } from "@/components/shared";
 
 export default function MentorDataMahasiswaPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +26,7 @@ export default function MentorDataMahasiswaPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const { students: filteredStudents, isLoading, refreshStudents, removeStudent, updateStudent } = useStudents({
+  const { students: filteredStudents, isLoading } = useStudents({
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
     universitas: univFilter !== "Semua" ? univFilter : undefined,
     status: statusFilter !== "Semua" ? statusFilter : undefined,
@@ -51,212 +40,7 @@ export default function MentorDataMahasiswaPage() {
 
   const { universitasList } = useUniversitas();
 
-  // Local state for student internship periods (initially mapped from dates)
-  const [studentPeriods, setStudentPeriods] = useState<Record<string | number, { startDate: string; endDate: string }>>({});
-
-  // State for editing period
-  const [editingStudentId, setEditingStudentId] = useState<string | number | null>(null);
-  const [editStartDate, setEditStartDate] = useState("");
-  const [editEndDate, setEditEndDate] = useState("");
-  const [isSavingPeriod, setIsSavingPeriod] = useState(false);
   const [showPeriodToast, setShowPeriodToast] = useState("");
-
-  const handleOpenEditPeriod = (studentId: number, start: string, end: string) => {
-    setEditingStudentId(studentId);
-    setEditStartDate(start);
-    setEditEndDate(end);
-  };
-
-  const handleSavePeriod = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editStartDate || !editEndDate) {
-      alert("Harap lengkapi tanggal awal dan akhir kegiatan.");
-      return;
-    }
-
-    if (new Date(editStartDate) > new Date(editEndDate)) {
-      alert("Tanggal awal kegiatan tidak boleh melampaui tanggal akhir kegiatan.");
-      return;
-    }
-
-    setIsSavingPeriod(true);
-
-    // Format period string
-    const formatIndoDate = (dateStr: string) => {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-    };
-    const periodStr = `${formatIndoDate(editStartDate)} - ${formatIndoDate(editEndDate)}`;
-
-    try {
-      await updateStudent(editingStudentId!, {
-        periode: {
-          tanggalMulai: editStartDate,
-          tanggalBerakhir: editEndDate,
-          status: "aktif"
-        }
-      });
-      await refreshStudents();
-    } catch (err) {
-      console.error("Gagal memperbarui periode magang via API:", err);
-    }
-
-    setStudentPeriods((prev) => ({
-      ...prev,
-      [editingStudentId!]: { startDate: editStartDate, endDate: editEndDate }
-    }));
-
-    const studentName = filteredStudents.find(s => s.id === editingStudentId)?.name || "Mahasiswa";
-    setIsSavingPeriod(false);
-    setEditingStudentId(null);
-    setShowPeriodToast(`Periode magang ${studentName} berhasil diperbarui!`);
-    setTimeout(() => setShowPeriodToast(""), 3000);
-  };
-
-  // State for deleting student
-  const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // State for editing student details
-  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
-  const [editForm, setEditForm] = useState({
-    name: "",
-    nim: "",
-    email: "",
-    university: "",
-    idUniversity: 0,
-    phone: "",
-    gender: "Laki-laki" as "Laki-laki" | "Perempuan" | "-",
-    periodStart: "",
-    periodEnd: "",
-    periodStatus: "aktif" as "aktif" | "selesai" | "batal"
-  });
-  const [isSavingEdit, setIsSavingEdit] = useState(false);
-  const [editError, setEditError] = useState("");
-
-  const parsePeriodToDates = (periodStr: string) => {
-    if (!periodStr) return { start: "2026-02-01", end: "2026-07-31" };
-    const parts = periodStr.split(" - ");
-    if (parts.length < 2) return { start: "2026-02-01", end: "2026-07-31" };
-
-    const parseIndoDate = (str: string) => {
-      try {
-        const cleanStr = str.trim();
-        if (/^\d{4}-\d{2}-\d{2}$/.test(cleanStr)) return cleanStr;
-        
-        const monthMap: Record<string, string> = { 
-          "januari": "01", "februari": "02", "maret": "03", "april": "04", "mei": "05", "juni": "06", 
-          "juli": "07", "agustus": "08", "september": "09", "oktober": "10", "november": "11", "desember": "12" 
-        };
-        
-        const p = cleanStr.toLowerCase().split(/\s+/);
-        if (p.length >= 3) {
-          const day = p[0].padStart(2, "0");
-          const month = monthMap[p[1]] || "01";
-          const year = p[2];
-          return `${year}-${month}-${day}`;
-        }
-
-        const d = new Date(cleanStr);
-        if (!isNaN(d.getTime())) {
-          return d.toISOString().split("T")[0];
-        }
-      } catch (_) {}
-      return "2026-02-01";
-    };
-
-    return {
-      start: parseIndoDate(parts[0]),
-      end: parseIndoDate(parts[1])
-    };
-  };
-
-  const handleOpenEdit = (student: Student) => {
-    setEditingStudent(student);
-    const parsedDates = parsePeriodToDates(student.period);
-    setEditForm({
-      name: student.name,
-      nim: student.nim,
-      email: student.email,
-      university: student.university,
-      idUniversity: student.idUniversity || 0,
-      phone: student.phone,
-      gender: (student.gender === "-" || !student.gender) ? "Laki-laki" : student.gender as "Laki-laki" | "Perempuan",
-      periodStart: parsedDates.start,
-      periodEnd: parsedDates.end,
-      periodStatus: student.statusPeriode?.toLowerCase() === "selesai" ? "selesai" 
-        : student.statusPeriode?.toLowerCase() === "batal" ? "batal" : "aktif"
-    });
-    setEditError("");
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deletingStudent) return;
-    setIsDeleting(true);
-    try {
-      await removeStudent(deletingStudent.id);
-      setShowPeriodToast(`Data mahasiswa ${deletingStudent.name} berhasil dihapus.`);
-      setTimeout(() => setShowPeriodToast(""), 3000);
-    } catch (err: any) {
-      alert(err.message || "Gagal menghapus data mahasiswa.");
-    } finally {
-      setIsDeleting(false);
-      setDeletingStudent(null);
-    }
-  };
-
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setEditError("");
-
-    if (!editForm.name.trim()) return setEditError("Nama Lengkap wajib diisi.");
-    if (!editForm.nim.trim()) return setEditError("NIM wajib diisi.");
-    if (!/^\d+$/.test(editForm.nim.trim())) return setEditError("NIM harus berupa angka saja.");
-    if (!editForm.email.trim()) return setEditError("Alamat Email wajib diisi.");
-    if (!/\S+@\S+\.\S+/.test(editForm.email)) return setEditError("Format email tidak valid.");
-    if (editForm.idUniversity === 0) return setEditError("Universitas wajib dipilih.");
-    if (!editForm.phone.trim()) return setEditError("Nomor HP wajib diisi.");
-
-    if (!editForm.periodStart || !editForm.periodEnd) {
-      return setEditError("Harap lengkapi tanggal awal dan akhir kegiatan.");
-    }
-    if (new Date(editForm.periodStart) > new Date(editForm.periodEnd)) {
-      return setEditError("Tanggal awal tidak boleh melampaui tanggal akhir.");
-    }
-
-
-    setIsSavingEdit(true);
-
-    try {
-      await updateStudent(editingStudent!.id, {
-        nama: editForm.name,
-        nim: editForm.nim,
-        email: editForm.email,
-        idUniversity: editForm.idUniversity,
-        noHp: editForm.phone,
-        gender: editForm.gender === "-" ? undefined : editForm.gender,
-        periode: {
-          tanggalMulai: editForm.periodStart,
-          tanggalBerakhir: editForm.periodEnd,
-          status: editForm.periodStatus
-        }
-      });
-
-      setStudentPeriods((prev) => ({
-        ...prev,
-        [editingStudent!.id]: { startDate: editForm.periodStart, endDate: editForm.periodEnd }
-      }));
-
-      await refreshStudents();
-      setIsSavingEdit(false);
-      setEditingStudent(null);
-      setShowPeriodToast(`Data mahasiswa ${editForm.name} berhasil diperbarui!`);
-      setTimeout(() => setShowPeriodToast(""), 3000);
-    } catch (err: any) {
-      setIsSavingEdit(false);
-      setEditError(err.message || "Gagal memperbarui data mahasiswa.");
-    }
-  };
 
   // Extract unique universities for filter dropdown (Dynamic from universitas module)
   const uniqueUniversities = useMemo(() => {
@@ -297,329 +81,10 @@ export default function MentorDataMahasiswaPage() {
 
   return (
     <div className="space-y-6 relative">
-      
+
       {/* FLOAT SUCCESS TOAST */}
       <SuccessToast show={!!showPeriodToast} message={showPeriodToast} />
 
-      {/* DELETE CONFIRMATION MODAL */}
-      <DeleteConfirmModal
-        show={!!deletingStudent}
-        title="Hapus Data Mahasiswa?"
-        body={<>Apakah Anda yakin ingin menghapus data mahasiswa bimbingan bernama <strong className="text-[#232F72] dark:text-[#FFFFFF]">{deletingStudent?.name}</strong>? Tindakan ini tidak dapat dibatalkan.</>}
-        isDeleting={isDeleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeletingStudent(null)}
-      />
-
-      {/* EDIT STUDENT DETAILS MODAL */}
-      <Modal show={!!editingStudent} onClose={() => setEditingStudent(null)} maxWidth="max-w-2xl" cardClassName="space-y-5">
-        <form
-          onSubmit={handleSaveEdit}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ModalHeader icon={<Pencil className="w-5 h-5" />} title="Edit Data Mahasiswa" subtitle={`Ubah rincian informasi data mahasiswa ${editingStudent?.name} secara aman.`} />
-
-            {/* Error Message */}
-            {editError && (
-              <div className="p-3.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-400 rounded-xl flex items-start gap-2.5 shadow-sm text-xs font-semibold leading-normal animate-pulse">
-                <AlertTriangle className="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" />
-                <span>{editError}</span>
-              </div>
-            )}
-
-            {/* Modal Form Content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Nama Lengkap */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Nama Lengkap <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.name}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <User className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* NIM */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  NIM (Nomor Induk) <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.nim}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, nim: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <span className="text-[9px] font-extrabold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3.5">NIM</span>
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Alamat Email <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    required
-                    value={editForm.email}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Mail className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* No. HP */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Nomor HP / WhatsApp <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={editForm.phone}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Phone className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Universitas */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Universitas Asal <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    value={editForm.idUniversity}
-                    onChange={(e) => {
-                      const selectedId = Number(e.target.value);
-                      const selectedUniv = universitasList.find(u => u.id === selectedId);
-                      setEditForm(prev => ({ 
-                        ...prev, 
-                        idUniversity: selectedId,
-                        university: selectedUniv ? selectedUniv.nameUniversity : prev.university
-                      }));
-                    }}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white appearance-none"
-                  >
-                    <option value={0} disabled>Pilih Universitas...</option>
-                    {universitasList?.map(u => (
-                      <option key={u.id} value={u.id}>{u.nameUniversity}</option>
-                    ))}
-                  </select>
-                  <School className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Jenis Kelamin */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block">
-                  Jenis Kelamin <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={editForm.gender}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, gender: e.target.value as "Laki-laki" | "Perempuan" | "-" }))}
-                  className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] dark:text-white"
-                >
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
-              </div>
-
-              {/* Tanggal Mulai Magang */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Awal Kegiatan <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    required
-                    value={editForm.periodStart}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, periodStart: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Calendar className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Tanggal Selesai Magang */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Akhir Kegiatan <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    required
-                    value={editForm.periodEnd}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, periodEnd: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Calendar className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Status Periode */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block">
-                  Status Periode <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={editForm.periodStatus}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, periodStatus: e.target.value as "aktif" | "selesai" | "batal" }))}
-                  className="w-full p-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl text-xs font-semibold focus:outline-none focus:border-[#232F72] dark:border-[#121358] dark:text-white"
-                >
-                  <option value="aktif">Aktif</option>
-                  <option value="selesai">Selesai</option>
-                  <option value="batal">Batal</option>
-                </select>
-              </div>
-
-            </div>
-
-            {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3.5 pt-4 border-t border-slate-100 dark:border-[#2F578A] text-xs">
-              <button
-                type="button"
-                onClick={() => setEditingStudent(null)}
-                className="px-4 py-2 rounded-xl border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72]/80 dark:text-[#F1F5F9] font-bold hover:bg-[#F8FAFC] dark:hover:bg-[#121358] cursor-pointer"
-              >
-                Batal
-              </button>
-              
-              <button
-                type="submit"
-                disabled={isSavingEdit}
-                className="px-5 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md disabled:bg-[#232F72] dark:bg-[#232F72]/70 text-white font-extrabold rounded-xl shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer transition-all"
-              >
-                {isSavingEdit ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    Simpan Perubahan
-                  </>
-                )}
-              </button>
-            </div>
-
-        </form>
-      </Modal>
-
-      {/* EDIT MODAL DIALOG (YYYY-MM-DD Date picker) */}
-      {editingStudentId !== null && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-55 flex items-center justify-center p-4" onClick={() => setEditingStudentId(null)}>
-          <form 
-            onSubmit={handleSavePeriod}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 animate-float"
-          >
-            {/* Modal Header */}
-            <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-[#2F578A]">
-              <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-[#FFFFFF] rounded-xl">
-                <Calendar className="w-5.5 h-5.5" />
-              </div>
-              <div>
-                <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF] leading-tight">
-                  Atur Periode Magang
-                </h4>
-                <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5">
-                  Mahasiswa: {filteredStudents.find(s => s.id === editingStudentId)?.name}
-                </p>
-              </div>
-            </div>
-
-            {/* Modal Inputs (Awal & Akhir Kegiatan) */}
-            <div className="space-y-4">
-              
-              {/* Tanggal Awal Kegiatan */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Awal Kegiatan (Tahun-Bulan-Tanggal) <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    required
-                    value={editStartDate}
-                    onChange={(e) => setEditStartDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Calendar className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-              {/* Tanggal Akhir Kegiatan */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex items-center gap-1">
-                  Akhir Kegiatan (Tahun-Bulan-Tanggal) <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    required
-                    value={editEndDate}
-                    onChange={(e) => setEditEndDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
-                  />
-                  <Calendar className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
-                </div>
-              </div>
-
-            </div>
-
-            {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3.5 pt-4 border-t border-slate-100 dark:border-[#2F578A] text-xs">
-              <button
-                type="button"
-                onClick={() => setEditingStudentId(null)}
-                className="px-4 py-2 rounded-xl border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72]/80 dark:text-[#F1F5F9] font-bold hover:bg-[#F8FAFC] dark:hover:bg-[#121358] cursor-pointer"
-              >
-                Batal
-              </button>
-              
-              <button
-                type="submit"
-                disabled={isSavingPeriod}
-                className="px-5 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md disabled:bg-[#232F72] dark:bg-[#232F72]/70 text-white font-extrabold rounded-xl shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer transition-all"
-              >
-                {isSavingPeriod ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    Simpan Perubahan
-                  </>
-                )}
-              </button>
-            </div>
-
-          </form>
-        </div>
-      )}
-      
       {/* HEADER SECTION WITH METRIC BADGES */}
       <PageHeader
         title="Data Mahasiswa Bimbingan Magang"
@@ -852,9 +317,9 @@ export default function MentorDataMahasiswaPage() {
                   <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="flex items-center gap-2 group/period">
                       <div className="flex flex-col text-slate-850 dark:text-slate-200 font-bold">
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.startDate || student.tanggalMulai || "-"}</span>
+                        <span className="text-[11px] font-mono leading-none">{student.tanggalMulai || "-"}</span>
                         <span className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-bold uppercase tracking-wider my-0.5 text-center">s.d.</span>
-                        <span className="text-[11px] font-mono leading-none">{studentPeriods[student.id]?.endDate || student.tanggalBerakhir || "-"}</span>
+                        <span className="text-[11px] font-mono leading-none">{student.tanggalBerakhir || "-"}</span>
                       </div>
                     </div>
                   </td>
@@ -870,21 +335,21 @@ export default function MentorDataMahasiswaPage() {
                         Detail
                       </Link>
 
-                      <button 
-                        onClick={() => handleOpenEdit(student)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-sky-600 dark:hover:bg-sky-500 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9] cursor-pointer"
+                      <Link
+                        href={`/dashboard/mentor/data-mahasiswa/${student.id}/edit`}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-sky-600 dark:hover:bg-sky-500 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
                         title="Edit Data Mahasiswa"
                       >
                         <Pencil className="w-3.5 h-3.5" />
-                      </button>
+                      </Link>
 
-                      <button 
-                        onClick={() => setDeletingStudent(student)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-rose-650 dark:hover:bg-rose-600 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9] cursor-pointer"
+                      <Link
+                        href={`/dashboard/mentor/data-mahasiswa/${student.id}/hapus`}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-rose-600 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
                         title="Hapus Mahasiswa"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

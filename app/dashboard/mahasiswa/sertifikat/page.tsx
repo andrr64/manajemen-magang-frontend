@@ -1,17 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Award,
   Download,
   Eye,
   CheckCircle2,
-  FileText,
   Calendar,
   ShieldCheck,
   Loader2,
-  X,
-  Sparkles
 } from "lucide-react";
 import { useCertificate } from "@/modules/sertifikat/hooks";
 import { useIamStore } from "@/modules/iam/store";
@@ -20,7 +18,6 @@ import { PageLoader, SuccessToast } from "@/components/shared";
 export default function StudentSertifikatPage() {
   const { certificate, isLoading } = useCertificate();
   const { user } = useIamStore();
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -152,13 +149,13 @@ export default function StudentSertifikatPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               
               {/* Action 1: Melihat / Review */}
-              <button
-                onClick={() => setIsPreviewOpen(true)}
-                className="px-5 py-3.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/60 text-[#232F72] dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:scale-95 border border-[#2F578A]/30 dark:border-[#2F578A]/50"
+              <Link
+                href="/dashboard/mahasiswa/sertifikat/pratinjau"
+                className="px-5 py-3.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/60 text-[#232F72] dark:text-white rounded-2xl text-xs font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 border border-[#2F578A]/30 dark:border-[#2F578A]/50"
               >
                 <Eye className="w-4 h-4 text-[#36ADA3]" />
                 Melihat / Review
-              </button>
+              </Link>
 
               {/* Action 2: Download */}
               <button
@@ -221,64 +218,6 @@ export default function StudentSertifikatPage() {
         </div>
 
       </div>
-
-      {/* FULLSCREEN REVIEW / PREVIEW MODAL */}
-      {isPreviewOpen && (
-        <div className="fixed inset-0 z-50 bg-[#121358]/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 w-full max-w-4xl shadow-2xl relative animate-fadeIn scale-[1.01] flex flex-col justify-between max-h-[90vh]">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-500 animate-spin" />
-                <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white uppercase tracking-wider">Pratinjau Sertifikat Magang Pilihan</h4>
-              </div>
-              <button 
-                onClick={() => setIsPreviewOpen(false)}
-                className="p-1.5 hover:bg-rose-500 hover:text-white text-[#2F578A] dark:text-[#F1F5F9]/60 rounded-xl transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Simulated Live preview iframe area */}
-            <div className="my-6 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl bg-[#F8FAFC] dark:bg-[#232F72]/30 flex-1 overflow-y-auto min-h-[300px] flex flex-col items-center justify-center p-6 text-center relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#36ADA3]/5 via-transparent to-[#2F578A]/5 pointer-events-none" />
-              
-              <div className="max-w-md space-y-4">
-                <Award className="w-16 h-16 text-amber-500 mx-auto animate-bounce" />
-                <h3 className="text-base font-black text-[#232F72] dark:text-white">REVIEW DOKUMEN SERTIFIKAT</h3>
-                <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 leading-relaxed font-semibold">
-                  Tampilan di atas mensimulasikan dokumen yang telah diunggah mentor Anda. Dokumen ini sah dan terdaftar dengan ID UI-GTN-0021.
-                </p>
-                
-                <div className="pt-2 flex justify-center gap-2">
-                  <button 
-                    onClick={handleDownload}
-                    className="px-4 py-2.5 bg-[#36ADA3] hover:bg-[#2eb1a6] text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer shadow-[0_0_10px_rgba(54,173,163,0.3)]"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    Unduh Sekarang
-                  </button>
-                  <button 
-                    onClick={() => setIsPreviewOpen(false)}
-                    className="px-4 py-2.5 bg-[#F8FAFC] hover:bg-[#2F578A]/10 dark:bg-[#232F72]/50 dark:hover:bg-[#232F72] text-[#232F72] dark:text-white rounded-xl text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer border border-[#2F578A]/30"
-                  >
-                    Tutup Review
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="pt-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[10.5px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-bold flex-shrink-0 flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>Verifikasi Keabsahan: Dokumen ini telah ditandatangani secara digital oleh Otoritas Akademik Universitas Indonesia.</span>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

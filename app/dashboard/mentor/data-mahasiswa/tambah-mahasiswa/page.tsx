@@ -17,7 +17,6 @@ import {
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useUniversitas } from "@/modules/universitas/hooks";
 import {
-  SuccessModal,
   BackNavBar,
   FormSectionHeader,
   FormInputField,
@@ -29,6 +28,13 @@ export default function TambahMahasiswaPage() {
   const { addStudent } = useStudents();
   const { universitasList } = useUniversitas();
 
+  const defaultTanggalMulai = new Date().toISOString().split("T")[0];
+  const defaultTanggalBerakhir = (() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 3);
+    return d.toISOString().split("T")[0];
+  })();
+
   const [formData, setFormData] = useState({
     name: "",
     nim: "",
@@ -36,13 +42,12 @@ export default function TambahMahasiswaPage() {
     idUniversity: 0,
     phone: "",
     gender: "Laki-laki" as "Laki-laki" | "Perempuan",
-    tanggalMulai: "",
-    tanggalBerakhir: "",
+    tanggalMulai: defaultTanggalMulai,
+    tanggalBerakhir: defaultTanggalBerakhir,
     periodeStatus: "aktif" as "aktif" | "selesai" | "batal"
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -94,11 +99,7 @@ export default function TambahMahasiswaPage() {
       });
 
       setIsSubmitting(false);
-      setIsSuccess(true);
-
-      setTimeout(() => {
-        router.push(WEB_ROUTES.MENTOR_DATA_MAHASISWA);
-      }, 2000);
+      router.push(WEB_ROUTES.MENTOR_DATA_MAHASISWA);
     } catch (err: any) {
       setIsSubmitting(false);
       setErrorMessage(err.message || "Terjadi kesalahan sistem. Silakan coba kembali.");
@@ -107,12 +108,6 @@ export default function TambahMahasiswaPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto relative">
-
-      <SuccessModal
-        show={isSuccess}
-        title="Pendaftaran Berhasil!"
-        description={`Mahasiswa bimbingan ${formData.name} berhasil ditambahkan ke database sistem secara aman.`}
-      />
 
       <BackNavBar
         href="/dashboard/mentor/data-mahasiswa"
