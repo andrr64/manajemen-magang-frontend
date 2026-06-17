@@ -14,7 +14,13 @@ export default function TambahKegiatanPage() {
   const { upload } = useFileUpload();
 
   const [newTitle, setNewTitle] = useState("");
-  const [newDate, setNewDate] = useState("");
+  const [newDate, setNewDate] = useState(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  });
   const [newTime, setNewTime] = useState("08:00 - 17:00 WIB");
   const [newFile, setNewFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +57,7 @@ export default function TambahKegiatanPage() {
   };
 
   return (
-    <div className="space-y-6 relative pb-10 max-w-2xl mx-auto">
+    <div className="space-y-6 relative pb-10 max-w-3xl">
       <div className="flex items-center gap-4">
         <Link 
           href="/dashboard/mahasiswa/kegiatan"

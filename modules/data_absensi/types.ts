@@ -3,12 +3,13 @@
 // =====================================================================
 
 export interface AbsensiResponse {
-  id: string; // UUID
-  periodeMagangId: string; // UUID
-  mahasiswaId: string; // UUID
+  id: string;
+  periodeMagangId: string;
+  mahasiswaId: string;
+  mentorId: string | null; // null = belum diverifikasi mentor
   nim: string;
   namaMahasiswa: string;
-  tanggal: string; // LocalDate (YYYY-MM-DD)
+  tanggal: string; // YYYY-MM-DD
   status: "hadir" | "izin" | "sakit" | "alpha";
   attachmentUrl: string | null;
 }
@@ -32,13 +33,11 @@ export interface AbsensiMahasiswaStatResponse {
 export interface AttendanceLog {
   id: string | number;
   date: string;
-  tanggalISO?: string; // YYYY-MM-DD — untuk perbandingan tanggal
+  tanggalISO?: string;
   type: "Hadir" | "Izin" | "Sakit" | "Alpha";
   checkIn: string;
   checkOut: string;
   document: string | null;
-  documentSize?: string;
-  notes?: string;
   status: "Diverifikasi" | "Menunggu" | "Ditolak";
   studentId?: string | number;
   studentName?: string;
@@ -70,9 +69,7 @@ export interface AbsensiHarianMentorResponse {
 export interface AbsensiMentorRequest {
   mahasiswaId: string;
   status: "hadir" | "izin" | "sakit";
-  /** YYYY-MM-DD — opsional, backend default hari ini */
   tanggal?: string;
-  keterangan?: string;
   attachmentUrl?: string | null;
 }
 
@@ -92,11 +89,7 @@ export interface AttendanceSummary {
 
 /** Request submit absensi harian mahasiswa */
 export interface SubmitAbsensiRequest {
-  /** "hadir" | "izin" | "sakit" */
   status: "hadir" | "izin" | "sakit";
-  /** Keterangan/alasan (wajib untuk izin & sakit) */
-  keterangan?: string;
-  /** Key media hasil upload modul media (untuk izin & sakit) */
   attachmentUrl?: string | null;
 }
 
@@ -114,9 +107,7 @@ export interface AbsensiMahasiswaStat {
 
 export interface CheckInRequest {
   status: "hadir" | "izin" | "sakit";
-  notes?: string;
   document?: string | null;
-  documentSize?: string;
 }
 
 export interface CheckOutRequest {

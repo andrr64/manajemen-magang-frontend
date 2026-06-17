@@ -21,17 +21,9 @@ import {
 // =====================================================================
 
 function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
-  const formatTime = (timeStr: string | null) => {
-    if (!timeStr) return "-- : --";
-    try {
-      const parts = timeStr.split("T");
-      return parts.length > 1 ? parts[1].substring(0, 5) + " WIB" : timeStr;
-    } catch (_) { return timeStr; }
-  };
-
   const formatDate = (dateStr: string) => {
     try {
-      return new Date(dateStr).toLocaleDateString("id-ID", {
+      return new Date(dateStr + "T00:00:00").toLocaleDateString("id-ID", {
         weekday: "long", day: "numeric", month: "long", year: "numeric",
       });
     } catch (_) { return dateStr; }
@@ -41,10 +33,10 @@ function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
     hadir: "Hadir", izin: "Izin", sakit: "Sakit", alpha: "Alpha",
   };
 
-  const statusMap: Record<string, AttendanceLog["status"]> = {
-    DISETUJUI: "Diverifikasi",
-    PENDING:   "Menunggu",
-    DITOLAK:   "Ditolak",
+  // izin/sakit tanpa mentor_id = belum diverifikasi mentor
+  const deriveStatus = (status: string, mentorId: string | null): AttendanceLog["status"] => {
+    if ((status === "izin" || status === "sakit") && !mentorId) return "Menunggu";
+    return "Diverifikasi";
   };
 
   return {
@@ -55,7 +47,7 @@ function mapBackendAbsensiToFrontend(item: AbsensiResponse): AttendanceLog {
     checkIn:     "-- : --",
     checkOut:    "-- : --",
     document:    item.attachmentUrl ?? null,
-    status:      "Diverifikasi",
+    status:      deriveStatus(item.status, item.mentorId),
     studentId:   item.mahasiswaId,
     studentName: item.namaMahasiswa,
     studentNim:  item.nim,
@@ -130,7 +122,6 @@ export const absensiAPI = {
           mahasiswaId:   payload.mahasiswaId,
           status:        payload.status,
           tanggal:       payload.tanggal ?? null,
-          keterangan:    payload.keterangan ?? null,
           attachmentUrl: payload.attachmentUrl ?? null,
         }),
       }
@@ -265,7 +256,6 @@ export const absensiAPI = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: payload.status,
-          keterangan: payload.keterangan,
           attachmentUrl: payload.attachmentUrl ?? null,
         }),
       }
@@ -347,9 +337,8 @@ export const absensiAPI = {
   // -------------------------------------------------------------------
   checkIn: async (payload: CheckInRequest) => {
     return absensiAPI.submitAbsensi({
-      status:     payload.status,
-      keterangan: payload.notes,
-      attachmentUrl: null,
+      status:        payload.status,
+      attachmentUrl: payload.document ?? null,
     });
   },
 

@@ -124,7 +124,11 @@ export function useAttendance() {
     setError(null);
     try {
       const res = await absensiAPI.verifyAttendance(id, status);
-      setHistory(prev => prev.map(item => item.id === id ? res.data : item));
+      if (status === "Ditolak") {
+        setHistory(prev => prev.filter(item => item.id !== id));
+      } else {
+        setHistory(prev => prev.map(item => item.id === id ? res.data : item));
+      }
       return res.data;
     } catch (err: any) {
       const msg = err.message || "Gagal memverifikasi kehadiran.";
@@ -142,7 +146,6 @@ export function useAttendance() {
     try {
       await absensiAPI.deleteAttendance(id);
       setHistory(prev => prev.filter(item => item.id !== id));
-      notifier.success("Berhasil dihapus.");
       notifier.success("Berhasil dihapus.");
     } catch (err: any) {
       const msg = err.message || "Gagal menghapus catatan absensi.";

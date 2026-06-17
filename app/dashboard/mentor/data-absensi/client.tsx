@@ -120,7 +120,7 @@ export default function MentorAttendancePage() {
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isExporting,  setIsExporting]  = useState(false);
   const [viewingLeaveDoc, setViewingLeaveDoc] = useState<{
-    studentName: string; type: "Sakit" | "Izin"; notes: string; documentUrl?: string | null
+    studentName: string; type: "Sakit" | "Izin"; documentUrl?: string | null
   } | null>(null);
 
   const todayStr = useMemo(() => new Date().toLocaleDateString("id-ID", {
@@ -137,33 +137,37 @@ export default function MentorAttendancePage() {
 
   const enrichedLogs = useMemo(() => attendanceLogs?.map(log => {
     const student = rawStudents.find(s => String(s.id) === String(log.studentId));
-    let status: "Hadir" | "Sakit" | "Izin" | "Alfa" = "Hadir";
-    if (log.type === "Izin")  status = "Izin";
-    else if (log.type === "Sakit") status = "Sakit";
-    else if (log.type === "Alpha") status = "Alfa";
+    // type  = jenis absensi (Hadir/Izin/Sakit/Alpha)
+    // verificationStatus = status verifikasi mentor (Diverifikasi/Menunggu/Ditolak)
+    const verificationStatus = log.status; // dari AttendanceLog.status — derive dari mentorId di mapper
+    let displayType: "Hadir" | "Sakit" | "Izin" | "Alfa" = "Hadir";
+    if (log.type === "Izin")  displayType = "Izin";
+    else if (log.type === "Sakit") displayType = "Sakit";
+    else if (log.type === "Alpha") displayType = "Alfa";
     return {
       ...log,
-      studentName:   log.studentName  || (student?.name      ?? "Mahasiswa Tidak Dikenal"),
-      studentNim:    log.studentNim   || (student?.nim        ?? "-"),
-      studentAvatar: student?.avatarColor ?? "from-slate-400 to-slate-500",
-      studentUniv:   student?.university  ?? "-",
-      status,
+      studentName:         log.studentName  || (student?.name      ?? "Mahasiswa Tidak Dikenal"),
+      studentNim:          log.studentNim   || (student?.nim        ?? "-"),
+      studentAvatar:       student?.avatarColor ?? "from-slate-400 to-slate-500",
+      studentUniv:         student?.university  ?? "-",
+      displayType,
+      verificationStatus,
     };
   }), [attendanceLogs, rawStudents]);
 
   const filteredLogs = enrichedLogs.filter(log => {
     const q = searchQuery.toLowerCase().trim();
     const matchSearch = q === "" || log.studentName.toLowerCase().includes(q) || log.studentNim.toLowerCase().includes(q);
-    const matchStatus = statusFilter === "Semua" || log.status === statusFilter;
+    const matchStatus = statusFilter === "Semua" || log.displayType === statusFilter;
     return matchSearch && matchStatus;
   });
 
-  const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", notes: string, initialUrl?: string | null) => {
+  const handleViewDocument = async (logId: string | number, studentName: string, type: "Sakit" | "Izin", initialUrl?: string | null) => {
     try {
       const key = await getSuratKeterangan(logId);
-      setViewingLeaveDoc({ studentName, type, notes, documentUrl: key ? mediaAPI.getFileUrl(key) : null });
+      setViewingLeaveDoc({ studentName, type, documentUrl: key ? mediaAPI.getFileUrl(key) : null });
     } catch {
-      setViewingLeaveDoc({ studentName, type, notes, documentUrl: initialUrl ? mediaAPI.getFileUrl(initialUrl) : null });
+      setViewingLeaveDoc({ studentName, type, documentUrl: initialUrl ? mediaAPI.getFileUrl(initialUrl) : null });
     }
   };
 
@@ -179,6 +183,13 @@ export default function MentorAttendancePage() {
     catch (err: any) { alert(err.message || "Gagal menyetujui."); }
   };
 
+  const handleTolakLog = async (logId: string | number, studentName: string) => {
+    if (confirm(`Tolak absensi izin/sakit ${studentName}? Record absensi akan dihapus.`)) {
+      try { await verify(logId, "Ditolak"); toast(`Absensi ${studentName} ditolak dan dihapus.`); }
+      catch (err: any) { alert(err.message || "Gagal menolak absensi."); }
+    }
+  };
+
   const handleExport = async () => {
     setIsExporting(true);
     try { await exportCSV(statusFilter, searchQuery); toast("Rekap absensi berhasil diekspor!"); }
@@ -189,7 +200,7 @@ export default function MentorAttendancePage() {
   const statsConfig: StatItem[] = [
     { label: "Hadir",          value: harianStats.hadir, desc: formatDateID(selectedDate).split(",")[0], colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: UserCheck },
     { label: "Belum Diabsensi",value: harianStats.alfa,  desc: "Perlu dicatat",  colorClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-200/50 dark:border-rose-900/40", icon: Clock },
-    { label: "Izin / Sakit",   value: harianStats.off,   desc: "Dengan keterangan", colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40", icon: Coffee },
+    { label: "Izin / Sakit",   value: harianStats.off,   desc: "Izin atau sakit",   colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40", icon: Coffee },
   ];
 
   return (
@@ -218,10 +229,6 @@ export default function MentorAttendancePage() {
                 ? <img src={viewingLeaveDoc.documentUrl} alt="Lampiran" className="max-w-full max-h-[260px] object-contain rounded-xl" />
                 : <div className="text-center space-y-2"><AlertCircle className="w-8 h-8 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mx-auto" /><p className="text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9]">Tidak ada lampiran</p></div>
               }
-              <div className="w-full mt-4 p-3 bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-xl">
-                <p className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mb-1">Catatan:</p>
-                <p className="text-xs font-medium text-[#232F72]/80 dark:text-[#F1F5F9]">{viewingLeaveDoc.notes || "Tidak ada catatan."}</p>
-              </div>
             </div>
             <div className="flex items-center justify-end gap-3 text-xs">
               {viewingLeaveDoc.documentUrl && (
@@ -452,7 +459,7 @@ export default function MentorAttendancePage() {
                 <Calendar className="w-4 h-4" /> Hari Ini: <span className="font-black">{todayStr}</span>
               </h4>
               <div className="flex items-center gap-2 text-xs flex-wrap">
-                {["Semua", "Hadir", "Sakit", "Izin", "Alfa"].map(s => (
+                {["Semua", "Hadir", "Izin", "Sakit"].map(s => (
                   <button key={s} onClick={() => setStatusFilter(s)}
                     className={`px-3 py-1 rounded-lg border text-[10px] uppercase tracking-wide transition-all cursor-pointer ${statusFilter === s ? "bg-[#232F72] border-[#232F72] text-white shadow-md" : "bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/50 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
                   >
@@ -478,7 +485,7 @@ export default function MentorAttendancePage() {
                     <th className="pb-3.5 pl-4">Mahasiswa</th>
                     <th className="pb-3.5">NIM / Kampus</th>
                     <th className="pb-3.5">Status</th>
-                    <th className="pb-3.5">Keterangan Surat</th>
+                    <th className="pb-3.5">Lampiran</th>
                     <th className="pb-3.5 pr-4 text-right">Aksi</th>
                   </tr>
                 </thead>
@@ -504,42 +511,58 @@ export default function MentorAttendancePage() {
                         <p>{log.studentNim}</p>
                         <span className="text-[10px] font-semibold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5 truncate max-w-[150px]">{log.studentUniv}</span>
                       </td>
-                      <td className="py-4"><StatusBadgeAbsensi status={log.status.toLowerCase()} /></td>
+                      <td className="py-4">
+                        <div className="flex flex-col gap-1">
+                          <StatusBadgeAbsensi status={log.displayType.toLowerCase() === "alfa" ? "alpha" : log.displayType.toLowerCase()} />
+                          {(log.displayType === "Izin" || log.displayType === "Sakit") && (
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold w-fit ${
+                              log.verificationStatus === "Menunggu"
+                                ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200/40"
+                                : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/40"
+                            }`}>
+                              {log.verificationStatus === "Menunggu" ? "Menunggu Verifikasi" : "Diverifikasi"}
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="py-4" onClick={e => e.stopPropagation()}>
-                        {(log.status === "Sakit" || log.status === "Izin") ? (
-                          <div className="flex flex-col gap-1.5 max-w-[180px]">
-                            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">{log.notes || "Tidak ada keterangan."}</span>
-                            <button 
-                              onClick={() => handleViewDocument(log.id, log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document)} 
-                              disabled={!log.document}
-                              className={`inline-flex items-center gap-1 w-max px-2.5 py-1.5 border border-[#2F578A]/30 rounded-xl text-[9px] font-black transition-all ${
-                                !log.document 
-                                  ? "bg-slate-100 dark:bg-[#121358]/50 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60" 
-                                  : "bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white cursor-pointer active:scale-95"
-                              }`}>
-                              <Eye className="w-3.5 h-3.5" /> Lihat Surat
-                            </button>
-                          </div>
+                        {(log.displayType === "Sakit" || log.displayType === "Izin") ? (
+                          <button
+                            onClick={() => handleViewDocument(log.id, log.studentName, log.displayType as "Sakit" | "Izin", log.document)}
+                            disabled={!log.document}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#2F578A]/30 rounded-xl text-[9px] font-black transition-all ${
+                              !log.document
+                                ? "bg-slate-100 dark:bg-[#121358]/50 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60"
+                                : "bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white cursor-pointer active:scale-95"
+                            }`}>
+                            <Eye className="w-3.5 h-3.5" /> Lihat Surat
+                          </button>
                         ) : <span className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">-</span>}
                       </td>
                       <td className="py-4 pr-4 text-right" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
-                          {log.status !== "Hadir" && (
+                          {/* Setujui — hanya untuk izin/sakit yang BELUM diverifikasi */}
+                          {(log.displayType === "Izin" || log.displayType === "Sakit") && log.verificationStatus === "Menunggu" && (
                             <button onClick={() => handleVerifyLog(log.id, log.studentName)}
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/30 hover:text-white text-emerald-600 dark:text-emerald-400 border border-emerald-200/40 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
                             >
                               <Check className="w-3.5 h-3.5" /> Setujui
                             </button>
                           )}
-                          <button onClick={() => handleDeleteLog(log.id, log.studentName)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 dark:bg-rose-950/30 hover:text-white text-rose-600 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
-                          >
-                            {log.status === "Hadir" ? (
-                              <><Trash2 className="w-3.5 h-3.5" /> Hapus Absensi</>
-                            ) : (
-                              <><XCircle className="w-3.5 h-3.5" /> Tolak Absensi</>
-                            )}
-                          </button>
+                          {/* Tolak — untuk izin/sakit belum diverifikasi | Hapus — untuk hadir atau sudah diverifikasi */}
+                          {(log.displayType === "Izin" || log.displayType === "Sakit") && log.verificationStatus === "Menunggu" ? (
+                            <button onClick={() => handleTolakLog(log.id, log.studentName)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 dark:bg-rose-950/30 hover:text-white text-rose-600 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
+                            >
+                              <XCircle className="w-3.5 h-3.5" /> Tolak
+                            </button>
+                          ) : (
+                            <button onClick={() => handleDeleteLog(log.id, log.studentName)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 dark:bg-rose-950/30 hover:text-white text-rose-600 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

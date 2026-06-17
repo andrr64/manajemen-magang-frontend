@@ -59,7 +59,6 @@ function StatusBadge({ type }: { type: AttendanceLog["type"] }) {
 
 export default function StudentAttendancePage() {
   const [status, setStatus] = useState<IzinSakitStatus>("izin");
-  const [notes, setNotes]   = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [attachmentKey, setAttachmentKey] = useState<string | null>(null);
   const [dragActive, setDragActive]       = useState(false);
@@ -150,12 +149,11 @@ export default function StudentAttendancePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!attachmentKey) { alert("Silakan unggah dokumen pendukung terlebih dahulu."); return; }
-    if (!notes.trim())  { alert("Keterangan wajib diisi."); return; }
     try {
-      await submit({ status, keterangan: notes, attachmentUrl: attachmentKey });
+      await submit({ status, attachmentUrl: attachmentKey });
       refreshRiwayat();
       setShowToast(true);
-      setNotes(""); setUploadedFile(null); setAttachmentKey(null);
+      setUploadedFile(null); setAttachmentKey(null);
       setTimeout(() => setShowToast(false), 4000);
     } catch (err: any) {
       alert(err.message || "Gagal mengirimkan laporan presensi.");
@@ -332,21 +330,6 @@ export default function StudentAttendancePage() {
                   {uploadError && <p className="text-[10px] text-rose-500 font-bold">{uploadError}</p>}
                 </div>
 
-                {/* Keterangan */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-[#2F578A] dark:text-[#F1F5F9]/50 tracking-wider">
-                    Keterangan / Alasan <span className="text-[#36ADA3]">*</span>
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                    required
-                    placeholder={status === "izin" ? "Jelaskan keperluan izin Anda..." : "Jelaskan kondisi sakit / rujukan dokter..."}
-                    className="w-full px-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner resize-none"
-                  />
-                </div>
-
                 {/* Submit */}
                 <div className="pt-4 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40 flex justify-end">
                   <button
@@ -404,7 +387,6 @@ export default function StudentAttendancePage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-[11px] font-extrabold text-[#232F72] dark:text-white leading-tight truncate">{item.date}</p>
-                    {item.notes && <p className="text-[9px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 mt-0.5 truncate">{item.notes}</p>}
                   </div>
                 </div>
                 <StatusBadge type={item.type} />
