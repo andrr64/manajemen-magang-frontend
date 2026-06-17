@@ -5,7 +5,7 @@
  * Gracefully falls back to high-fidelity simulated LocalStorage mock database when backend is offline.
  */
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export class APIError extends Error {
   status: number;
