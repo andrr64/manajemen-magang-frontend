@@ -509,7 +509,14 @@ export default function MentorAttendancePage() {
                         {(log.status === "Sakit" || log.status === "Izin") ? (
                           <div className="flex flex-col gap-1.5 max-w-[180px]">
                             <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">{log.notes || "Tidak ada keterangan."}</span>
-                            <button onClick={() => handleViewDocument(log.id, log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document)} className="inline-flex items-center gap-1 w-max px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white border border-[#2F578A]/30 rounded-xl text-[9px] font-black cursor-pointer transition-all active:scale-95">
+                            <button 
+                              onClick={() => handleViewDocument(log.id, log.studentName, log.status as "Sakit" | "Izin", log.notes || "", log.document)} 
+                              disabled={!log.document}
+                              className={`inline-flex items-center gap-1 w-max px-2.5 py-1.5 border border-[#2F578A]/30 rounded-xl text-[9px] font-black transition-all ${
+                                !log.document 
+                                  ? "bg-slate-100 dark:bg-[#121358]/50 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60" 
+                                  : "bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-[#232F72] hover:text-white text-[#232F72] dark:text-white cursor-pointer active:scale-95"
+                              }`}>
                               <Eye className="w-3.5 h-3.5" /> Lihat Surat
                             </button>
                           </div>
@@ -517,15 +524,21 @@ export default function MentorAttendancePage() {
                       </td>
                       <td className="py-4 pr-4 text-right" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => handleVerifyLog(log.id, log.studentName)} disabled={log.status === "Hadir"}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1.5 border text-[10px] font-black rounded-xl transition-all cursor-pointer active:scale-95 ${log.status === "Hadir" ? "bg-emerald-50/55 dark:bg-emerald-950/20 text-emerald-500 border-emerald-100/20 cursor-not-allowed opacity-70" : "bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/30 hover:text-white text-emerald-600 dark:text-emerald-400 border-emerald-200/40"}`}
-                          >
-                            <Check className="w-3.5 h-3.5" /> Setujui
-                          </button>
+                          {log.status !== "Hadir" && (
+                            <button onClick={() => handleVerifyLog(log.id, log.studentName)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/30 hover:text-white text-emerald-600 dark:text-emerald-400 border border-emerald-200/40 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
+                            >
+                              <Check className="w-3.5 h-3.5" /> Setujui
+                            </button>
+                          )}
                           <button onClick={() => handleDeleteLog(log.id, log.studentName)}
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 dark:bg-rose-950/30 hover:text-white text-rose-600 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            {log.status === "Hadir" ? (
+                              <><Trash2 className="w-3.5 h-3.5" /> Hapus Absensi</>
+                            ) : (
+                              <><XCircle className="w-3.5 h-3.5" /> Tolak Absensi</>
+                            )}
                           </button>
                         </div>
                       </td>
