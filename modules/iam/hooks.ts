@@ -3,6 +3,7 @@ import { iamAPI } from "./api";
 import { LoginRequest, RegisterRequest, UpdateUserRequest } from "./types";
 import { useIamStore } from "./store";
 import { notifier } from "@/modules/notifier";
+import { mockDB } from "@/modules/api-client";
 
 export function useIam() {
   const store = useIamStore();
@@ -46,7 +47,12 @@ export function useIam() {
     setIsLoading(true);
     setError(null);
     try {
-      await iamAPI.login(payload);
+      const loginRes = await iamAPI.login(payload);
+      // Persist token so api-client sends Authorization: Bearer on every request.
+      // This is the reliable path; the HttpOnly cookie is a secondary mechanism.
+      if (loginRes.data?.accessToken) {
+        mockDB.set("token", loginRes.data.accessToken);
+      }
       // Fetch session data
       const response = await iamAPI.getMe();
       store.setUser(response.data);
@@ -109,6 +115,7 @@ export function useIam() {
       await iamAPI.logout();
       notifier.success("Logout berhasil!");
     } finally {
+      mockDB.set("token", "");
       store.clearUser();
       setIsLoading(false);
     }
