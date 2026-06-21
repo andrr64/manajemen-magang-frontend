@@ -73,12 +73,10 @@ export default function MentorReferenceLetterPage() {
       {/* METRIC STATISTICS */}
       {(() => {
         const statsConfig: StatItem[] = [
-          { label: "Total Bimbingan", value: stats.total, desc: "Bimbingan Terdaftar", colorClass: "text-[#232F72] dark:text-[#FFFFFF] bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/30", icon: User },
           { label: "Surat Diunggah", value: stats.uploaded, desc: "Berkas Terbit", colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: FileText },
           { label: "Belum Diunggah", value: stats.pending, desc: "Segera Proses", colorClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40", icon: Clock },
-          { label: "Penyelesaian", value: `${stats.ratio}%`, desc: "Rasio Penerbitan SKSM", colorClass: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-900/40", icon: TrendingUp },
         ];
-        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2 lg:grid-cols-4" />;
+        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2" />;
       })()}
 
       {/* FILTER PANEL */}

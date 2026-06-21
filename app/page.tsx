@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowRight, Shield, Sparkles, Building2, Lock, Users, BarChart3, Zap, ChevronDown } from "lucide-react";
 import CursorGlow from "./CursorGlow";
@@ -103,11 +104,17 @@ export default function Home() {
         <div className="navbar-glass flex items-center justify-between w-full max-w-5xl px-5 py-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/60 group-hover:scale-110 transition-all duration-300">
-              <Shield className="w-4.5 h-4.5 text-white" size={18} />
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/60 group-hover:scale-105 transition-all duration-300">
+              <Image 
+                src="/dw1-logo.png"
+                alt="Logo DW 1"
+                width={40}
+                height={40}
+                className="object-contain w-full h-full p-0.5"
+              />
             </div>
             <span className="font-black text-sm tracking-[0.2em] text-white">
-              DW<span className="text-cyan-400"> 1</span>
+              DIREKTORAT WILAYAH<span className="text-cyan-400"> 1</span>
             </span>
           </Link>
 

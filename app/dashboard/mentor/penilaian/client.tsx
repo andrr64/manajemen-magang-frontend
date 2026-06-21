@@ -87,11 +87,10 @@ export default function MentorPenilaianPage() {
       {/* METRIC STATISTICS */}
       {(() => {
         const statsConfig: StatItem[] = [
-          { label: "Total Bimbingan", value: stats.total, desc: "Mahasiswa Terdaftar", colorClass: "text-[#232F72] dark:text-[#FFFFFF] bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/30", icon: User },
           { label: "Sudah Dinilai", value: stats.graded, desc: "Rekomendasi Lulus", colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: CheckCircle },
           { label: "Belum Dinilai", value: stats.pending, desc: "Segera Input Nilai", colorClass: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40", icon: Clock },
         ];
-        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2 lg:grid-cols-3" />;
+        return <StatsGrid stats={statsConfig} gridClass="grid-cols-2" />;
       })()}
 
       {/* FILTER PANEL */}

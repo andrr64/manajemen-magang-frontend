@@ -118,6 +118,7 @@ export default function MentorAttendancePage() {
   // ── REKAP & RIWAYAT ──────────────────────────────────────────────────
   const [searchQuery,  setSearchQuery]  = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
+  const [selectedRekapDate, setSelectedRekapDate] = useState(todayISO);
   const [isExporting,  setIsExporting]  = useState(false);
 
   const todayStr = useMemo(() => new Date().toLocaleDateString("id-ID", {
@@ -156,7 +157,8 @@ export default function MentorAttendancePage() {
     const q = searchQuery.toLowerCase().trim();
     const matchSearch = q === "" || log.studentName.toLowerCase().includes(q) || log.studentNim.toLowerCase().includes(q);
     const matchStatus = statusFilter === "Semua" || log.displayType === statusFilter;
-    return matchSearch && matchStatus;
+    const matchDate = !selectedRekapDate || log.tanggalISO === selectedRekapDate;
+    return matchSearch && matchStatus && matchDate;
   });
 
   const getDocumentUrl = async (logId: string | number, fallbackKey?: string | null): Promise<string | null> => {
@@ -411,17 +413,55 @@ export default function MentorAttendancePage() {
           {/* Filter Panel */}
           <div className="border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-              <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white flex items-center gap-2">
-                <Calendar className="w-4 h-4" /> Hari Ini: <span className="font-black">{todayStr}</span>
-              </h4>
-              <div className="flex items-center gap-2 text-xs flex-wrap">
-                {["Semua", "Hadir", "Izin", "Sakit"].map(s => (
-                  <button key={s} onClick={() => setStatusFilter(s)}
-                    className={`px-3 py-1 rounded-lg border text-[10px] uppercase tracking-wide transition-all cursor-pointer ${statusFilter === s ? "bg-[#232F72] border-[#232F72] text-white shadow-md" : "bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/50 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
-                  >
-                    {s === "Semua" ? "Semua Status" : s}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#121358] dark:bg-[#232F72] border border-[#2F578A]/40 text-[#36ADA3] flex items-center justify-center flex-shrink-0">
+                  <CalendarDays className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 tracking-wide">Tanggal Rekap</p>
+                  <p className="text-sm font-black text-[#232F72] dark:text-white leading-tight">
+                    {selectedRekapDate ? formatDateID(selectedRekapDate) : "Semua Waktu"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Date Picker Actions */}
+                <button
+                  onClick={() => setSelectedRekapDate("")}
+                  disabled={!selectedRekapDate}
+                  className="px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide rounded-xl border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72] dark:text-[#F1F5F9] hover:bg-[#232F72] hover:text-white hover:border-[#232F72] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                  Semua
+                </button>
+                <button
+                  onClick={() => setSelectedRekapDate(todayISO())}
+                  disabled={selectedRekapDate === todayISO()}
+                  className="px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide rounded-xl border border-[#2F578A]/50 dark:border-[#2F578A] text-[#232F72] dark:text-[#F1F5F9] hover:bg-[#232F72] hover:text-white hover:border-[#232F72] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                  Hari Ini
+                </button>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={selectedRekapDate}
+                    max={todayISO()}
+                    onChange={e => setSelectedRekapDate(e.target.value)}
+                    className="pl-9 pr-4 py-2 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white cursor-pointer"
+                  />
+                  <Calendar className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3 top-2.5 pointer-events-none" />
+                </div>
+                
+                {/* Status Filter */}
+                <div className="flex items-center gap-2 ml-auto">
+                  {["Semua", "Hadir", "Izin", "Sakit"].map(s => (
+                    <button key={s} onClick={() => setStatusFilter(s)}
+                      className={`px-3 py-2 rounded-xl border text-[10px] uppercase tracking-wide font-extrabold transition-all cursor-pointer ${statusFilter === s ? "bg-[#232F72] border-[#232F72] text-white shadow-md" : "bg-[#F8FAFC] dark:bg-[#232F72] border-[#2F578A]/50 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/80 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                    >
+                      {s === "Semua" ? "Semua Status" : s}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="relative">

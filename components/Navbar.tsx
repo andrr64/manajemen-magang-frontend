@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X, GraduationCap, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,11 +32,17 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-2.5">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-md shadow-indigo-500/20">
-              <GraduationCap className="w-6 h-6" />
+            <div className="w-[72px] h-[72px] rounded-xl overflow-hidden flex-shrink-0 bg-white">
+              <Image 
+                src="/dw1-logo.png" 
+                alt="Logo DW 1" 
+                width={72} 
+                height={72}
+                className="object-contain w-full h-full p-1"
+              />
             </div>
-            <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-              Intern<span className="text-indigo-600 dark:text-indigo-400">Flow</span>
+            <span className="font-bold text-[15px] tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent whitespace-nowrap">
+              Direktorat <span className="text-indigo-600 dark:text-indigo-400">Wilayah 1</span>
             </span>
           </div>
 
