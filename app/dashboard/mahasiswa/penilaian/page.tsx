@@ -1,12 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import Image from "next/image";
+import ttdImage from "../absensi/assets/ttd-pak-agus.png";
 import {
   Award, Download, TrendingUp, Scale,
   MessageSquare, User, Loader2, AlertCircle,
-  CheckCircle2, Calendar, Clock,
+  CheckCircle2, Calendar, Clock, FileBarChart2, FileText
 } from "lucide-react";
 import { useAssessment } from "@/modules/penilaian/hooks";
+import { useMyStudentProfile } from "@/modules/data_mahasiswa/hooks";
+import { useDownloadPenilaianPDF } from "./useDownloadPenilaianPDF";
 
 function formatDate(iso: string | null) {
   if (!iso) return "-";
@@ -35,6 +39,28 @@ function gradeInfo(avg: number) {
 
 export default function StudentPenilaianPage() {
   const { penilaian, assessments, isLoading, error } = useAssessment();
+  const { profile } = useMyStudentProfile();
+
+  const [activeTab, setActiveTab] = useState<"laporan" | "rekap">("laporan");
+  const [ttdBase64, setTtdBase64] = useState<string | null>(null);
+
+  useEffect(() => {
+    const src = typeof ttdImage === "string" ? ttdImage : (ttdImage as any).src;
+    const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
+      setTtdBase64(canvas.toDataURL("image/png"));
+    };
+  }, []);
+
+  const { download: downloadPDF, isGenerating } = useDownloadPenilaianPDF(
+    profile, penilaian, assessments, ttdBase64
+  );
 
   const avg = Number(penilaian?.nilaiTotal ?? 0);
   const { grade, status, color } = gradeInfo(avg);
@@ -67,10 +93,66 @@ export default function StudentPenilaianPage() {
 
   const sudahDinilai = penilaian.statusPenilaian === "SUDAH_DINILAI";
 
-  return (
-    <div className="space-y-6 pb-10">
+  const now = new Date();
+  const hari = now.toLocaleDateString("id-ID", { day: "numeric" });
+  const bulan = now.toLocaleDateString("id-ID", { month: "long" });
+  const tahun = now.getFullYear();
 
-      {/* HERO HEADER */}
+  return (
+    <div className="space-y-6 relative pb-10">
+
+      {/* ── TABS & TOMBOL DOWNLOAD ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
+          <button
+            onClick={() => setActiveTab("laporan")}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "laporan"
+                ? "bg-white dark:bg-[#232F72] text-[#232F72] dark:text-white shadow-sm"
+                : "text-[#2F578A]/70 dark:text-[#F1F5F9]/50 hover:text-[#232F72] dark:hover:text-white"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <FileBarChart2 className="w-4 h-4" /> Laporan Penilaian
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab("rekap")}
+            disabled={!sudahDinilai}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "rekap"
+                ? "bg-white dark:bg-[#232F72] text-[#232F72] dark:text-white shadow-sm"
+                : "text-[#2F578A]/70 dark:text-[#F1F5F9]/50 hover:text-[#232F72] dark:hover:text-white"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4" /> Preview Rekap
+            </div>
+          </button>
+        </div>
+        
+        {sudahDinilai && (
+          <button
+            onClick={downloadPDF}
+            disabled={isGenerating}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
+                       bg-[#232F72] dark:bg-[#36ADA3] text-white
+                       hover:bg-[#1a2256] dark:hover:bg-[#2eb1a6]
+                       disabled:opacity-60 disabled:cursor-not-allowed
+                       shadow-[0_0_14px_rgba(35,47,114,0.25)] dark:shadow-[0_0_14px_rgba(54,173,163,0.3)]
+                       transition-all active:scale-95 cursor-pointer"
+          >
+            {isGenerating
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Membuat PDF...</>
+              : <><Download className="w-4 h-4" /> Download Rekap</>
+            }
+          </button>
+        )}
+      </div>
+
+      {activeTab === "laporan" && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          {/* HERO HEADER */}
       <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] text-white relative overflow-hidden shadow-xl border border-[#2F578A]/30">
         <div className="absolute -right-10 -top-10 w-72 h-72 bg-[#36ADA3]/10 rounded-full blur-[80px] pointer-events-none" />
 
@@ -122,12 +204,6 @@ export default function StudentPenilaianPage() {
                 <Clock className="w-5 h-5 text-amber-400 mx-auto mb-1" />
                 <p className="text-[10px] font-black uppercase tracking-wider text-amber-400">Menunggu Penilaian</p>
               </div>
-            )}
-            {sudahDinilai && (
-              <button onClick={() => window.print()} className="p-4 bg-white text-[#232F72] rounded-2xl hover:bg-[#F8FAFC] transition-all flex flex-col items-center gap-1 cursor-pointer active:scale-95">
-                <Download className="w-5 h-5 text-[#36ADA3]" />
-                <span className="text-[9px] uppercase font-extrabold">Cetak</span>
-              </button>
             )}
           </div>
         </div>
@@ -229,6 +305,134 @@ export default function StudentPenilaianPage() {
             </div>
           </div>
         </>
+      )}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════
+          REKAP PENILAIAN (PREVIEW)
+      ══════════════════════════════════════════════════════════════ */}
+
+      {activeTab === "rekap" && sudahDinilai && (
+        <div className="bg-white dark:bg-[#0f1535] border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+          
+          <div className="p-8 md:p-12 space-y-8 text-[#1a1a2e] dark:text-[#e8eaf6]">
+            
+            {/* KOP */}
+            <div className="text-center space-y-1 border-b-4 border-double border-[#232F72]/30 dark:border-[#36ADA3]/30 pb-6">
+              <h1 className="text-2xl font-black text-[#232F72] dark:text-white tracking-tight">REKAPITULASI PENILAIAN MAGANG</h1>
+              <p className="font-extrabold text-[#2F578A]/80 dark:text-[#F1F5F9]/60 tracking-widest text-sm">DIREKTORAT WILAYAH 1</p>
+            </div>
+
+            {/* INFO MHS */}
+            <div className="grid grid-cols-[130px_10px_1fr] md:grid-cols-[160px_10px_1fr] gap-y-3 text-[13px]">
+              <div className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]/80">Nama</div>
+              <div className="font-bold">:</div>
+              <div className="font-bold text-[#2F578A] dark:text-white">{profile?.name || "Budi Santoso"}</div>
+
+              <div className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]/80">NIM</div>
+              <div className="font-bold">:</div>
+              <div className="font-bold text-[#2F578A] dark:text-white">{profile?.nim || "2021001234"}</div>
+
+              <div className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]/80">Instansi / PT</div>
+              <div className="font-bold">:</div>
+              <div className="font-bold text-[#2F578A] dark:text-white">{profile?.university || "Universitas Negeri Jakarta"}</div>
+
+              <div className="font-extrabold text-[#232F72] dark:text-[#F1F5F9]/80">Periode Magang</div>
+              <div className="font-bold">:</div>
+              <div className="font-bold text-[#2F578A] dark:text-white">
+                {formatDate(penilaian.tanggalMulai)} – {formatDate(penilaian.tanggalBerakhir)}
+              </div>
+            </div>
+
+            {/* TABEL */}
+            <div className="border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-xl overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-[#232F72] dark:bg-[#121358] text-white">
+                  <tr>
+                    <th className="py-3 px-4 text-center w-16 text-xs uppercase tracking-widest">No.</th>
+                    <th className="py-3 px-4 text-left text-xs uppercase tracking-widest">Kriteria</th>
+                    <th className="py-3 px-4 text-center w-28 text-xs uppercase tracking-widest">Nilai</th>
+                    <th className="py-3 px-4 text-center w-36 text-xs uppercase tracking-widest">Capaian</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/20">
+                  {assessments.map((row, idx) => {
+                    const capaian = row.score >= 85 ? "Sangat Baik" : row.score >= 75 ? "Baik" : "Cukup";
+                    return (
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-white dark:bg-transparent" : "bg-[#F8FAFC] dark:bg-[#232F72]/10"}>
+                        <td className="py-2.5 px-4 text-center font-bold text-[#2F578A] dark:text-[#F1F5F9]/60">{idx + 1}</td>
+                        <td className="py-2.5 px-4 font-bold text-[#232F72] dark:text-white">{row.name}</td>
+                        <td className="py-2.5 px-4 text-center font-black">
+                          <span className={scoreBadge(row.score).split(" ")[0].replace("bg-", "text-")}>
+                            {row.score.toFixed(1)}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-4 text-center font-bold text-[#2F578A] dark:text-[#F1F5F9]/80">{capaian}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* SUMMARY KANAN */}
+            <div className="flex justify-end">
+              <div className="w-64 border-t-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 pt-4">
+                <div className="flex justify-between items-end mb-2">
+                  <span className="font-extrabold text-[11px] text-[#2F578A]/70 dark:text-[#F1F5F9]/50 uppercase tracking-widest">NILAI TOTAL</span>
+                  <span className={`font-black text-2xl ${color}`}>{avg.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-[#2F578A]/70 dark:text-[#F1F5F9]/50">Grade / Capaian:</span>
+                  <span className={`font-black ${color}`}>{grade} — {status}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* DIVIDER */}
+            <div className="border-t border-dashed border-[#2F578A]/25 dark:border-[#2F578A]/40" />
+
+            <div className="flex flex-col md:flex-row justify-between gap-8 items-start">
+              {/* CATATAN (Kiri) */}
+              <div className="max-w-md space-y-2">
+                {penilaian.catatan && penilaian.catatan !== "-" && (
+                  <>
+                    <p className="font-extrabold text-[11px] text-[#36ADA3] uppercase tracking-widest">Catatan Mentor:</p>
+                    <p className="text-xs font-semibold leading-relaxed italic text-[#2F578A] dark:text-[#F1F5F9]/80">"{penilaian.catatan}"</p>
+                  </>
+                )}
+              </div>
+
+              {/* TANDA TANGAN (Kanan) */}
+              <div className="flex flex-col items-end gap-1 text-[11px] flex-shrink-0">
+                <p className="font-semibold text-[#2F578A]/80 dark:text-[#F1F5F9]/60">
+                  Jakarta, {hari} {bulan} {tahun}
+                </p>
+                <div className="mt-4 flex flex-col items-center gap-3">
+                  <div className="w-40 h-24 relative">
+                    <Image
+                      src={ttdImage}
+                      alt="Tanda Tangan Direktur Wilayah 1"
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-extrabold text-[13px] text-[#232F72] dark:text-white underline underline-offset-4">
+                      Agus Joko Saptono
+                    </p>
+                    <p className="font-semibold text-[10px] text-[#2F578A]/70 dark:text-[#F1F5F9]/50 mt-0.5">
+                      (Direktur Wilayah 1)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       )}
 
     </div>

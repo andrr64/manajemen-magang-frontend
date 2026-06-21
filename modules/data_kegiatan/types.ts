@@ -29,7 +29,6 @@ export interface Activity {
   title: string;
   deskripsi: string;
   date: string;
-  time: string;
   fileUrls: string[];
   status: "Disetujui" | "Belum Disetujui" | "Ditolak";
   namaMentor: string | null;
@@ -53,7 +52,6 @@ export interface CreateActivityRequest {
   title: string;
   keterangan?: string;
   date: string;
-  time: string;
   fileKeys?: string[];
 }
 

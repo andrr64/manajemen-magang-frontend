@@ -109,9 +109,6 @@ export default function StudentActivitiesPage() {
 
       {/* TOP HEADER & ACTION BANNER */}
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h3 className="text-xl md:text-2xl font-black text-[#232F72] dark:text-white tracking-tight">Kegiatan Harian Dan Lampiran Tugas</h3>
-        </div>
         <Link
           href="/dashboard/mahasiswa/kegiatan/tambah"
           className="px-4 py-2.5 rounded-xl bg-[#36ADA3] hover:bg-[#2eb1a6] text-white text-xs font-black shadow-[0_0_15px_rgba(54,173,163,0.3)] hover:shadow-[0_0_20px_rgba(54,173,163,0.5)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
@@ -182,7 +179,6 @@ export default function StudentActivitiesPage() {
               <tr className="border-b border-[#2F578A]/20 dark:border-[#2F578A]/40 text-[10px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/60 uppercase tracking-widest text-left">
                 <th className="pb-3.5 pl-4 font-bold w-14">NO</th>
                 <th className="pb-3.5 font-bold">Nama Kegiatan</th>
-                <th className="pb-3.5 font-bold w-40">Waktu</th>
                 <th className="pb-3.5 font-bold w-48">Keterangan</th>
                 <th className="pb-3.5 font-bold text-center w-44">Lampiran</th>
                 <th className="pb-3.5 pr-4 font-bold text-center w-20">Aksi</th>
@@ -191,7 +187,7 @@ export default function StudentActivitiesPage() {
             <tbody className="divide-y divide-[#2F578A]/10 dark:divide-[#2F578A]/30 text-xs">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
+                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Loader2 className="w-8 h-8 animate-spin text-[#36ADA3]" />
                       Memuat daftar kegiatan...
@@ -200,7 +196,7 @@ export default function StudentActivitiesPage() {
                 </tr>
               ) : filteredActivities.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
+                  <td colSpan={5} className="px-4 py-16 text-center text-[#2F578A] dark:text-[#F1F5F9]/50 font-extrabold">
                     Tidak ada jurnal kegiatan magang yang cocok dengan kriteria pencarian.
                   </td>
                 </tr>
@@ -223,6 +219,10 @@ export default function StudentActivitiesPage() {
                       <Link href={`/dashboard/mahasiswa/kegiatan/${act.id}`} className="font-extrabold text-[#232F72] dark:text-white leading-normal hover:text-[#36ADA3] dark:hover:text-[#36ADA3] transition-colors block">
                         {act.title}
                       </Link>
+                      <div className="flex items-center gap-1 text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60 mt-1">
+                        <Calendar className="w-3 h-3 flex-shrink-0 text-[#36ADA3]" />
+                        <span>{act.date}</span>
+                      </div>
                       <span className={`mt-1 inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border ${
                         act.status === "Disetujui" ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/30" :
                         act.status === "Ditolak"   ? "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200/30" :
@@ -233,28 +233,14 @@ export default function StudentActivitiesPage() {
                     </div>
                   </td>
 
-                  {/* Column 3: Waktu */}
-                  <td className="py-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-[#232F72] dark:text-[#F1F5F9] font-bold whitespace-nowrap">
-                        <Calendar className="w-3.5 h-3.5 text-[#36ADA3] flex-shrink-0" />
-                        <span>{act.date}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60">
-                        <Clock className="w-3 h-3 flex-shrink-0" />
-                        <span>{act.time}</span>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Column 4: Keterangan */}
-                  <td className="py-4 max-w-[180px]">
+                  {/* Column 3: Keterangan */}
+                  <td className="py-4 pr-4">
                     <p className="text-[11px] font-semibold text-[#232F72]/70 dark:text-[#F1F5F9]/60 line-clamp-2 leading-relaxed">
                       {act.deskripsi || <span className="italic text-[#2F578A]/40">—</span>}
                     </p>
                   </td>
 
-                  {/* Column 5: Lampiran */}
+                  {/* Column 4: Lampiran */}
                   <td className="py-4 text-center" onClick={e => e.stopPropagation()}>
                     {act.fileUrls && act.fileUrls.length > 0 ? (
                       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#36ADA3]/10 dark:bg-[#36ADA3]/20 border border-[#36ADA3]/30 rounded-xl">

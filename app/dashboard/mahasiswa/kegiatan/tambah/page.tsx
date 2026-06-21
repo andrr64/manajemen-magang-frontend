@@ -19,7 +19,6 @@ export default function TambahKegiatanPage() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   });
-  const [newTime,       setNewTime]       = useState("08:00 - 17:00 WIB");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting,  setIsSubmitting]  = useState(false);
 
@@ -44,7 +43,7 @@ export default function TambahKegiatanPage() {
         const results = await Promise.all(selectedFiles.map(f => upload(f)));
         fileKeys = results.map(r => r.key);
       }
-      await addActivity({ title: newTitle, keterangan: newKeterangan, date: newDate, time: newTime, fileKeys });
+      await addActivity({ title: newTitle, keterangan: newKeterangan, date: newDate, fileKeys });
       notifier.success("Kegiatan baru berhasil ditambahkan!");
       router.push("/dashboard/mahasiswa/kegiatan");
     } catch (err: any) {
@@ -97,29 +96,16 @@ export default function TambahKegiatanPage() {
             />
           </div>
 
-          {/* Tanggal + Waktu */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2.5">
-              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Tanggal Kegiatan <span className="text-[#36ADA3]">*</span></label>
-              <input
-                type="date"
-                required
-                value={newDate}
-                onChange={e => setNewDate(e.target.value)}
-                className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
-              />
-            </div>
-            <div className="space-y-2.5">
-              <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Durasi / Waktu <span className="text-[#36ADA3]">*</span></label>
-              <input
-                type="text"
-                required
-                value={newTime}
-                onChange={e => setNewTime(e.target.value)}
-                placeholder="Contoh: 08:00 - 17:00 WIB"
-                className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
-              />
-            </div>
+          {/* Tanggal */}
+          <div className="space-y-2.5">
+            <label className="text-[10px] uppercase text-[#2F578A] dark:text-[#F1F5F9]/70">Tanggal Kegiatan <span className="text-[#36ADA3]">*</span></label>
+            <input
+              type="date"
+              required
+              value={newDate}
+              onChange={e => setNewDate(e.target.value)}
+              className="w-full md:w-1/2 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
+            />
           </div>
 
           {/* Multi-file upload */}

@@ -16,7 +16,8 @@ import {
   X,
   Activity,
   Moon,
-  Sun
+  Sun,
+  FileBarChart2
 } from "lucide-react";
 import { useIam } from "@/modules/iam/hooks";
 

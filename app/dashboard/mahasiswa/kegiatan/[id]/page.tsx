@@ -104,18 +104,12 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
         </div>
 
         {/* Tanggal & waktu */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl space-y-1">
             <p className="text-[10px] font-black uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 tracking-wider flex items-center gap-1.5">
               <Calendar className="w-3 h-3" /> Tanggal
             </p>
             <p className="text-sm font-extrabold text-[#232F72] dark:text-white">{activity.date}</p>
-          </div>
-          <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl space-y-1">
-            <p className="text-[10px] font-black uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 tracking-wider flex items-center gap-1.5">
-              <Clock className="w-3 h-3" /> Durasi
-            </p>
-            <p className="text-sm font-extrabold text-[#232F72] dark:text-white">{activity.time}</p>
           </div>
         </div>
 

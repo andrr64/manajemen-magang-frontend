@@ -58,11 +58,6 @@ export default function StudentSertifikatPage() {
   return (
     <div className="space-y-6 pb-10 max-w-2xl">
 
-      <div>
-        <h3 className="text-xl font-black text-[#232F72] dark:text-white">Sertifikat Kelulusan</h3>
-        <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas sertifikat yang diunggah oleh mentor bimbingan Anda.</p>
-      </div>
-
       {/* Status banner */}
       <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border ${
         sudahDiunggah

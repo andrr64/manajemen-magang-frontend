@@ -100,7 +100,7 @@ export default function StudentDashboardHome() {
                 Halo, {studentProfile.name}!
               </h3>
               <p className="text-xs text-violet-200 mt-1.5 font-semibold leading-relaxed max-w-xl">
-                Anda sedang menempuh magang industri sebagai <strong className="text-white">{studentProfile.role}</strong> di <strong className="text-white">{studentProfile.company}</strong>. Tetap jaga kedisiplinan dan jangan lupa mengisi logbook mingguan Anda!
+                Anda sedang menempuh magang industri. Tetap jaga kedisiplinan dan jangan lupa mengisi logbook mingguan Anda!
               </p>
             </div>
             
