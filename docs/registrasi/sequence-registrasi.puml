@@ -1,0 +1,27 @@
+@startuml
+title Sequence Diagram - Registrasi (Mahasiswa & Mentor)
+
+actor Pengguna as user
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(IamController)" as api
+database "Database" as db
+
+user -> fe : Membuka halaman Registrasi
+fe --> user : Menampilkan form Registrasi
+
+user -> fe : Memasukkan Data Diri & Role
+fe -> api : POST /api/iam/register
+api -> db : Pengecekan Email / NIM terdaftar
+
+alt Data Belum Terdaftar
+    db --> api : Validasi sukses
+    api -> db : Simpan pengguna baru
+    db --> api : Data tersimpan
+    api --> fe : Response Sukses
+    fe --> user : Tampilkan notifikasi "Registrasi Berhasil"\n& Redirect ke halaman Login
+else Data Sudah Terdaftar
+    db --> api : Validasi gagal (Email/NIM duplikat)
+    api --> fe : Response Error (Conflict)
+    fe --> user : Tampilkan pesan error "Email/NIM telah digunakan"
+end
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+title Sequence Diagram - Surat Keterangan Selesai Magang (SKSM)
+
+actor Mentor as mntr
+actor Mahasiswa as mhs
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(SuratKeteranganController)" as api
+database "Database" as db
+
+== Mentor: Mengunggah SKSM ==
+mntr -> fe : Membuka halaman Surat Keterangan
+fe -> api : GET /api/surat-keterangan
+api -> db : Fetch data status SKSM mahasiswa bimbingan
+db --> api : Data SKSM
+api --> fe : Response data
+fe --> mntr : Menampilkan daftar SKSM
+
+mntr -> fe : Klik "Unggah Surat" & Upload PDF
+fe -> api : POST /api/surat-keterangan/upload
+api -> db : Simpan tautan URL SKSM
+db --> api : Berhasil
+api --> fe : Response Sukses
+fe --> mntr : Status diperbarui menjadi "Sudah Diunggah"
+
+== Mahasiswa: Mengunduh SKSM ==
+mhs -> fe : Membuka halaman Surat Keterangan
+fe -> api : GET /api/surat-keterangan/mahasiswa/{id}
+api -> db : Fetch data SKSM pengguna login
+db --> api : Data SKSM
+
+alt Sudah Diunggah
+    api --> fe : Response Data (Memuat URL Dokumen)
+    fe --> mhs : Menampilkan detail & Tombol Unduh
+    mhs -> fe : Klik "Unduh / Buka Surat Keterangan"
+    fe -> fe : Buka URL SKSM di tab baru / unduh langsung
+    fe --> mhs : Menerima file SKSM
+else Belum Diunggah
+    api --> fe : Response (Data belum ada)
+    fe --> mhs : Tampilkan peringatan "Menunggu SKSM dari Mentor"
+end
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title Sequence Diagram - Data Kegiatan (Mahasiswa & Mentor)
+
+actor Mahasiswa as mhs
+actor Mentor as mntr
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(DataKegiatanController)" as api
+database "Database" as db
+
+== Mahasiswa: Mengelola Kegiatan ==
+mhs -> fe : Membuka halaman Kegiatan
+fe -> api : GET /api/kegiatan/mahasiswa
+api -> db : Fetch data kegiatan milik mahasiswa
+db --> api : Daftar kegiatan
+api --> fe : Response (Paginated data)
+fe --> mhs : Menampilkan daftar kegiatan
+
+mhs -> fe : Klik "Tambah Kegiatan", isi Form & Lampiran
+fe -> api : POST /api/kegiatan/mahasiswa
+api -> db : Simpan kegiatan baru (Status: Dalam Review)
+db --> api : Berhasil menyimpan
+api --> fe : Response Sukses (ActivityResponse)
+fe --> mhs : Tampilkan notifikasi "Berhasil ditambahkan"
+
+mhs -> fe : Konfirmasi Hapus Kegiatan
+fe -> api : DELETE /api/kegiatan/{id}
+api -> db : Hapus data kegiatan & lampiran
+db --> api : Berhasil menghapus
+api --> fe : Response Sukses
+fe --> mhs : Daftar kegiatan diperbarui
+
+== Mentor: Memverifikasi Kegiatan ==
+mntr -> fe : Membuka halaman Data Kegiatan
+fe -> api : GET /api/kegiatan & GET /api/kegiatan/statistik
+api -> db : Fetch data kegiatan bimbingan & statistik
+db --> api : Data daftar kegiatan dan statistik agregat
+api --> fe : Response data
+fe --> mntr : Menampilkan tabel kegiatan & metrik statistik
+
+mntr -> fe : Klik ikon "Setujui" / "Cabut Persetujuan"
+fe -> api : PUT /api/kegiatan/{id}/status?status=disetujui
+api -> db : Update status kegiatan
+db --> api : Berhasil update
+api --> fe : Response Sukses
+fe --> mntr : Status diubah menjadi Disetujui/Dalam Review
+
+mntr -> fe : Konfirmasi Hapus Kegiatan (Revoke)
+fe -> api : DELETE /api/kegiatan/{id}
+api -> db : Hapus permanen data kegiatan mahasiswa
+db --> api : Berhasil menghapus
+api --> fe : Response Sukses
+fe --> mntr : Daftar kegiatan diperbarui dan log dihapus
+
+@enduml

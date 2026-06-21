@@ -1,0 +1,55 @@
+@startuml
+title Sequence Diagram - Proses Absensi
+
+actor Mahasiswa as mhs
+actor Mentor as mntr
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(DataAbsensiController)" as api
+database "Database" as db
+
+== Mahasiswa: Mengajukan Absensi (Izin/Sakit) ==
+mhs -> fe : Membuka halaman absensi
+fe -> api : GET /api/absensi/mahasiswa/statistik & riwayat
+api -> db : Fetch data absensi mahasiswa
+db --> api : Data absensi
+api --> fe : Response data
+fe --> mhs : Menampilkan statistik & form
+
+mhs -> fe : Isi form (Status, Unggah Dokumen) & Submit
+fe -> api : POST /api/absensi/mahasiswa/submit
+api -> db : Simpan data (Status: Menunggu Verifikasi)
+db --> api : Berhasil menyimpan
+api --> fe : Response sukses (AbsensiResponse)
+fe --> mhs : Tampilkan notifikasi berhasil
+
+== Mentor: Memverifikasi Pengajuan Absensi ==
+mntr -> fe : Membuka halaman rekap absensi
+fe -> api : GET /api/absensi (list)
+api -> db : Fetch daftar pengajuan absensi
+db --> api : Data absensi mahasiswa
+api --> fe : Response data
+fe --> mntr : Menampilkan tabel pengajuan
+
+mntr -> fe : Klik Verifikasi (Setujui / Tolak)
+fe -> api : POST /api/absensi/{id}/verifikasi?action=setujui/tolak
+api -> db : Update status absensi (Diverifikasi/Ditolak)
+db --> api : Berhasil update
+api --> fe : Response sukses
+fe --> mntr : Tampilkan notifikasi "Berhasil verifikasi"
+
+== Mentor: Mencatat Absensi Harian Manual ==
+mntr -> fe : Membuka tab "Catat Absensi"
+fe -> api : GET /api/absensi/mentor/harian
+api -> db : Fetch daftar mahasiswa bimbingan & status hari ini
+db --> api : Data harian mahasiswa
+api --> fe : Response data
+fe --> mntr : Menampilkan daftar mahasiswa harian
+
+mntr -> fe : Pilih status (Hadir/Izin/Sakit) & klik "Catat"
+fe -> api : POST /api/absensi/mentor/submit
+api -> db : Simpan data absensi mahasiswa
+db --> api : Berhasil menyimpan
+api --> fe : Response sukses
+fe --> mntr : Tampilkan notifikasi "Berhasil dicatat"
+
+@enduml

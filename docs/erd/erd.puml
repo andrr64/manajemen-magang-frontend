@@ -1,0 +1,154 @@
+@startuml
+title Entity-Relationship Diagram (Chen's Notation) - Manajemen Magang
+
+left to right direction
+
+' Styling sesuai gambar Chen ERD (Entity = Biru, Relasi = Oranye, Atribut = Hijau)
+skinparam rectangle {
+    BackgroundColor #2196F3
+    FontColor white
+    BorderColor #1976D2
+}
+
+skinparam hexagon {
+    BackgroundColor #FF5722
+    FontColor white
+    BorderColor #E64A19
+}
+
+skinparam usecase {
+    BackgroundColor #8BC34A
+    FontColor white
+    BorderColor #689F38
+}
+
+' ================= ENTITIES =================
+rectangle "User" as user
+rectangle "Mahasiswa" as mahasiswa
+rectangle "Mentor" as mentor
+rectangle "University" as university
+rectangle "Periode Magang" as periode
+rectangle "Absensi" as absensi
+rectangle "Data Kegiatan" as kegiatan
+rectangle "File Kegiatan" as filekeg
+rectangle "Penilaian" as penilaian
+rectangle "Surat Keterangan" as surat
+rectangle "Sertifikat" as sertifikat
+
+' ================= RELATIONSHIPS =================
+hexagon "memiliki" as rel_user_mhs
+hexagon "memiliki" as rel_user_mentor
+hexagon "asal" as rel_mhs_univ
+hexagon "mendaftar" as rel_mhs_periode
+hexagon "mencatat" as rel_periode_absensi
+hexagon "melakukan" as rel_periode_kegiatan
+hexagon "melampirkan" as rel_keg_file
+hexagon "menerima" as rel_periode_nilai
+hexagon "mendapat" as rel_periode_surat
+hexagon "diberikan" as rel_periode_sertif
+
+hexagon "memverifikasi" as rel_mentor_absensi
+hexagon "menyetujui" as rel_mentor_keg
+hexagon "menilai" as rel_mentor_nilai
+
+' ================= ATTRIBUTES =================
+usecase "email" as u_email
+usecase "password" as u_pass
+usecase "role" as u_role
+
+usecase "nim" as m_nim
+usecase "nama" as m_nama
+usecase "gender" as m_gender
+
+usecase "nama_university" as univ_nama
+
+usecase "nama" as men_nama
+
+usecase "tgl_mulai" as p_mulai
+usecase "tgl_berakhir" as p_akhir
+usecase "status" as p_status
+
+usecase "tanggal" as a_tgl
+usecase "status" as a_status
+
+usecase "judul" as k_judul
+usecase "status" as k_status
+
+usecase "url" as fk_url
+
+usecase "nilai_total" as n_total
+
+usecase "url" as s_url
+usecase "url" as ser_url
+
+' --- Connect Attributes to Entities ---
+user -- u_email
+user -- u_pass
+user -- u_role
+
+mahasiswa -- m_nim
+mahasiswa -- m_nama
+mahasiswa -- m_gender
+
+university -- univ_nama
+
+mentor -- men_nama
+
+periode -- p_mulai
+periode -- p_akhir
+periode -- p_status
+
+absensi -- a_tgl
+absensi -- a_status
+
+kegiatan -- k_judul
+kegiatan -- k_status
+
+filekeg -- fk_url
+
+penilaian -- n_total
+
+surat -- s_url
+sertifikat -- ser_url
+
+' ================= CONNECTIONS =================
+user "1" -- "1" rel_user_mhs
+rel_user_mhs -- "1" mahasiswa
+
+user "1" -- "1" rel_user_mentor
+rel_user_mentor -- "1" mentor
+
+university "1" -- "N" rel_mhs_univ
+rel_mhs_univ -- "N" mahasiswa
+
+mahasiswa "1" -- "N" rel_mhs_periode
+rel_mhs_periode -- "N" periode
+
+periode "1" -- "N" rel_periode_absensi
+rel_periode_absensi -- "N" absensi
+
+periode "1" -- "N" rel_periode_kegiatan
+rel_periode_kegiatan -- "N" kegiatan
+
+kegiatan "1" -- "N" rel_keg_file
+rel_keg_file -- "N" filekeg
+
+periode "1" -- "1" rel_periode_nilai
+rel_periode_nilai -- "1" penilaian
+
+periode "1" -- "1" rel_periode_surat
+rel_periode_surat -- "1" surat
+
+periode "1" -- "1" rel_periode_sertif
+rel_periode_sertif -- "1" sertifikat
+
+mentor "1" -- "N" rel_mentor_absensi
+rel_mentor_absensi -- "N" absensi
+
+mentor "1" -- "N" rel_mentor_keg
+rel_mentor_keg -- "N" kegiatan
+
+mentor "1" -- "N" rel_mentor_nilai
+rel_mentor_nilai -- "N" penilaian
+
+@enduml

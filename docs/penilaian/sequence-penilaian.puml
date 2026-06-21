@@ -1,0 +1,45 @@
+@startuml
+title Sequence Diagram - Penilaian (Mentor & Mahasiswa)
+
+actor Mentor as mntr
+actor Mahasiswa as mhs
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(PenilaianController)" as api
+database "Database" as db
+
+== Mentor: Memberikan / Mengubah Penilaian ==
+mntr -> fe : Membuka halaman Penilaian
+fe -> api : GET /api/penilaian
+api -> db : Fetch daftar mahasiswa bimbingan & status nilai
+db --> api : Data penilaian
+api --> fe : Response data
+fe --> mntr : Menampilkan daftar mahasiswa
+
+mntr -> fe : Klik "Beri Nilai" / "Edit Nilai", isi skor & catatan
+fe -> api : POST /api/penilaian/submit (atau PUT)
+api -> db : Simpan rincian skor & update status "Sudah Dinilai"
+db --> api : Berhasil menyimpan
+api --> fe : Response Sukses
+fe --> mntr : Kembali ke tabel & tampilkan notifikasi
+
+== Mahasiswa: Melihat & Mengunduh Penilaian ==
+mhs -> fe : Membuka halaman Penilaian
+fe -> api : GET /api/penilaian/mahasiswa/{id}
+api -> db : Fetch data nilai akhir & rincian skor
+db --> api : Data nilai
+
+alt Sudah Dinilai
+    api --> fe : Response Data Penilaian
+    fe --> mhs : Menampilkan rincian nilai & catatan
+    
+    mhs -> fe : Klik "Download Rekap"
+    fe -> api : GET /api/penilaian/{id}/export-pdf
+    api -> db : Ambil data mentah
+    api -> api : Generate PDF & Tanda Tangan
+    api --> fe : Return File PDF
+    fe --> mhs : Mengunduh file ke perangkat
+else Belum Dinilai
+    api --> fe : Response (Data kosong)
+    fe --> mhs : Menampilkan peringatan "Menunggu Penilaian"
+end
+@enduml

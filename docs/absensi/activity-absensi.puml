@@ -1,0 +1,72 @@
+@startuml
+title Activity Diagram - Absensi (Mahasiswa & Mentor)
+
+skinparam ActivityBackgroundColor #E8F5E9
+skinparam ActivityBorderColor #2E7D32
+skinparam ActivityDiamondBackgroundColor #FFF9C4
+skinparam ActivityDiamondBorderColor #F57F17
+skinparam SwimlaneBorderColor #1565C0
+skinparam TitleFontSize 18
+skinparam ActivityFontSize 13
+
+|Mahasiswa|
+start
+:Membuka halaman absensi;
+
+|Sistem|
+:Mengambil data absensi\ndari server;
+:Menampilkan statistik absensi\n(Hadir, Izin, Sakit, Tidak Hadir);
+
+|Mahasiswa|
+if (Apakah sudah absen hari ini?) then (ya)
+  |Sistem|
+  :Menampilkan pesan\n"Absensi Hari Ini\nSudah Tercatat";
+  |Mahasiswa|
+  stop
+else (tidak)
+  :Memilih status absensi\n(Izin / Sakit);
+  :Upload dokumen pendukung\n(PDF / JPG / PNG, maks 10MB);
+  :Klik tombol "Submit";
+
+  |Sistem|
+  :Validasi data absensi;
+  if (Apakah dokumen sudah diupload?) then (ya)
+    :Mengunggah file ke server;
+    :Mengirim data absensi ke server;
+    :Menyimpan dengan status\n"Menunggu Verifikasi";
+    
+    |Mentor|
+    :Membuka halaman Absensi\n(Tab Rekap & Riwayat);
+    :Mereview dokumen pengajuan;
+    if (Apakah disetujui?) then (ya)
+      |Sistem|
+      :Memperbarui status menjadi\n"Diverifikasi";
+    else (tidak)
+      |Sistem|
+      :Memperbarui status menjadi\n"Ditolak" (Dihapus);
+    endif
+    
+    |Mahasiswa|
+    :Melihat status absensi terbaru;
+    stop
+  else (tidak)
+    |Sistem|
+    :Menampilkan pesan error\n"Dokumen wajib diunggah";
+    |Mahasiswa|
+    stop
+  endif
+endif
+
+|Mentor|
+start
+:Membuka halaman Absensi\n(Tab Catat Absensi);
+|Sistem|
+:Menampilkan daftar mahasiswa\nbeserta status harian (Hadir/Alpha);
+|Mentor|
+:Memilih status absensi manual\n(Hadir / Izin / Sakit) untuk mahasiswa;
+:Klik "Catat";
+|Sistem|
+:Menyimpan data absensi mentor\nke server;
+stop
+
+@enduml

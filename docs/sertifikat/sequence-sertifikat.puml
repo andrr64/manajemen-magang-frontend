@@ -1,0 +1,41 @@
+@startuml
+title Sequence Diagram - Sertifikat (Mentor & Mahasiswa)
+
+actor Mentor as mntr
+actor Mahasiswa as mhs
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(SertifikatController)" as api
+database "Database" as db
+
+== Mentor: Mengunggah Sertifikat ==
+mntr -> fe : Membuka halaman Sertifikat
+fe -> api : GET /api/sertifikat
+api -> db : Fetch data status sertifikat mahasiswa
+db --> api : Data sertifikat
+api --> fe : Response data
+fe --> mntr : Menampilkan daftar & filter status
+
+mntr -> fe : Klik "Unggah File" & Upload PDF
+fe -> api : POST /api/sertifikat/upload
+api -> db : Simpan tautan URL sertifikat
+db --> api : Berhasil
+api --> fe : Response Sukses
+fe --> mntr : Status diperbarui menjadi "Sudah Diunggah"
+
+== Mahasiswa: Mengunduh Sertifikat ==
+mhs -> fe : Membuka halaman Sertifikat
+fe -> api : GET /api/sertifikat/mahasiswa/{id}
+api -> db : Fetch data sertifikat pengguna login
+db --> api : Data sertifikat
+
+alt Sudah Diunggah
+    api --> fe : Response Data (Memuat URL Sertifikat)
+    fe --> mhs : Menampilkan detail & Tombol Unduh
+    mhs -> fe : Klik "Unduh / Buka Sertifikat"
+    fe -> fe : Buka URL dokumen di tab baru / unduh
+    fe --> mhs : Menerima file sertifikat
+else Belum Diunggah
+    api --> fe : Response (Data belum ada)
+    fe --> mhs : Tampilkan peringatan "Menunggu Sertifikat"
+end
+@enduml

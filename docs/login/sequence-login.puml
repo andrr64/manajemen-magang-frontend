@@ -1,0 +1,27 @@
+@startuml
+title Sequence Diagram - Login (Mahasiswa & Mentor)
+
+actor Pengguna as user
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(IamController)" as api
+database "Database" as db
+
+user -> fe : Membuka halaman Login
+fe --> user : Menampilkan form Login
+
+user -> fe : Memasukkan Email & Password
+fe -> api : POST /api/iam/login
+api -> db : Cek kredensial (Email & Password)
+
+alt Kredensial Valid
+    db --> api : Data pengguna ditemukan
+    api -> api : Generate JWT Token
+    api --> fe : Response Sukses (Token & Profil)
+    fe -> fe : Menyimpan Token & Session
+    fe --> user : Redirect ke halaman Dashboard
+else Kredensial Tidak Valid
+    db --> api : Data tidak ditemukan / Password salah
+    api --> fe : Response Error (Unauthorized)
+    fe --> user : Tampilkan pesan error "Kredensial salah"
+end
+@enduml

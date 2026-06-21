@@ -1,0 +1,148 @@
+@startuml
+title Logical Record Structure (LRS)
+header Manajemen Magang Database Schema
+
+' Styling ERD
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 60
+skinparam class {
+    BackgroundColor White
+    BorderColor #1565C0
+    HeaderBackgroundColor #E3F2FD
+    FontName Arial
+    FontSize 14
+}
+
+' Menyembunyikan circle (C) di pojok kiri atas nama tabel
+hide circle
+
+' Syntax untuk mendefinisikan entitas database
+!define Table(name,desc) entity "name" as desc << (T, white) >>
+
+' ================= ENTITIES =================
+Table(user, user) {
+  * id : UUID <<PK>>
+  --
+  * email : VARCHAR(255) <<UNIQUE>>
+  * password : VARCHAR(255)
+  * role : VARCHAR(20)
+  * is_active : BOOLEAN
+  created_at : TIMESTAMP
+}
+
+Table(universitas, univ) {
+  * id : UUID <<PK>>
+  --
+  * nama_universitas : VARCHAR(255)
+}
+
+Table(mahasiswa, mhs) {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  universitas_id : UUID <<FK>>
+  * nim : VARCHAR(20) <<UNIQUE>>
+  * nama : VARCHAR(255)
+  no_hp : VARCHAR(20)
+  gender : VARCHAR(20)
+}
+
+Table(mentor, mentor) {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  * nama : VARCHAR(255)
+}
+
+Table(periode_magang, pm) {
+  * id : UUID <<PK>>
+  --
+  * mahasiswa_id : UUID <<FK>>
+  * tanggal_mulai : DATE
+  * tanggal_berakhir : DATE
+  * status : VARCHAR(10)
+}
+
+Table(absensi, absensi) {
+  * id : UUID <<PK>>
+  --
+  * periode_magang_id : UUID <<FK>>
+  mahasiswa_id : UUID <<FK>>
+  mentor_id : UUID <<FK>>
+  * tanggal : DATE
+  waktu_masuk : TIMESTAMPTZ
+  waktu_keluar : TIMESTAMPTZ
+  * status : VARCHAR(10)
+  status_verifikasi : VARCHAR(20)
+  attachment_url : TEXT
+}
+
+Table(data_kegiatan, keg) {
+  * id : UUID <<PK>>
+  --
+  * periode_magang_id : UUID <<FK>>
+  mentor_id : UUID <<FK>>
+  * judul : VARCHAR(255)
+  deskripsi : TEXT
+  * waktu : TIMESTAMPTZ
+  status : VARCHAR(20)
+}
+
+Table(file_kegiatan, fkeg) {
+  * id : UUID <<PK>>
+  --
+  * data_kegiatan_id : UUID <<FK>>
+  nama_file : VARCHAR(255)
+  * url : TEXT
+  tipe_file : VARCHAR(50)
+}
+
+Table(penilaian, nilai) {
+  * id : UUID <<PK>>
+  --
+  * periode_magang_id : UUID <<FK>>
+  * mentor_id : UUID <<FK>>
+  kinerja : NUMERIC(5,2)
+  kedisiplinan : NUMERIC(5,2)
+  nilai_total : NUMERIC(5,2)
+  catatan : TEXT
+}
+
+Table(surat_keterangan_magang, sksm) {
+  * id : UUID <<PK>>
+  --
+  * periode_magang_id : UUID <<FK>>
+  * url : TEXT
+}
+
+Table(sertifikat, sertif) {
+  * id : UUID <<PK>>
+  --
+  * periode_magang_id : UUID <<FK>>
+  * url : TEXT
+}
+
+' ================= RELATIONSHIPS =================
+' ||--o{ = 1 to Many
+' ||--|| = 1 to 1
+' ||--o| = 1 to 0 or 1
+
+user ||--|| mhs : "memiliki profil"
+user ||--|| mentor : "memiliki profil"
+univ ||--o{ mhs : "asal mahasiswa"
+
+mhs ||--o{ pm : "mendaftar"
+pm ||--o{ absensi : "memiliki riwayat"
+pm ||--o{ keg : "memiliki riwayat"
+pm ||--o| nilai : "mendapat"
+pm ||--o| sksm : "menerima"
+pm ||--o| sertif : "menerima"
+
+keg ||--o{ fkeg : "melampirkan"
+
+mentor |o--o{ absensi : "memverifikasi"
+mentor |o--o{ keg : "menyetujui"
+mentor ||--o{ nilai : "memberikan"
+
+@enduml

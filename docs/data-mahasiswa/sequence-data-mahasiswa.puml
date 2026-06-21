@@ -1,0 +1,48 @@
+@startuml
+title Sequence Diagram - Data Mahasiswa (Mentor Only)
+
+actor Mentor as mntr
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(DataMahasiswaController)" as api
+database "Database" as db
+
+== Mentor: Melihat & Memfilter Daftar Mahasiswa ==
+mntr -> fe : Membuka halaman Data Mahasiswa
+fe -> api : GET /api/mahasiswa & /statistik
+api -> db : Fetch data mahasiswa bimbingan & metrik (aktif/selesai)
+db --> api : Data mahasiswa & statistik
+api --> fe : Response data
+fe --> mntr : Menampilkan tabel mahasiswa & statistik
+
+mntr -> fe : Memasukkan kata kunci atau filter (Gender, Univ, Status)
+fe -> api : GET /api/mahasiswa?gender=...&universitas=...&status=...
+api -> db : Fetch data sesuai filter
+db --> api : Hasil filter
+api --> fe : Response (Paginated data)
+fe --> mntr : Menampilkan hasil pencarian yang relevan
+
+== Mentor: Menambahkan Mahasiswa Baru ==
+mntr -> fe : Klik "Tambah Mahasiswa", Isi Form Registrasi
+fe -> api : POST /api/mahasiswa (StudentRequest)
+api -> db : Simpan data diri & periode magang baru
+db --> api : Berhasil menyimpan
+api --> fe : Response Sukses (StudentResponse)
+fe --> mntr : Tampilkan notifikasi "Berhasil ditambahkan" & kembali ke tabel
+
+== Mentor: Mengubah Data & Status Periode Mahasiswa ==
+mntr -> fe : Klik "Edit" atau pilih opsi "Ubah Status Periode" (Aktif/Selesai)
+fe -> api : PUT /api/mahasiswa/edit-by-mentor/{id}
+api -> db : Update data profil / status periode magang
+db --> api : Berhasil update
+api --> fe : Response Sukses
+fe --> mntr : Tampilkan notifikasi & tabel diperbarui
+
+== Mentor: Menghapus Data Mahasiswa ==
+mntr -> fe : Konfirmasi Hapus Data Mahasiswa
+fe -> api : DELETE /api/mahasiswa/{id}
+api -> db : Menghapus data mahasiswa dari sistem
+db --> api : Berhasil menghapus
+api --> fe : Response Sukses
+fe --> mntr : Menampilkan notifikasi "Berhasil dihapus" & daftar diperbarui
+
+@enduml

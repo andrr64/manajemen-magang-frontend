@@ -1,0 +1,34 @@
+@startuml
+title Sequence Diagram - Kelola Profil (Mahasiswa & Mentor)
+
+actor Pengguna as user
+participant "Frontend\n(React/Next.js)" as fe
+participant "Backend API\n(IamController)" as api
+database "Database" as db
+
+== Melihat Profil ==
+user -> fe : Membuka halaman Profil
+fe -> api : GET /api/iam/profile
+api -> db : Fetch data profil
+db --> api : Data pengguna
+api --> fe : Response Data
+fe --> user : Menampilkan Kartu Identitas & Form
+
+== Ubah Profil ==
+user -> fe : Mengubah data & klik "Simpan"
+fe -> api : PUT /api/iam/profile
+api -> db : Update data profil pengguna
+alt Jika ubah password
+    api -> db : Cek kecocokan password lama
+end
+
+alt Berhasil
+    db --> api : Data terupdate
+    api --> fe : Response Sukses
+    fe --> user : Tampilkan Toast "Profil berhasil diperbarui"
+else Gagal Validasi
+    db --> api : Validasi gagal (Cth: Password lama salah)
+    api --> fe : Response Error
+    fe --> user : Tampilkan pesan error pada Form
+end
+@enduml

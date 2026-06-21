@@ -1,0 +1,51 @@
+@startuml
+title Activity Diagram - Registrasi
+
+skinparam ActivityBackgroundColor #E8F5E9
+skinparam ActivityBorderColor #2E7D32
+skinparam ActivityDiamondBackgroundColor #FFF9C4
+skinparam ActivityDiamondBorderColor #F57F17
+skinparam SwimlaneBorderColor #1565C0
+skinparam TitleFontSize 18
+skinparam ActivityFontSize 13
+
+|Pengguna (Mahasiswa / Mentor)|
+start
+:Membuka halaman registrasi;
+:Memilih role (Daftar Sebagai\n"Mahasiswa" atau "Mentor");
+
+if (Role yang dipilih?) then (mahasiswa)
+  :Mengisi form registrasi Mahasiswa\n(Nama, Email, Password, No HP,\nNIM, Gender, Universitas);
+else (mentor)
+  :Mengisi form registrasi Mentor\n(Nama, Email, Password,\nSecret Key);
+endif
+
+:Klik tombol "Daftar Sekarang";
+
+|Sistem|
+:Validasi kelengkapan form;
+if (Apakah data terisi lengkap?) then (ya)
+  :Mengirim data registrasi ke server;
+  :Proses registrasi dan otentikasi;
+  if (Apakah registrasi berhasil?) then (ya)
+    :Menyimpan sesi pengguna\n(otomatis login);
+    :Redirect ke halaman Dashboard\nsesuai role masing-masing;
+    |Pengguna (Mahasiswa / Mentor)|
+    :Mengakses halaman Dashboard;
+    stop
+  else (tidak)
+    |Sistem|
+    :Menampilkan pesan error\n(Misal: terjadi kesalahan / akses ditolak);
+    |Pengguna (Mahasiswa / Mentor)|
+    :Memperbaiki data registrasi;
+    stop
+  endif
+else (tidak)
+  |Sistem|
+  :Mencegah submit atau\nmenampilkan pesan error bawaan form;
+  |Pengguna (Mahasiswa / Mentor)|
+  :Melengkapi data form;
+  stop
+endif
+
+@enduml
