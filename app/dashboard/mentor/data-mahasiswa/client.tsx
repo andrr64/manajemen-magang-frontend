@@ -85,23 +85,7 @@ export default function MentorDataMahasiswaPage() {
       {/* FLOAT SUCCESS TOAST */}
       <SuccessToast show={!!showPeriodToast} message={showPeriodToast} />
 
-      {/* HEADER SECTION WITH METRIC BADGES */}
-      <PageHeader
-        title="Data Mahasiswa Bimbingan Magang"
-        subtitle="Kelola, monitor progres, dan lihat data lengkap mahasiswa yang Anda bimbing di berbagai industri mitra."
-        action={
-          <>
-            <button onClick={resetFilters} className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm">
-              <RefreshCw className="w-3.5 h-3.5" />
-              Reset Filter
-            </button>
-            <Link href="/dashboard/mentor/data-mahasiswa/tambah-mahasiswa" className="flex items-center gap-1.5 px-4 py-2 bg-[#232F72] dark:bg-[#232F72] hover:brightness-110 shadow-md text-white rounded-xl text-xs font-extrabold shadow-md shadow-[#232F72]/20 hover:shadow-[#232F72]/30 active:scale-95 transition-all cursor-pointer">
-              <UserPlus className="w-3.5 h-3.5" />
-              Tambah Mahasiswa
-            </Link>
-          </>
-        }
-      />
+
 
       {/* QUICK STATUS STATS GRID */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">

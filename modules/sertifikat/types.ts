@@ -3,7 +3,7 @@ export interface CertificateInfo {
   issueDate: string;
   grade: string;
   recipient: string;
-  company: string;
+  company?: string;
   role: string;
   fileSize: string;
   fileFormat: string;

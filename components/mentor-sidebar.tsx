@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
@@ -59,11 +60,17 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
       {/* Sidebar Brand Header */}
       <div className="p-6 border-b border-slate-200 dark:border-[#2F578A] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-gradient-to-r from-[#2F578A] to-[#36ADA3] text-[#FFFFFF] shadow-md shadow-[#36ADA3]/20">
-            <GraduationCap className="w-5 h-5" />
+          <div className="w-[72px] h-[72px] rounded-xl overflow-hidden flex-shrink-0 bg-white">
+            <Image 
+              src="/dw1-logo.png" 
+              alt="Logo DW 1" 
+              width={72} 
+              height={72}
+              className="object-contain w-full h-full p-1"
+            />
           </div>
-          <span className="font-bold text-lg tracking-tight text-[#232F72] dark:text-[#FFFFFF]">
-            Intern<span className="text-[#36ADA3]">Flow</span>
+          <span className="font-bold text-[15px] tracking-tight text-[#232F72] dark:text-[#FFFFFF] whitespace-nowrap">
+            Direktorat <span className="text-[#36ADA3]">Wilayah 1</span>
           </span>
         </div>
         {onClose && (

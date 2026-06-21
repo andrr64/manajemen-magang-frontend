@@ -1,4 +1,4 @@
-﻿import { executeHybridRequest } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
 import { CertificateInfo, VerifyCertificateResponse, SertifikatResponse, SertifikatStatResponse } from "./types";
 import { studentsData } from "@/app/dashboard/mentor/data-mahasiswa/studentsData";
@@ -12,7 +12,6 @@ export function mapBackendSertifikatToFrontend(item: any): CertificateInfo {
     issueDate: item.createdAt ? new Date(item.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "29 Mei 2026",
     grade: student?.grade ? `${student.grade} (${student.grade >= 85 ? "Sangat Memuaskan" : "Memuaskan"})` : "A (Sangat Memuaskan)",
     recipient: item.namaMahasiswa || "Budi Santoso",
-    company: student?.company || "PT. Global Teknologi Nusantara",
     role: student?.role || "Software Engineering Intern",
     fileSize: "2.8 MB",
     fileFormat: "PDF Document",

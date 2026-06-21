@@ -35,7 +35,6 @@ function mapBackendStudentToFrontend(item: StudentResponse): Student {
     phone: item.noHp || "-",
     gender: (item.gender as "Laki-laki" | "Perempuan" | "-") || "-",
     program: "S1 Teknik Informatika",
-    company: isPlaced ? "PT. Global Teknologi Nusantara" : "Belum Ditempatkan",
     role: isPlaced ? "Software Engineering Intern" : "-",
     status: status,
     progress: status === "Selesai" ? 100 : (status === "Belum Penempatan" ? 0 : (status === "Dalam Review" ? 95 : 85)),

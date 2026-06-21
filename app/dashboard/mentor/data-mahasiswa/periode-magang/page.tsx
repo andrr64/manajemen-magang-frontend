@@ -66,7 +66,7 @@ export default function MentorInternshipPeriodPage() {
       q === "" ||
       p.studentName.toLowerCase().includes(q) ||
       p.studentNim.includes(q) ||
-      p.studentCompany.toLowerCase().includes(q) ||
+      (p.studentCompany || "").toLowerCase().includes(q) ||
       p.studentUniv.toLowerCase().includes(q)
     );
   });

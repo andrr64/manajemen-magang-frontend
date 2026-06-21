@@ -8,7 +8,6 @@ function mapBackendLetterToFrontend(item: any): LetterInfo {
     number: "GTN/HRD-INTERN/V/2026/0892",
     issueDate: "29 Mei 2026",
     recipient: item.namaMahasiswa || "Budi Santoso",
-    company: "PT. Global Teknologi Nusantara",
     role: "Software Engineering Intern",
     fileSize: "1.4 MB",
     fileFormat: "PDF Document",

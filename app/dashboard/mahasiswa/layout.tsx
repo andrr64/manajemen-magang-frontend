@@ -84,9 +84,7 @@ export default function MahasiswaLayout({
                 <h2 className="font-extrabold text-lg md:text-xl text-slate-900 dark:text-white">
                   {getPageTitle()}
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-                  Tahun Akademik: 2025/2026 • Semester Genap
-                </p>
+
               </div>
             </div>
 

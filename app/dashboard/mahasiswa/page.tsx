@@ -53,7 +53,6 @@ export default function StudentDashboardHome() {
     email: user?.email || apiStudent?.email || "-",
     university: apiStudent?.university || "-",
     program: apiStudent?.program || "-",
-    company: apiStudent?.company || "Belum Ditempatkan",
     role: apiStudent?.role || "-",
     period: apiStudent?.period || "-",
     progress: apiStudent?.progress || 0,
@@ -91,10 +90,7 @@ export default function StudentDashboardHome() {
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3.5 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-violet-200 bg-violet-850/60 border border-violet-750 px-3 py-1.5 rounded-lg">
-              <Zap className="w-3.5 h-3.5 text-violet-300 animate-pulse" />
-              STATUS MAGANG AKTIF • KELAS INDUSTRI
-            </span>
+    
             <div>
               <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">
                 Halo, {studentProfile.name}!
@@ -106,10 +102,6 @@ export default function StudentDashboardHome() {
             
             {/* Meta Tags */}
             <div className="flex flex-wrap gap-4 pt-1.5 text-xs text-violet-200/90 font-medium">
-              <span className="flex items-center gap-1.5">
-                <Building className="w-4 h-4 text-violet-300" />
-                {studentProfile.company}
-              </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-violet-300" />
                 {studentProfile.period}

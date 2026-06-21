@@ -105,7 +105,7 @@ export function useStudents(filters?: StudentFilterParams & { searchQuery?: stri
         s.university.toLowerCase().includes(query) ||
         s.program.toLowerCase().includes(query) ||
         s.role.toLowerCase().includes(query) ||
-        s.company.toLowerCase().includes(query);
+        (s.company || "").toLowerCase().includes(query);
 
       return matchesSearch;
     });

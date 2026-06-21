@@ -176,20 +176,7 @@ export default function MentorActivitiesPage() {
       {/* FLOAT SUCCESS TOAST */}
       <SuccessToast show={!!showToast} message={showToast} />
 
-      {/* HEADER BAR */}
-      <PageHeader
-        title="Log Kegiatan & Laporan Mahasiswa"
-        subtitle="Validasi pekerjaan harian mahasiswa bimbingan Anda, kelola lampiran file, dan lakukan tindakan persetujuan atau penghapusan log."
-        action={
-          <button
-            onClick={() => { setSearchQuery(""); setStatusFilter("Semua"); }}
-            className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Reset Filter
-          </button>
-        }
-      />
+
 
       {/* ACTIVITY STATISTICS */}
       {(() => {

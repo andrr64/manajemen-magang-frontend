@@ -2,7 +2,7 @@ export interface LetterInfo {
   number: string;
   issueDate: string;
   recipient: string;
-  company: string;
+  company?: string;
   role: string;
   fileSize: string;
   fileFormat: string;
@@ -15,7 +15,7 @@ export interface LetterInfo {
 export interface RequestLetterPayload {
   recipientName: string;
   role: string;
-  company: string;
+  company?: string;
   purpose: string;
 }
 

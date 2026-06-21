@@ -68,20 +68,7 @@ export default function MentorCertificatePage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER SECTION */}
-      <PageHeader
-        title="Pengelolaan Sertifikat Magang Mahasiswa"
-        subtitle="Unggah berkas sertifikat formal bagi mahasiswa bimbingan yang telah menyelesaikan rangkaian magang industri dengan sukses."
-        action={
-          <button
-            onClick={handleResetFilters}
-            className="flex items-center gap-1.5 px-4 py-2 border border-[#2F578A]/50 dark:border-[#2F578A] hover:border-[#232F72] rounded-xl text-xs font-bold text-[#232F72]/80 dark:text-[#F1F5F9] bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md transition-all cursor-pointer active:scale-95 shadow-sm"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Reset Filter
-          </button>
-        }
-      />
+
 
       {/* METRIC STATISTICS */}
       {(() => {

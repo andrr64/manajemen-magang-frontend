@@ -209,16 +209,7 @@ export default function MentorAttendancePage() {
 
       <SuccessToast show={!!toastMsg} message={toastMsg} />
 
-      {/* HEADER */}
-      <PageHeader
-        title="Monitoring Absensi Harian Mahasiswa"
-        subtitle="Catat kehadiran mahasiswa bimbingan dan pantau rekap absensi secara real-time."
-        action={
-          <button onClick={handleExport} disabled={isExporting} className="flex items-center gap-1.5 px-4 py-2.5 bg-[#232F72] hover:brightness-110 disabled:opacity-60 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-[#232F72]/20">
-            {isExporting ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Mengekspor...</> : <><Download className="w-3.5 h-3.5" /> Ekspor Rekap</>}
-          </button>
-        }
-      />
+
 
       {/* STATS — reactive dari data harian */}
       <StatsGrid stats={statsConfig} gridClass="grid-cols-2 lg:grid-cols-3" />

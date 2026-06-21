@@ -102,10 +102,6 @@ export default function StudentProfilePage() {
                 <span className="text-[9px] uppercase font-black tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 border border-[#36ADA3]/20 px-2.5 py-1 rounded-lg">
                   Mahasiswa Magang
                 </span>
-                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  Verified Intern
-                </span>
               </div>
               <h3 className="text-lg md:text-2xl font-black tracking-tight mt-2 leading-tight text-white">
                 {profile.name}

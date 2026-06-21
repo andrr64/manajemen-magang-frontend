@@ -55,7 +55,7 @@ export interface Student {
   phone: string;
   gender: "Laki-laki" | "Perempuan" | "-";
   program: string;
-  company: string;
+  company?: string;
   role: string;
   status: "Aktif" | "Dalam Review" | "Selesai" | "Belum Penempatan";
   progress: number;
