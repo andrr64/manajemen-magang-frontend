@@ -104,7 +104,7 @@ export default function DashboardHome() {
               Daftarkan Mahasiswa Baru
             </Link>
             <Link 
-              href="/dashboard/mentor/data-kegiatan"
+              href="/dashboard/mentor/kegiatan"
               className="px-4 py-2.5 rounded-xl bg-[#2F578A]/50 hover:bg-[#2F578A] text-[#FFFFFF] text-xs font-bold border border-[#2F578A] transition-all"
             >
               Tinjau Log Kegiatan (8)

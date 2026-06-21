@@ -47,8 +47,8 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
   const menuItems = [
     { name: "Dashboard", href: "/dashboard/mentor", icon: LayoutDashboard },
     { name: "Data Mahasiswa", href: "/dashboard/mentor/data-mahasiswa", icon: Users },
-    { name: "Data Absensi", href: "/dashboard/mentor/data-absensi", icon: Clock },
-    { name: "Data Kegiatan", href: "/dashboard/mentor/data-kegiatan", icon: Activity },
+    { name: "Data Absensi", href: "/dashboard/mentor/absensi", icon: Clock },
+    { name: "Data Kegiatan", href: "/dashboard/mentor/kegiatan", icon: Activity },
     { name: "Penilaian Magang", href: "/dashboard/mentor/penilaian", icon: Award },
     { name: "Sertifikat Magang", href: "/dashboard/mentor/sertifikat", icon: FileBadge },
     { name: "Surat Keterangan", href: "/dashboard/mentor/surat-keterangan", icon: Scroll },

@@ -61,7 +61,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
     try {
       await rejectActivity(activity.id);
       toast("Kegiatan ditolak.");
-      setTimeout(() => window.location.href = "/dashboard/mentor/data-kegiatan", 1500);
+      setTimeout(() => window.location.href = "/dashboard/mentor/kegiatan", 1500);
     } catch (err: any) {
       alert(err.message || "Gagal menolak kegiatan.");
     }
@@ -86,7 +86,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
         <AlertCircle className="w-12 h-12 text-rose-400" />
         <p className="font-extrabold text-[#232F72] dark:text-white">Kegiatan tidak ditemukan</p>
         <p className="text-xs text-[#2F578A]/80 dark:text-[#F1F5F9]/50">ID: {activityId}</p>
-        <Link href="/dashboard/mentor/data-kegiatan" className="px-5 py-2.5 bg-[#232F72] text-white text-xs font-extrabold rounded-xl hover:brightness-110 transition-all">
+        <Link href="/dashboard/mentor/kegiatan" className="px-5 py-2.5 bg-[#232F72] text-white text-xs font-extrabold rounded-xl hover:brightness-110 transition-all">
           Kembali ke Daftar
         </Link>
       </div>
@@ -106,7 +106,7 @@ export default function MentorActivityDetailPage({ params }: PageProps) {
 
       {/* Back nav */}
       <div className="flex items-center justify-between">
-        <Link href="/dashboard/mentor/data-kegiatan" className="inline-flex items-center gap-2 text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/70 hover:text-[#232F72] dark:hover:text-white transition-colors">
+        <Link href="/dashboard/mentor/kegiatan" className="inline-flex items-center gap-2 text-xs font-bold text-[#2F578A] dark:text-[#F1F5F9]/70 hover:text-[#232F72] dark:hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Kembali ke Log Kegiatan
         </Link>
         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border ${

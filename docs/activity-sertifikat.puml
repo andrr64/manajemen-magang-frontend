@@ -1,0 +1,80 @@
+@startuml
+title Activity Diagram - Sertifikat (Mentor & Mahasiswa)
+
+skinparam ActivityBackgroundColor #E8F5E9
+skinparam ActivityBorderColor #2E7D32
+skinparam ActivityDiamondBackgroundColor #FFF9C4
+skinparam ActivityDiamondBorderColor #F57F17
+skinparam SwimlaneBorderColor #1565C0
+skinparam TitleFontSize 18
+skinparam ActivityFontSize 13
+
+|Mentor|
+start
+:Membuka halaman Sertifikat;
+
+|Sistem|
+:Mengambil data sertifikat mahasiswa\nbimbingan beserta statistik;
+:Menampilkan daftar sertifikat\ndan status unggahan;
+
+|Mentor|
+if (Aksi yang dilakukan?) then (Cari/Filter)
+  :Mencari nama/NIM atau memfilter\nberdasarkan status berkas;
+  |Sistem|
+  :Menyaring dan menampilkan hasil;
+  |Mentor|
+  :Melihat hasil pencarian;
+  stop
+else (Kelola/Unggah Sertifikat)
+  :Klik aksi "Unggah File" atau\n"Kelola File" pada baris tabel;
+  |Sistem|
+  :Mengarahkan ke halaman\nform unggah dokumen;
+  |Mentor|
+  :Mengunggah file PDF sertifikat;
+  |Sistem|
+  :Memproses pengunggahan file\ndan menyimpan tautan;
+  if (Apakah unggahan berhasil?) then (ya)
+    :Memperbarui status menjadi\n"Sudah Diunggah";
+    |Mentor|
+    :Melihat status berkas terbaru;
+    stop
+  else (tidak)
+    |Sistem|
+    :Menampilkan pesan error;
+    |Mentor|
+    stop
+  endif
+endif
+
+== Mahasiswa Mengunduh Sertifikat ==
+
+|Mahasiswa|
+start
+:Membuka halaman Sertifikat;
+
+|Sistem|
+:Mengambil data sertifikat\nberdasarkan pengguna yang login;
+
+if (Apakah ada periode magang?) then (tidak)
+  :Menampilkan pesan\n"Tidak ada periode magang aktif";
+  |Mahasiswa|
+  stop
+else (ya)
+  if (Status sertifikat?) then (Sudah Diunggah)
+    :Menampilkan detail sertifikat\ndan tombol unduhan;
+    |Mahasiswa|
+    :Klik tombol "Unduh / Buka Sertifikat";
+    |Sistem|
+    :Membuka/mengunduh file dokumen\nsertifikat dari tautan server;
+    |Mahasiswa|
+    :Menerima file sertifikat;
+    stop
+  else (Belum Diunggah)
+    |Sistem|
+    :Menampilkan status peringatan\n"Menunggu Sertifikat dari Mentor";
+    |Mahasiswa|
+    stop
+  endif
+endif
+
+@enduml

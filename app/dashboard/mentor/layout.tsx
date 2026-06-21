@@ -24,9 +24,9 @@ export default function MentorLayout({
         return "Dashboard";
       case "/dashboard/mentor/data-mahasiswa":
         return "Data Mahasiswa";
-      case "/dashboard/mentor/data-absensi":
+      case "/dashboard/mentor/absensi":
         return "Data Absensi";
-      case "/dashboard/mentor/data-kegiatan":
+      case "/dashboard/mentor/kegiatan":
         return "Data Kegiatan";
       case "/dashboard/mentor/logbook":
         return "Logbook Mingguan";
