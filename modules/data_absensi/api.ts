@@ -11,6 +11,7 @@ import {
   AbsensiMahasiswaStatResponse,
   AbsensiHarianMentorResponse,
   AbsensiMentorRequest,
+  RekapAbsensiResponse,
 } from "./types";
 
 // =====================================================================
@@ -93,7 +94,7 @@ export const absensiAPI = {
   getAbsensiHarianMentor: async (
     tanggal?: string,
     index: number = 1,
-    size: number = 20
+    size: number = 5
   ) => {
     const q = new URLSearchParams();
     if (tanggal) q.append("tanggal", tanggal);
@@ -134,10 +135,12 @@ export const absensiAPI = {
   // -------------------------------------------------------------------
   // 1. List absensi semua mahasiswa (mentor)
   // -------------------------------------------------------------------
-  getHistory: async (status?: string, namaMahasiswa?: string) => {
+  getHistory: async (status?: string, namaMahasiswa?: string, page: number = 1, size: number = 10) => {
     const q = new URLSearchParams();
     if (status && status !== "Semua") q.append("status", status.toLowerCase());
     if (namaMahasiswa) q.append("namaMahasiswa", namaMahasiswa);
+    q.append("index", String(page));
+    q.append("size", String(size));
 
     return executeHybridRequest<AbsensiResponse[]>(
       "Get attendance history list",
@@ -228,6 +231,35 @@ export const absensiAPI = {
     return executeHybridRequest<{ url: string }>(
       `Get surat keterangan ID: ${id}`,
       API_ROUTES.ABSENSI_SURAT_KET(id),
+      { method: "GET" }
+    );
+  },
+
+  // -------------------------------------------------------------------
+  // 6.5. Get Rekap Absensi (mentor/admin)
+  // -------------------------------------------------------------------
+  getRekapAbsensi: async (tanggalAwal: string, tanggalAkhir: string, mahasiswaId?: string) => {
+    const q = new URLSearchParams();
+    q.append("tanggalAwal", tanggalAwal);
+    q.append("tanggalAkhir", tanggalAkhir);
+    if (mahasiswaId) q.append("mahasiswaId", mahasiswaId);
+
+    return executeHybridRequest<RekapAbsensiResponse[]>(
+      "Get rekap absensi",
+      `${API_ROUTES.ABSENSI_REKAP}?${q.toString()}`,
+      { method: "GET" }
+    );
+  },
+
+  getRekapDetailAbsensi: async (tanggalAwal: string, tanggalAkhir: string, mahasiswaId: string) => {
+    const q = new URLSearchParams();
+    q.append("tanggalAwal", tanggalAwal);
+    q.append("tanggalAkhir", tanggalAkhir);
+    q.append("mahasiswaId", mahasiswaId);
+
+    return executeHybridRequest<import("./types").RekapDetailAbsensiResponse[]>(
+      "Get rekap detail absensi",
+      `${API_ROUTES.ABSENSI_REKAP}/detail?${q.toString()}`,
       { method: "GET" }
     );
   },

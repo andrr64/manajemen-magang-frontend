@@ -1,6 +1,6 @@
 import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
-import { Activity, CreateActivityRequest, ActivityStat, ActivityResponse, ActivityStatResponse } from "./types";
+import { Activity, CreateActivityRequest, ActivityStat, ActivityResponse, ActivityStatResponse, ActivityRekapResponse } from "./types";
 
 export interface MentorActivityLog {
   id: number | string;
@@ -167,5 +167,13 @@ export const kegiatanAPI = {
       const backend = res.data as unknown as ActivityStatResponse;
       return { ...res, data: { totalKegiatan: backend.totalKegiatan, disetujui: backend.disetujui, ditolak: backend.ditolak } };
     });
+  },
+
+  getRekapActivities: async () => {
+    return executeHybridRequest<ActivityRekapResponse[]>(
+      "Get all rekap activities",
+      API_ROUTES.KEGIATAN_REKAP,
+      { method: "GET" }
+    );
   },
 };

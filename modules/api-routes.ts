@@ -10,6 +10,7 @@ export const API_ROUTES = {
   ABSENSI_LIST:                "/api/absensi",
   ABSENSI_STATISTIK:           "/api/absensi/statistik",
   ABSENSI_EKSPOR:              "/api/absensi/ekspor",
+  ABSENSI_REKAP:               "/api/absensi/rekap",
   ABSENSI_VERIFY:    (id: string | number) => `/api/absensi/${id}/verifikasi`,
   ABSENSI_DELETE:    (id: string | number) => `/api/absensi/${id}`,
   ABSENSI_SURAT_KET: (id: string | number) => `/api/absensi/${id}/surat-keterangan`,
@@ -24,6 +25,7 @@ export const API_ROUTES = {
 
   // ─── KEGIATAN ─────────────────────────────────────────────────────────────
   KEGIATAN_LIST:       "/api/kegiatan",
+  KEGIATAN_REKAP:      "/api/kegiatan/rekap",
   KEGIATAN_STATISTIK:  "/api/kegiatan/statistik",
   KEGIATAN_DETAIL:   (id: string | number) => `/api/kegiatan/${id}`,
   KEGIATAN_FILE:     (id: string | number) => `/api/kegiatan/${id}/file`,
@@ -59,6 +61,7 @@ export const API_ROUTES = {
   // ─── DASHBOARD ────────────────────────────────────────────────────────────
   DASHBOARD_MAHASISWA_STATISTIK: "/api/dashboard-mahasiswa/statistik",
   DASHBOARD_MENTOR_STATISTIK:    "/api/dashboard-mentor/statistik",
+  DASHBOARD_MENTOR_STATISTIK_KEHADIRAN: "/api/dashboard-mentor/statistik-kehadiran",
   DASHBOARD_MENTOR_MAHASISWA:    "/api/dashboard-mentor/mahasiswa",
 
   // ─── MEDIA ────────────────────────────────────────────────────────────────

@@ -209,10 +209,28 @@ export default function StudentAttendancePage() {
     }
   };
 
+  const handleExportCSV = () => {
+    if (!profile) return;
+    const csvRows = ["No;Tanggal;Status;Waktu Mulai;Waktu Selesai"];
+    chronologicalHistory.forEach((log, index) => {
+      csvRows.push(`${index + 1};${log.date};${log.type};${log.checkIn};${log.checkOut}`);
+    });
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `rekap_absensi_${profile.name.replace(/\s+/g, '_')}_${today}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault(); e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-    else setDragActive(false);
+    else if (e.type === "dragleave") setDragActive(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -273,21 +291,33 @@ export default function StudentAttendancePage() {
             Preview Rekap
           </button>
         </div>
-        <button
-          onClick={downloadPDF}
-          disabled={isGenerating}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
-                     bg-[#232F72] dark:bg-[#36ADA3] text-white
-                     hover:bg-[#1a2256] dark:hover:bg-[#2eb1a6]
-                     disabled:opacity-60 disabled:cursor-not-allowed
-                     shadow-[0_0_14px_rgba(35,47,114,0.25)] dark:shadow-[0_0_14px_rgba(54,173,163,0.3)]
-                     transition-all active:scale-95 cursor-pointer"
-        >
-          {isGenerating
-            ? <><Loader2 className="w-4 h-4 animate-spin" /> Membuat PDF...</>
-            : <><Download className="w-4 h-4" /> Download Rekap Absensi</>
-          }
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
+                       bg-emerald-600 dark:bg-emerald-500 text-white
+                       hover:bg-emerald-700 dark:hover:bg-emerald-600
+                       shadow-[0_0_14px_rgba(5,150,105,0.25)] dark:shadow-[0_0_14px_rgba(16,185,129,0.3)]
+                       transition-all active:scale-95 cursor-pointer"
+          >
+            <Download className="w-4 h-4" /> CSV
+          </button>
+          <button
+            onClick={downloadPDF}
+            disabled={isGenerating}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
+                       bg-[#232F72] dark:bg-[#36ADA3] text-white
+                       hover:bg-[#1a2256] dark:hover:bg-[#2eb1a6]
+                       disabled:opacity-60 disabled:cursor-not-allowed
+                       shadow-[0_0_14px_rgba(35,47,114,0.25)] dark:shadow-[0_0_14px_rgba(54,173,163,0.3)]
+                       transition-all active:scale-95 cursor-pointer"
+          >
+            {isGenerating
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Membuat PDF...</>
+              : <><Download className="w-4 h-4" /> Download Rekap Absensi</>
+            }
+          </button>
+        </div>
       </div>
 
       {activeTab === "laporan" && (

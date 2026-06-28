@@ -21,9 +21,9 @@ import {
   Search,
   Scale
 } from "lucide-react";
-import { studentsData, Student } from "./data-mahasiswa/studentsData";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { useIam } from "@/modules/iam/hooks";
+import { useAttendanceStatsByDateRange } from "@/modules/dashboard_mentor/hooks";
 
 export default function DashboardHome() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,27 +43,49 @@ export default function DashboardHome() {
     return studentsList.filter(s => s.status === "Selesai").length;
   }, [studentsList]);
 
-  // Calculate cumulative attendance statistics dynamically
+  const [attendanceFilter, setAttendanceFilter] = useState<"Minggu ini" | "Bulan ini" | "Tahun ini">("Tahun ini");
+  
+  const { tanggalAwal, tanggalAkhir } = useMemo(() => {
+    const today = new Date();
+    let start = new Date(today);
+    
+    if (attendanceFilter === "Minggu ini") {
+      const day = start.getDay();
+      const diff = start.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+      start = new Date(start.setDate(diff));
+    } else if (attendanceFilter === "Bulan ini") {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+    } else if (attendanceFilter === "Tahun ini") {
+      start = new Date(today.getFullYear(), 0, 1);
+    }
+    
+    const formatDate = (date: Date) => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+    
+    return {
+      tanggalAwal: formatDate(start),
+      tanggalAkhir: formatDate(today)
+    };
+  }, [attendanceFilter]);
+
+  const { stats: apiAttendanceStats, isLoading: isAttendanceLoading } = useAttendanceStatsByDateRange(tanggalAwal, tanggalAkhir);
+  
   const attendanceStats = useMemo(() => {
-    let totalHadir = 0;
-    let totalSakit = 0;
-    let totalIzin = 0;
-
-    studentsList.forEach(s => {
-      if (s.attendance) {
-        totalHadir += s.attendance.present || 0;
-        totalSakit += s.attendance.sick || 0;
-        totalIzin += s.attendance.leave || 0;
-      }
-    });
-
+    const totalHadir = apiAttendanceStats?.jumlahHadir || 0;
+    const totalIzin = apiAttendanceStats?.jumlahIzin || 0;
+    const totalSakit = apiAttendanceStats?.jumlahSakit || 0;
+    
     const total = totalHadir + totalSakit + totalIzin;
     const pctHadir = total > 0 ? ((totalHadir / total) * 100).toFixed(1) : "0.0";
     const pctSakit = total > 0 ? ((totalSakit / total) * 100).toFixed(1) : "0.0";
     const pctIzin = total > 0 ? ((totalIzin / total) * 100).toFixed(1) : "0.0";
-
+    
     return { totalHadir, totalSakit, totalIzin, total, pctHadir, pctSakit, pctIzin };
-  }, [studentsList]);
+  }, [apiAttendanceStats]);
 
   // Filter students directory on home page table
   const filteredStudents = useMemo(() => {
@@ -165,9 +187,26 @@ export default function DashboardHome() {
               <span className="text-[10px] uppercase font-bold tracking-wider text-[#2F578A] dark:text-[#F1F5F9]/70 block">
                 Diagram Rekap Absensi
               </span>
-              <h4 className="text-sm font-extrabold text-[#232F72] dark:text-[#FFFFFF] mt-1">
-                Akumulasi Presensi Keseluruhan Mahasiswa
-              </h4>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-1 gap-3">
+                <h4 className="text-sm font-extrabold text-[#232F72] dark:text-[#FFFFFF]">
+                  Akumulasi Presensi Keseluruhan Mahasiswa
+                </h4>
+                <div className="flex bg-[#F1F5F9] dark:bg-[#121358] p-1 rounded-xl">
+                  {["Minggu ini", "Bulan ini", "Tahun ini"].map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setAttendanceFilter(filter as any)}
+                      className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all ${
+                        attendanceFilter === filter 
+                          ? "bg-[#36ADA3] text-white shadow-sm" 
+                          : "text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-[#E2E8F0] dark:hover:bg-[#232F72]"
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* STACKED PROGRESS DIAGRAM */}

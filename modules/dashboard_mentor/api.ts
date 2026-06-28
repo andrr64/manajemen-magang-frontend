@@ -1,6 +1,6 @@
-﻿import { executeHybridRequest } from "../api-client";
+import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
-import { DashboardStatResponse, RegisterStudentRequest, SearchStudentResponse } from "./types";
+import { DashboardStatResponse, RegisterStudentRequest, SearchStudentResponse, AttendanceStatResponse } from "./types";
 
 
 
@@ -61,6 +61,26 @@ export const dashboardMentorAPI = {
         return {
           ...res,
           data: res.data as unknown as SearchStudentResponse
+        };
+      }
+      return res;
+    });
+  },
+
+  /**
+   * Mengambil data statistik kehadiran berdasarkan rentang tanggal.
+   */
+  getAttendanceStatsByDateRange: async (tanggalAwal: string, tanggalAkhir: string) => {
+    const url = `${API_ROUTES.DASHBOARD_MENTOR_STATISTIK_KEHADIRAN}?tanggalAwal=${tanggalAwal}&tanggalAkhir=${tanggalAkhir}`;
+    return executeHybridRequest<AttendanceStatResponse>(
+      "Get attendance stats by date range",
+      url,
+      { method: "GET" }
+    ).then((res) => {
+      if (true) {
+        return {
+          ...res,
+          data: res.data as unknown as AttendanceStatResponse
         };
       }
       return res;
