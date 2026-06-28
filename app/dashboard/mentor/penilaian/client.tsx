@@ -14,17 +14,19 @@ import {
   RefreshCw,
   Sparkles
 } from "lucide-react";
-import { useStudentAssessments, usePenilaianStats } from "@/modules/penilaian/hooks";
+import { useStudentAssessments, usePenilaianStats, usePenilaianRekap } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { DataTable } from "@/components/ui/data-table";
 import { PageHeader, StatsGrid, StatItem } from "@/components/shared";
 
 export default function MentorPenilaianPage() {
+  const [activeTab, setActiveTab] = useState<"data" | "ekspor">("data");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
 
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { stats: apiStats } = usePenilaianStats(searchQuery);
+  const { rekap, isLoading: isRekapLoading } = usePenilaianRekap();
   const { rawStudents } = useStudents();
   const studentsList = rawStudents;
 
@@ -80,6 +82,14 @@ export default function MentorPenilaianPage() {
     return { total, graded, pending, ratio };
   }, [enrichedStudents]);
 
+  const rekapList = useMemo(() => {
+    if (!rekap) return [];
+    return Object.entries(rekap).map(([nama, penilaians]) => ({
+      nama,
+      penilaian: penilaians && penilaians.length > 0 ? penilaians[0] : null
+    }));
+  }, [rekap]);
+
   return (
     <div className="space-y-6">
 
@@ -93,7 +103,32 @@ export default function MentorPenilaianPage() {
         return <StatsGrid stats={statsConfig} gridClass="grid-cols-2" />;
       })()}
 
-      {/* FILTER PANEL */}
+      <div className="flex border-b border-[#2F578A]/20 dark:border-[#2F578A]/50 mt-4">
+        <button
+          onClick={() => setActiveTab("data")}
+          className={`pb-3 px-4 text-sm font-extrabold uppercase tracking-wide transition-all ${
+            activeTab === "data"
+              ? "border-b-2 border-[#36ADA3] text-[#232F72] dark:text-white"
+              : "text-[#2F578A]/60 dark:text-[#F1F5F9]/40 hover:text-[#232F72] dark:hover:text-[#F1F5F9]"
+          }`}
+        >
+          Data Penilaian
+        </button>
+        <button
+          onClick={() => setActiveTab("ekspor")}
+          className={`pb-3 px-4 text-sm font-extrabold uppercase tracking-wide transition-all ${
+            activeTab === "ekspor"
+              ? "border-b-2 border-[#36ADA3] text-[#232F72] dark:text-white"
+              : "text-[#2F578A]/60 dark:text-[#F1F5F9]/40 hover:text-[#232F72] dark:hover:text-[#F1F5F9]"
+          }`}
+        >
+          Ekspor Rekap
+        </button>
+      </div>
+
+      {activeTab === "data" && (
+        <div className="space-y-6">
+          {/* FILTER PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
@@ -229,6 +264,63 @@ export default function MentorPenilaianPage() {
           },
         ]}
       />
+        </div>
+      )}
+
+      {activeTab === "ekspor" && (
+        <div className="space-y-6">
+          <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-[#36ADA3]" />
+              <h4 className="font-extrabold text-lg text-[#232F72] dark:text-[#FFFFFF]">Rekapitulasi Penilaian Mahasiswa</h4>
+            </div>
+            
+            <DataTable
+              data={rekapList}
+              loading={isRekapLoading}
+              emptyMessage="Belum ada data rekapitulasi penilaian."
+              className="rounded-3xl"
+              columns={[
+                {
+                  key: "nama",
+                  label: "Nama Mahasiswa",
+                  render: (row) => (
+                    <span className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] text-sm">{row.nama}</span>
+                  )
+                },
+                {
+                  key: "detail",
+                  label: "Detail Penilaian",
+                  render: (row) => {
+                    const p = row.penilaian;
+                    if (!p) {
+                      return <span className="text-amber-600 dark:text-amber-400 font-bold italic text-sm">Belum di nilai</span>;
+                    }
+                    return (
+                      <div className="w-full max-w-lg bg-[#F8FAFC] dark:bg-[#232F72]/30 p-4 rounded-xl border border-[#2F578A]/20 dark:border-[#2F578A]/50">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-xs font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80">
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kinerja Pekerjaan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kinerja}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kedisiplinan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kedisiplinan}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Tanggung Jawab:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.tanggungJawab}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Komunikasi:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.komunikasi}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Sikap & Etika:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.sikap}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kerapihan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kerapihan}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kehadiran:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.absensi}</span></div>
+                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kerjasama Tim:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kerjasama}</span></div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/50">
+                          <span className="font-extrabold text-[#232F72] dark:text-white text-xs block mb-1">Catatan Evaluasi:</span>
+                          <p className="text-xs font-medium text-[#2F578A] dark:text-[#F1F5F9]/80 italic bg-white dark:bg-[#121358]/50 p-2 rounded-lg border border-[#2F578A]/10">"{p.catatan || 'Tidak ada catatan.'}"</p>
+                        </div>
+                      </div>
+                    );
+                  }
+                }
+              ]}
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );
