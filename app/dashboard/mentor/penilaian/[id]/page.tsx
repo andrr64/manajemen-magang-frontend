@@ -22,9 +22,12 @@ import {
   Loader2,
   CalendarCheck,
   Scale,
-  Briefcase
+  Briefcase,
+  Download
 } from "lucide-react";
 import { BackNavBar, PageLoader, NotFoundBlock, ModalActions } from "@/components/shared";
+import ttdImage from "../../../mahasiswa/absensi/assets/ttd-pak-agus.png";
+import { useDownloadPenilaianMentorPDF } from "../useDownloadPenilaianMentorPDF";
 import { studentsData } from "../../data-mahasiswa/studentsData";
 import { useStudentAssessments } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
@@ -261,6 +264,45 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
     return { average: finalAverage, predicate, status, color };
   }, [grades]);
 
+  // Setup PDF generation hook and live rekap conversion
+  const [ttdBase64, setTtdBase64] = useState<string | null>(null);
+  useEffect(() => {
+    const src = typeof ttdImage === "string" ? ttdImage : (ttdImage as any).src;
+    const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
+      setTtdBase64(canvas.toDataURL("image/png"));
+    };
+  }, []);
+
+  const currentRekapList = useMemo(() => {
+    if (!student) return [];
+    const p: any = {
+      kinerja: grades.kinerja,
+      kedisiplinan: grades.kedisiplinan,
+      tanggungJawab: grades.tanggungjawab,
+      komunikasi: grades.komunikasi,
+      sikap: grades.sikap,
+      kerapihan: grades.kerapihan,
+      absensi: grades.absensi,
+      kerjasama: grades.kerjasama,
+      catatan: catatan
+    };
+    return [{
+      nama: student.name,
+      penilaian: p
+    }];
+  }, [student, grades, catatan]);
+
+  const { download: downloadPDF, isGenerating: isGeneratingPDF } = useDownloadPenilaianMentorPDF(
+    currentRekapList as any, ttdBase64
+  );
+
   // Form Submission
   const handleSaveAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -413,18 +455,29 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
           <div className="glass-card border border-slate-200/50 dark:border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-sm bg-white dark:bg-[#070e24]/40 space-y-6">
             
             {/* Form Title banner */}
-            <div className="flex items-start gap-4 pb-5 border-b border-slate-100 dark:border-slate-800/80">
-              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/40 dark:border-indigo-900/40 rounded-2xl shadow-sm">
-                <Award className="w-6 h-6" />
+            <div className="flex items-start justify-between flex-wrap gap-4 pb-5 border-b border-slate-100 dark:border-slate-800/80">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/40 dark:border-indigo-900/40 rounded-2xl shadow-sm">
+                  <Award className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-black text-base md:text-lg text-slate-900 dark:text-white leading-tight">
+                    Formulir Evaluasi 7 Kriteria Kompetensi Magang
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Lengkapi isian nilai (0 - 100) dan lampirkan berkas bukti pendukung (*evidence*) di setiap parameter penilaian.
+                  </p>
+                </div>
               </div>
-              <div className="space-y-1">
-                <h4 className="font-black text-base md:text-lg text-slate-900 dark:text-white leading-tight">
-                  Formulir Evaluasi 7 Kriteria Kompetensi Magang
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                  Lengkapi isian nilai (0 - 100) dan lampirkan berkas bukti pendukung (*evidence*) di setiap parameter penilaian.
-                </p>
-              </div>
+              <button
+                onClick={downloadPDF}
+                type="button"
+                disabled={isGeneratingPDF}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#232F72] hover:bg-[#2F578A] text-white rounded-xl text-xs font-bold transition-all shadow-md disabled:opacity-50"
+              >
+                {isGeneratingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span>{isGeneratingPDF ? "Membuat PDF..." : "Ekspor ke PDF"}</span>
+              </button>
             </div>
 
             {/* Assessment Submit Form Wrapper */}
