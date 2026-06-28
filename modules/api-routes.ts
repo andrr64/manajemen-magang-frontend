@@ -43,6 +43,8 @@ export const API_ROUTES = {
   PENILAIAN_LIST:        "/api/penilaian",
   PENILAIAN_STATISTIK:   "/api/penilaian/statistik",
   PENILAIAN_MAHASISWA:   "/api/penilaian/mahasiswa/nilai",
+  PENILAIAN_REKAP:       "/api/penilaian/rekap",
+  PENILAIAN_REKAP_MAHASISWA: (id: string | number) => `/api/penilaian/rekap/${id}`,
 
   // ─── SERTIFIKAT ───────────────────────────────────────────────────────────
   SERTIFIKAT_LIST:        "/api/sertifikat",
