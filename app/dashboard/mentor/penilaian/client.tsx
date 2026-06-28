@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -12,12 +12,16 @@ import {
   School,
   ChevronRight,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Download,
+  Loader2
 } from "lucide-react";
 import { useStudentAssessments, usePenilaianStats, usePenilaianRekap } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { DataTable } from "@/components/ui/data-table";
 import { PageHeader, StatsGrid, StatItem } from "@/components/shared";
+import ttdImage from "../../mahasiswa/absensi/assets/ttd-pak-agus.png";
+import { useDownloadPenilaianMentorPDF } from "./useDownloadPenilaianMentorPDF";
 
 export default function MentorPenilaianPage() {
   const [activeTab, setActiveTab] = useState<"data" | "ekspor">("data");
@@ -89,6 +93,25 @@ export default function MentorPenilaianPage() {
       penilaian: penilaians && penilaians.length > 0 ? penilaians[0] : null
     }));
   }, [rekap]);
+
+  const [ttdBase64, setTtdBase64] = useState<string | null>(null);
+  useEffect(() => {
+    const src = typeof ttdImage === "string" ? ttdImage : (ttdImage as any).src;
+    const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
+      setTtdBase64(canvas.toDataURL("image/png"));
+    };
+  }, []);
+
+  const { download: downloadPDF, isGenerating: isGeneratingPDF } = useDownloadPenilaianMentorPDF(
+    rekapList, ttdBase64
+  );
 
   return (
     <div className="space-y-6">
@@ -270,54 +293,110 @@ export default function MentorPenilaianPage() {
       {activeTab === "ekspor" && (
         <div className="space-y-6">
           <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-[#36ADA3]" />
-              <h4 className="font-extrabold text-lg text-[#232F72] dark:text-[#FFFFFF]">Rekapitulasi Penilaian Mahasiswa</h4>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#36ADA3]" />
+                <h4 className="font-extrabold text-lg text-[#232F72] dark:text-[#FFFFFF]">Rekapitulasi Penilaian Mahasiswa</h4>
+              </div>
+              <button
+                onClick={downloadPDF}
+                disabled={isGeneratingPDF || rekapList.length === 0}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#232F72] hover:bg-[#2F578A] text-white rounded-xl text-xs font-bold transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
+              >
+                {isGeneratingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span>{isGeneratingPDF ? "Membuat PDF..." : "Ekspor ke PDF"}</span>
+              </button>
             </div>
             
-            <DataTable
-              data={rekapList}
-              loading={isRekapLoading}
-              emptyMessage="Belum ada data rekapitulasi penilaian."
-              className="rounded-3xl"
-              columns={[
-                {
-                  key: "nama",
-                  label: "Nama Mahasiswa",
-                  render: (row) => (
-                    <span className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] text-sm">{row.nama}</span>
-                  )
-                },
-                {
-                  key: "detail",
-                  label: "Detail Penilaian",
-                  render: (row) => {
-                    const p = row.penilaian;
-                    if (!p) {
-                      return <span className="text-amber-600 dark:text-amber-400 font-bold italic text-sm">Belum di nilai</span>;
-                    }
-                    return (
-                      <div className="w-full max-w-lg bg-[#F8FAFC] dark:bg-[#232F72]/30 p-4 rounded-xl border border-[#2F578A]/20 dark:border-[#2F578A]/50">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-xs font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80">
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kinerja Pekerjaan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kinerja}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kedisiplinan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kedisiplinan}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Tanggung Jawab:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.tanggungJawab}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Komunikasi:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.komunikasi}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Sikap & Etika:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.sikap}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kerapihan:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kerapihan}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kehadiran:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.absensi}</span></div>
-                          <div className="flex justify-between border-b border-[#2F578A]/10 pb-1"><span>Kerjasama Tim:</span> <span className="font-bold text-[#232F72] dark:text-white">{p.kerjasama}</span></div>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/50">
-                          <span className="font-extrabold text-[#232F72] dark:text-white text-xs block mb-1">Catatan Evaluasi:</span>
-                          <p className="text-xs font-medium text-[#2F578A] dark:text-[#F1F5F9]/80 italic bg-white dark:bg-[#121358]/50 p-2 rounded-lg border border-[#2F578A]/10">"{p.catatan || 'Tidak ada catatan.'}"</p>
-                        </div>
-                      </div>
-                    );
-                  }
-                }
-              ]}
-            />
+            <div className="overflow-x-auto rounded-xl border border-[#2F578A]/20 dark:border-[#2F578A]/50">
+              <table className="w-full text-left border-collapse text-xs md:text-sm">
+                <thead>
+                  <tr className="bg-[#232F72] text-white">
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-12 text-center">No</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[30%]">Nama Mahasiswa</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[40%]">Kriteria Penilaian</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[20%] text-center">Nilai</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-[#121358]/40">
+                  {isRekapLoading ? (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-[#2F578A] dark:text-white font-semibold">
+                        Memuat data rekapitulasi...
+                      </td>
+                    </tr>
+                  ) : rekapList.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-[#2F578A] dark:text-white font-semibold">
+                        Belum ada data rekapitulasi penilaian.
+                      </td>
+                    </tr>
+                  ) : (
+                    rekapList.map((row, index) => {
+                      const p = row.penilaian;
+                      const isEven = index % 2 === 0;
+                      const rowClass = isEven ? "bg-white dark:bg-[#121358]/20" : "bg-[#F8FAFC] dark:bg-[#232F72]/20";
+
+                      if (!p) {
+                        return (
+                          <tr key={index} className={`border-b border-[#2F578A]/20 dark:border-[#2F578A]/50 ${rowClass}`}>
+                            <td className="px-4 py-3 text-center font-bold text-[#232F72] dark:text-white">{index + 1}</td>
+                            <td className="px-4 py-3 font-extrabold text-[#232F72] dark:text-white">{row.nama}</td>
+                            <td className="px-4 py-3 font-semibold text-amber-600 dark:text-amber-400 italic">Belum di nilai</td>
+                            <td className="px-4 py-3 font-bold text-center text-[#232F72] dark:text-white">-</td>
+                          </tr>
+                        );
+                      }
+
+                      const kriteria = [
+                        { label: "Kinerja Pekerjaan", value: p.kinerja },
+                        { label: "Kedisiplinan", value: p.kedisiplinan },
+                        { label: "Tanggung Jawab", value: p.tanggungJawab },
+                        { label: "Komunikasi", value: p.komunikasi },
+                        { label: "Sikap & Etika Kerja", value: p.sikap },
+                        { label: "Kerapihan", value: p.kerapihan },
+                        { label: "Kehadiran", value: p.absensi },
+                        { label: "Kerjasama Tim", value: p.kerjasama },
+                        { label: "Catatan", value: p.catatan || "-" }
+                      ];
+
+                      return (
+                        <React.Fragment key={index}>
+                          <tr className={`border-b border-[#2F578A]/10 dark:border-[#2F578A]/20 ${rowClass}`}>
+                            <td className="px-4 py-3 text-center font-bold text-[#232F72] dark:text-white align-top" rowSpan={kriteria.length}>
+                              {index + 1}
+                            </td>
+                            <td className="px-4 py-3 font-extrabold text-[#232F72] dark:text-white align-top" rowSpan={kriteria.length}>
+                              {row.nama}
+                            </td>
+                            <td className="px-4 py-2 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+                              {kriteria[0].label}
+                            </td>
+                            <td className="px-4 py-2 font-bold text-center text-[#232F72] dark:text-white border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+                              {kriteria[0].value}
+                            </td>
+                          </tr>
+                          {kriteria.slice(1).map((k, kIdx) => {
+                            const isLast = kIdx === kriteria.length - 2;
+                            return (
+                              <tr key={`${index}-${kIdx}`} className={rowClass}>
+                                <td className={`px-4 py-2 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80 ${isLast ? 'border-b border-[#2F578A]/20 dark:border-[#2F578A]/50' : 'border-b border-[#2F578A]/10 dark:border-[#2F578A]/30'}`}>
+                                  {k.label}
+                                </td>
+                                <td className={`px-4 py-2 font-bold text-center text-[#232F72] dark:text-white ${isLast ? 'border-b border-[#2F578A]/20 dark:border-[#2F578A]/50' : 'border-b border-[#2F578A]/10 dark:border-[#2F578A]/30'}`}>
+                                  {k.value}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
           </div>
         </div>
       )}
