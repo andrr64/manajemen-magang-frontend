@@ -176,4 +176,12 @@ export const kegiatanAPI = {
       { method: "GET" }
     );
   },
+
+  getRekapActivitiesByMahasiswaId: async (mahasiswaId: string) => {
+    return executeHybridRequest<ActivityRekapResponse[]>(
+      `Get rekap activities for mahasiswa ${mahasiswaId}`,
+      `${API_ROUTES.KEGIATAN_REKAP}/${mahasiswaId}`,
+      { method: "GET" }
+    );
+  },
 };

@@ -334,7 +334,7 @@ export default function MentorActivitiesPage() {
             key: "nama",
             label: "Nama",
             render: (act) => (
-              <Link href={`/dashboard/mentor/kegiatan/${act.id}`} className="flex items-center gap-3">
+              <Link href={`/dashboard/mentor/kegiatan/${act.studentId}`} className="flex items-center gap-3">
                 <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${act.studentAvatar} text-white font-extrabold flex items-center justify-center text-xs shadow-inner shadow-[#232F72]/10 group-hover:scale-105 transition-transform`}>
                   {(act?.studentName || "U").split(" ").map(n => n[0]).join("").substring(0, 2)}
                 </div>
@@ -353,7 +353,7 @@ export default function MentorActivitiesPage() {
             key: "nim",
             label: "ID Mahasiswa",
             render: (act) => (
-              <Link href={`/dashboard/mentor/kegiatan/${act.id}`} className="font-bold text-[#232F72]/80 dark:text-[#F1F5F9] block py-1">
+              <Link href={`/dashboard/mentor/kegiatan/${act.studentId}`} className="font-bold text-[#232F72]/80 dark:text-[#F1F5F9] block py-1">
                 {act.studentNim}
               </Link>
             ),
@@ -362,7 +362,7 @@ export default function MentorActivitiesPage() {
             key: "activityName",
             label: "Nama Kegiatan",
             render: (act) => (
-              <Link href={`/dashboard/mentor/kegiatan/${act.id}`} className="font-bold text-[#232F72] dark:text-[#F1F5F9] block max-w-[240px]">
+              <Link href={`/dashboard/mentor/kegiatan/${act.studentId}`} className="font-bold text-[#232F72] dark:text-[#F1F5F9] block max-w-[240px]">
                 {act.activityName}
               </Link>
             ),

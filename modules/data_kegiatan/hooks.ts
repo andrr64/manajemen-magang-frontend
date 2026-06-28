@@ -173,7 +173,7 @@ export function useActivityStats(status?: string, namaMahasiswa?: string) {
   return { stats, isLoading, error, refreshStats: fetchStats };
 }
 
-export function useRekapKegiatan() {
+export function useRekapKegiatan(mahasiswaId?: string) {
   const [data, setData] = useState<ActivityRekapResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -182,7 +182,9 @@ export function useRekapKegiatan() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await kegiatanAPI.getRekapActivities();
+      const res = mahasiswaId 
+        ? await kegiatanAPI.getRekapActivitiesByMahasiswaId(mahasiswaId)
+        : await kegiatanAPI.getRekapActivities();
       setData(res.data);
     } catch (err: any) {
       const msg = err.message || "Gagal memuat rekap kegiatan.";
@@ -191,7 +193,7 @@ export function useRekapKegiatan() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mahasiswaId]);
 
   useEffect(() => { fetchRekap(); }, [fetchRekap]);
 
