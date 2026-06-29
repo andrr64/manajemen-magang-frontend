@@ -269,8 +269,7 @@ export default function DashboardHome() {
         {/* Table Header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h4 className="font-extrabold text-base text-[#232F72] dark:text-[#FFFFFF]">Direktori Kontak & Mahasiswa Bimbingan</h4>
-            <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70">Daftar lengkap parameter profil pribadi dan rincian kontak akademik mahasiswa bimbingan.</p>
+            <h4 className="font-extrabold text-base text-[#232F72] dark:text-[#FFFFFF]">Daftar Mahasiswa Magang</h4>
           </div>
           
           <div className="relative w-full sm:w-64">

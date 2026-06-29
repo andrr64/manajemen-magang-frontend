@@ -293,16 +293,6 @@ export default function StudentAttendancePage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
-                       bg-emerald-600 dark:bg-emerald-500 text-white
-                       hover:bg-emerald-700 dark:hover:bg-emerald-600
-                       shadow-[0_0_14px_rgba(5,150,105,0.25)] dark:shadow-[0_0_14px_rgba(16,185,129,0.3)]
-                       transition-all active:scale-95 cursor-pointer"
-          >
-            <Download className="w-4 h-4" /> CSV
-          </button>
-          <button
             onClick={downloadPDF}
             disabled={isGenerating}
             className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
