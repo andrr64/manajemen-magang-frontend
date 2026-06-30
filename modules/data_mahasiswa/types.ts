@@ -44,6 +44,32 @@ export interface StudentStatResponse {
   totalAktifTanpaPenilaian: number;
 }
 
+export interface AttendanceRecap {
+  hadir: number;
+  izin: number;
+  sakit: number;
+  tidakHadir: number;
+}
+
+export interface ActivityResponse {
+  id: string;
+  mahasiswaId: string;
+  namaMahasiswa: string;
+  judul: string;
+  deskripsi: string;
+  waktu: string;
+  fileUrls: string[];
+  status: string;
+  namaMentor: string | null;
+}
+
+export interface StudentDetailResponse {
+  mahasiswa: StudentResponse;
+  rekapitulasiKehadiran: AttendanceRecap;
+  dataKegiatan: ActivityResponse[];
+  totalNilai: number | null;
+}
+
 // =====================================================================
 // STUDENT — shape yang dipakai komponen UI
 // =====================================================================
@@ -82,6 +108,7 @@ export interface Student {
   namaMentor?: string | null;
   userId?: string | null;
   idUniversity?: number | null;
+  dataKegiatan?: ActivityResponse[];
 }
 
 // =====================================================================

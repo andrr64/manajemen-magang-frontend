@@ -454,7 +454,7 @@ export default function MentorActivitiesPage() {
                 }`}>
                   {act.status}
                 </span>
-                <Link href={`/dashboard/mentor/kegiatan/${act.id}`} className="p-1 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-[#232F72] dark:hover:text-[#FFFFFF] transition-colors ml-1">
+                <Link href={`/dashboard/mentor/kegiatan/${act.studentId}`} className="p-1 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 hover:text-[#232F72] dark:hover:text-[#FFFFFF] transition-colors ml-1">
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>

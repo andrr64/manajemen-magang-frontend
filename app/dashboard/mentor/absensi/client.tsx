@@ -12,6 +12,7 @@ import {
   useAbsensiHarianMentor,
   useSubmitAbsensiMentor,
   useRekapAbsensi,
+  useAbsensiHarianMentorStatistik,
 } from "@/modules/data_absensi/hooks";
 import Image from "next/image";
 import Link from "next/link";
@@ -85,6 +86,15 @@ export default function MentorAttendancePage() {
   } = useAbsensiHarianMentor(selectedDate);
 
   const { submit: submitMentor } = useSubmitAbsensiMentor();
+  
+  // live stats from backend harian data
+  const { stats: harianStats, refreshStats: refreshHarianStats } = useAbsensiHarianMentorStatistik(selectedDate);
+
+  const handleDateChange = useCallback((dir: "prev" | "next") => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + (dir === "next" ? 1 : -1));
+    setSelectedDate(d.toISOString().split("T")[0]);
+  }, [selectedDate]);
 
   // Initialise default "hadir" for any alfa row not yet picked
   useEffect(() => {
@@ -110,15 +120,9 @@ export default function MentorAttendancePage() {
       toast(err.message || "Gagal mencatat absensi.");
     } finally {
       setSubmittingIds(prev => { const s = new Set(prev); s.delete(m.mahasiswaId); return s; });
+      refreshHarianStats();
     }
-  }, [rowStatus, selectedDate, submitMentor, refreshHarian]);
-
-  // live stats from harian data
-  const harianStats = useMemo(() => ({
-    hadir:  harianData.filter(m => m.absensiStatus === "hadir").length,
-    alfa:   harianData.filter(m => m.absensiStatus === "alpha").length,
-    off:    harianData.filter(m => m.absensiStatus === "izin" || m.absensiStatus === "sakit").length,
-  }), [harianData]);
+  }, [rowStatus, selectedDate, submitMentor, refreshHarian, refreshHarianStats]);
 
   // ── EKSPOR REKAP ABSENSI BARU ─────────────────────────────────────────
   const [eksporFilter, setEksporFilter] = useState<"Minggu ini" | "Bulan ini" | "Tahun ini">("Tahun ini");
@@ -199,7 +203,10 @@ export default function MentorAttendancePage() {
   } = useAttendance();
   const { rawStudents } = useStudents();
 
-  useEffect(() => { refreshHistory(statusFilter, searchQuery); }, [statusFilter, searchQuery, refreshHistory]);
+  // API call sekarang menggunakan selectedRekapDate
+  useEffect(() => { 
+    refreshHistory(statusFilter, searchQuery, selectedRekapDate || undefined); 
+  }, [statusFilter, searchQuery, selectedRekapDate, refreshHistory]);
 
   const enrichedLogs = useMemo(() => attendanceLogs?.map(log => {
     const student = rawStudents.find(s => String(s.id) === String(log.studentId));
@@ -222,11 +229,12 @@ export default function MentorAttendancePage() {
   }), [attendanceLogs, rawStudents]);
 
   const filteredLogs = enrichedLogs.filter(log => {
+    // Status and Search are handled in backend, but frontend filter for safety.
+    // Date filter is now handled in backend.
     const q = searchQuery.toLowerCase().trim();
     const matchSearch = q === "" || log.studentName.toLowerCase().includes(q) || log.studentNim.toLowerCase().includes(q);
     const matchStatus = statusFilter === "Semua" || log.displayType === statusFilter;
-    const matchDate = !selectedRekapDate || log.tanggalISO === selectedRekapDate;
-    return matchSearch && matchStatus && matchDate;
+    return matchSearch && matchStatus;
   });
 
   const getDocumentUrl = async (logId: string | number, fallbackKey?: string | null): Promise<string | null> => {
@@ -248,7 +256,7 @@ export default function MentorAttendancePage() {
   const handleVerifyLog = async (logId: string | number, studentName: string) => {
     try {
       await verify(logId, "Diverifikasi");
-      await refreshHistory(statusFilter, searchQuery);
+      await refreshHistory(statusFilter, searchQuery, selectedRekapDate || undefined);
       toast(`Absensi ${studentName} disetujui!`);
     } catch (err: any) { alert(err.message || "Gagal menyetujui."); }
   };
@@ -267,10 +275,16 @@ export default function MentorAttendancePage() {
     finally { setIsExporting(false); }
   };
 
+  const { stats: rekapTabStats } = useAbsensiHarianMentorStatistik(selectedRekapDate || undefined);
+
+  const displayStats = activeTab === "catat" 
+    ? { hadir: harianStats.hadir, alfa: harianStats.alfa, off: harianStats.off, date: formatDateID(selectedDate).split(",")[0] }
+    : { hadir: rekapTabStats.hadir, alfa: rekapTabStats.alfa, off: rekapTabStats.off, date: selectedRekapDate ? formatDateID(selectedRekapDate).split(",")[0] : "Semua Waktu" };
+
   const statsConfig: StatItem[] = [
-    { label: "Hadir",          value: harianStats.hadir, desc: formatDateID(selectedDate).split(",")[0], colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: UserCheck },
-    { label: "Belum Diabsensi",value: harianStats.alfa,  desc: "Perlu dicatat",  colorClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-200/50 dark:border-rose-900/40", icon: Clock },
-    { label: "Izin / Sakit",   value: harianStats.off,   desc: "Izin atau sakit",   colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40", icon: Coffee },
+    { label: "Hadir",          value: displayStats.hadir, desc: displayStats.date, colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40", icon: UserCheck },
+    { label: "Belum Diabsensi",value: displayStats.alfa,  desc: "Perlu dicatat",  colorClass: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-200/50 dark:border-rose-900/40", icon: Clock },
+    { label: "Izin / Sakit",   value: displayStats.off,   desc: "Izin atau sakit",   colorClass: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200/50 dark:border-blue-900/40", icon: Coffee },
   ];
 
   return (

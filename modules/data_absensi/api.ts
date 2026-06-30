@@ -109,6 +109,21 @@ export const absensiAPI = {
   },
 
   /**
+   * GET /api/absensi/mentor/harian/statistik
+   * Dapatkan statistik (hadir, alfa, off)
+   */
+  getAbsensiHarianMentorStatistik: async (tanggal?: string) => {
+    const q = new URLSearchParams();
+    if (tanggal) q.append("tanggal", tanggal);
+
+    return executeHybridRequest<{ hadir: number, alfa: number, off: number }>(
+      "Get statistik harian mentor",
+      `${API_ROUTES.ABSENSI_MENTOR_HARIAN_STATISTIK}?${q.toString()}`,
+      { method: "GET" }
+    );
+  },
+
+  /**
    * POST /api/absensi/mentor/submit
    * Mentor mencatat absensi untuk salah satu mahasiswa bimbingannya.
    */
@@ -135,10 +150,11 @@ export const absensiAPI = {
   // -------------------------------------------------------------------
   // 1. List absensi semua mahasiswa (mentor)
   // -------------------------------------------------------------------
-  getHistory: async (status?: string, namaMahasiswa?: string, page: number = 1, size: number = 10) => {
+  getHistory: async (status?: string, namaMahasiswa?: string, tanggal?: string, page: number = 1, size: number = 10) => {
     const q = new URLSearchParams();
     if (status && status !== "Semua") q.append("status", status.toLowerCase());
     if (namaMahasiswa) q.append("namaMahasiswa", namaMahasiswa);
+    if (tanggal) q.append("tanggal", tanggal);
     q.append("index", String(page));
     q.append("size", String(size));
 

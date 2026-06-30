@@ -61,6 +61,27 @@ export function useAbsensiHarianMentor(tanggal?: string, pageSize: number = 5) {
   };
 }
 
+export function useAbsensiHarianMentorStatistik(tanggal?: string) {
+  const [stats, setStats] = useState<{ hadir: number, alfa: number, off: number }>({ hadir: 0, alfa: 0, off: 0 });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await absensiAPI.getAbsensiHarianMentorStatistik(tanggal);
+      setStats(res.data);
+    } catch (err: any) {
+      console.error("Gagal memuat statistik harian:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tanggal]);
+
+  useEffect(() => { fetchStats(); }, [fetchStats]);
+
+  return { stats, isLoading, refreshStats: fetchStats };
+}
+
 // =====================================================================
 // useSubmitAbsensiMentor — MENTOR: catat absensi untuk 1 mahasiswa
 // =====================================================================
@@ -105,11 +126,11 @@ export function useAttendance() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error,        setError]        = useState<string | null>(null);
 
-  const fetchHistory = useCallback(async (status?: string, namaMahasiswa?: string, pageIndex: number = 1, pageSize: number = 10) => {
+  const fetchHistory = useCallback(async (status?: string, namaMahasiswa?: string, tanggal?: string, pageIndex: number = 1, pageSize: number = 10) => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await absensiAPI.getHistory(status, namaMahasiswa, pageIndex, pageSize);
+      const res = await absensiAPI.getHistory(status, namaMahasiswa, tanggal, pageIndex, pageSize);
       setHistory(res.data);
       setPage(pageIndex);
       setTotalPages(res.totalPages ?? 1);
@@ -214,7 +235,7 @@ export function useAttendance() {
     exportCSV,
     getSuratKeterangan,
     refreshHistory: fetchHistory,
-    goToPage: (status?: string, namaMahasiswa?: string, p: number = 1) => fetchHistory(status, namaMahasiswa, p),
+    goToPage: (status?: string, namaMahasiswa?: string, tanggal?: string, p: number = 1) => fetchHistory(status, namaMahasiswa, tanggal, p),
     clearError: () => setError(null),
   };
 }

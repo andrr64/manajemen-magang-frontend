@@ -408,12 +408,6 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                 </div>
                 <span className="text-slate-800 dark:text-white font-semibold truncate">{student.university}</span>
               </div>
-              <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                <div className="p-2 bg-cyan-50 dark:bg-cyan-500/10 rounded-lg text-cyan-600 dark:text-cyan-400 shadow-sm">
-                  <Briefcase className="w-4 h-4 flex-shrink-0" />
-                </div>
-                <span className="text-slate-700 dark:text-slate-300 font-bold truncate">{student.company}</span>
-              </div>
             </div>
           </div>
 
