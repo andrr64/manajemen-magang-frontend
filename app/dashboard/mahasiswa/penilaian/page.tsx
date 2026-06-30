@@ -365,7 +365,7 @@ export default function StudentPenilaianPage() {
                         <td className="py-2.5 px-4 font-bold text-[#232F72] dark:text-white">{row.name}</td>
                         <td className="py-2.5 px-4 text-center font-black">
                           <span className={scoreBadge(row.score).split(" ")[0].replace("bg-", "text-")}>
-                            {row.score.toFixed(1)}
+                            {row.score.toFixed(1).replace('.', ',')}
                           </span>
                         </td>
                         <td className="py-2.5 px-4 text-center font-bold text-[#2F578A] dark:text-[#F1F5F9]/80">{capaian}</td>
@@ -381,7 +381,7 @@ export default function StudentPenilaianPage() {
               <div className="w-64 border-t-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 pt-4">
                 <div className="flex justify-between items-end mb-2">
                   <span className="font-extrabold text-[11px] text-[#2F578A]/70 dark:text-[#F1F5F9]/50 uppercase tracking-widest">NILAI TOTAL</span>
-                  <span className={`font-black text-2xl ${color}`}>{avg.toFixed(2)}</span>
+                  <span className={`font-black text-2xl ${color}`}>{avg.toFixed(1).replace('.', ',')}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-bold text-[#2F578A]/70 dark:text-[#F1F5F9]/50">Grade / Capaian:</span>

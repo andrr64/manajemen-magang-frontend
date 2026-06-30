@@ -209,9 +209,6 @@ export default function MentorPenilaianPage() {
                   <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] leading-tight">
                     {student.name}
                   </p>
-                  <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5">
-                    Mitra: {student.company}
-                  </span>
                 </div>
               </Link>
             ),
@@ -242,7 +239,7 @@ export default function MentorPenilaianPage() {
             render: (student) => {
               const isGraded = student.penilaianId !== null && student.penilaianId !== undefined;
               return isGraded
-                ? <span className="font-black text-[#232F72] dark:text-[#FFFFFF] text-sm">{student.grade}</span>
+                ? <span className="font-black text-[#232F72] dark:text-[#FFFFFF] text-sm">{Number(student.grade).toFixed(1).replace('.', ',')}</span>
                 : <span className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">—</span>;
             },
           },

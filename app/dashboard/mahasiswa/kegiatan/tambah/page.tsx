@@ -44,7 +44,6 @@ export default function TambahKegiatanPage() {
         fileKeys = results.map(r => r.key);
       }
       await addActivity({ title: newTitle, keterangan: newKeterangan, date: newDate, fileKeys });
-      notifier.success("Kegiatan baru berhasil ditambahkan!");
       router.push("/dashboard/mahasiswa/kegiatan");
     } catch (err: any) {
       notifier.error(err.message || "Gagal menambahkan kegiatan.");

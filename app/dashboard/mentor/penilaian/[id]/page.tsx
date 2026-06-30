@@ -427,12 +427,10 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
               
               <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase relative z-10">Skor Akumulatif Akhir</p>
               <h3 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500 dark:from-indigo-400 dark:to-cyan-400 tracking-tight drop-shadow-sm relative z-10 group-hover:scale-110 transition-transform duration-500">
-                {gradingCalculations.average}
+                {Number(gradingCalculations.average).toFixed(1).replace('.', ',')}
               </h3>
               
-              <div className="relative z-10 inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 shadow-sm text-xs font-black text-indigo-600 dark:text-indigo-400 rounded-full mt-2">
-                Predikat: Grade <span className="text-cyan-600 dark:text-cyan-400 text-sm ml-0.5">{gradingCalculations.predicate}</span>
-              </div>
+
             </div>
 
             {/* Status card */}
@@ -510,9 +508,10 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                             type="number"
                             min={0}
                             max={100}
+                            step="0.1"
                             value={score}
-                            onChange={(e) => handleGradeChange(c.id, Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
-                            className="w-14 px-2 py-2 bg-white dark:bg-slate-900 border-none shadow-sm rounded-xl text-center text-sm font-black text-indigo-700 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all"
+                            onChange={(e) => handleGradeChange(c.id, Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))}
+                            className="w-16 px-2 py-2 bg-white dark:bg-slate-900 border-none shadow-sm rounded-xl text-center text-sm font-black text-indigo-700 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500/50 focus:outline-none transition-all"
                           />
                           <span className="text-[10px] font-black text-slate-400 pr-2">/100</span>
                         </div>
@@ -524,13 +523,14 @@ export default function MentorStudentGradingPage({ params }: PageProps) {
                           type="range"
                           min={0}
                           max={100}
+                          step="0.1"
                           value={score}
-                          onChange={(e) => handleGradeChange(c.id, parseInt(e.target.value))}
+                          onChange={(e) => handleGradeChange(c.id, parseFloat(e.target.value) || 0)}
                           className="flex-1 accent-indigo-600 h-2.5 bg-slate-200/80 dark:bg-slate-700/80 rounded-full appearance-none cursor-pointer hover:accent-indigo-500 transition-all shadow-inner"
                         />
-                        <div className="w-10 text-right">
+                        <div className="w-12 text-right">
                           <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400">
-                            {score}
+                            {Number(score).toFixed(1).replace('.', ',')}
                           </span>
                         </div>
                       </div>

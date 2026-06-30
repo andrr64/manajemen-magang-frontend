@@ -552,7 +552,7 @@ export default function StudentAttendancePage() {
               {([
                 { label: "Nama",           nilai: profile?.name || "Budi Santoso" },
                 { label: "NIM",            nilai: profile?.nim || "2021001234" },
-                { label: "Instansi / PT",  nilai: profile?.university || "Universitas Negeri Jakarta" },
+                { label: "Universitas",    nilai: profile?.university || "Universitas Negeri Jakarta" },
                 { label: "Periode Magang", nilai: formatPeriode(profile?.tanggalMulai, profile?.tanggalBerakhir) },
               ] as const).map(({ label, nilai }) => (
                 <div key={label} className="flex gap-2">
