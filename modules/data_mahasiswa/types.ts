@@ -38,6 +38,7 @@ export interface StudentResponse {
 }
 
 export interface StudentStatResponse {
+  totalMahasiswa: number;
   totalAktif: number;
   totalSelesai: number;
   totalAktifTanpaPenilaian: number;
@@ -87,6 +88,7 @@ export interface Student {
 // STATISTIK
 // =====================================================================
 export interface StudentStat {
+  totalMahasiswa: number;
   totalAktif: number;
   totalSelesai: number;
   totalAktifTanpaPenilaian: number;

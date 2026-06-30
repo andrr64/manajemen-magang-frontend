@@ -115,6 +115,7 @@ export const mahasiswaAPI = {
         return {
           ...res,
           data: {
+            totalMahasiswa: stats.totalMahasiswa,
             totalAktif: stats.totalAktif,
             totalSelesai: stats.totalSelesai,
             totalAktifTanpaPenilaian: stats.totalAktifTanpaPenilaian

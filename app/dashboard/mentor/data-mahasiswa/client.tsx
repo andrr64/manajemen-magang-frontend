@@ -62,7 +62,7 @@ export default function MentorDataMahasiswaPage() {
   const stats = useMemo(() => {
     if (backendStats) {
       return {
-        totalCount: (backendStats.totalAktif || 0) + (backendStats.totalSelesai || 0) + (backendStats.totalAktifTanpaPenilaian || 0),
+        totalCount: backendStats.totalMahasiswa || 0,
         activeCount: backendStats.totalAktif || 0,
         pendingCount: backendStats.totalAktifTanpaPenilaian || 0,
         completedCount: backendStats.totalSelesai || 0
