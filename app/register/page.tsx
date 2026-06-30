@@ -2,6 +2,7 @@
 import { WEB_ROUTES } from "@/modules/web-routes";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useIam } from "@/modules/iam/hooks";
 import { RegisterRequest } from "@/modules/iam/types";
@@ -69,11 +70,13 @@ export default function RegisterPage() {
         </div>
         
         <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl shadow-blue-900/50">
-              <Building2 className="text-blue-600 w-6 h-6" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shadow-xl shadow-blue-900/50">
+              <Image src="/favicon.ico" alt="Logo" width={48} height={48} className="object-contain w-full h-full p-1" />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">InternFlow</span>
+            <span className="font-bold text-2xl tracking-tight text-white whitespace-nowrap">
+              Direktorat <span className="text-cyan-400">Wilayah 1</span>
+            </span>
           </div>
         </div>
 
@@ -93,11 +96,13 @@ export default function RegisterPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-[500px] bg-blue-600/10 blur-[100px] lg:hidden rounded-full pointer-events-none"></div>
         
         <div className="w-full max-w-md relative z-10">
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Building2 className="text-white w-5 h-5" />
+          <div className="lg:hidden flex items-center gap-2.5 mb-10">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+              <Image src="/favicon.ico" alt="Logo" width={40} height={40} className="object-contain w-full h-full p-1" />
             </div>
-            <span className="text-2xl font-bold text-white">InternFlow</span>
+            <span className="font-bold text-2xl tracking-tight text-white whitespace-nowrap">
+              Direktorat <span className="text-cyan-400">Wilayah 1</span>
+            </span>
           </div>
 
           <div className="mb-8">

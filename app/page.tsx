@@ -11,69 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const stats = [
-    { value: "1.200+", label: "Mahasiswa Aktif" },
-    { value: "48", label: "Instansi Mitra" },
-    { value: "99.9%", label: "Uptime Sistem" },
-    { value: "24/7", label: "Monitoring" },
-  ];
 
-  const features = [
-    {
-      icon: Shield,
-      title: "Keamanan Tingkat Tinggi",
-      desc: "Enkripsi end-to-end dengan autentikasi berlapis untuk seluruh data anggota.",
-      color: "from-cyan-500/20 to-blue-500/20",
-      border: "border-cyan-500/20",
-      iconColor: "text-cyan-400",
-      glow: "shadow-cyan-500/20",
-    },
-    {
-      icon: Building2,
-      title: "Layanan Terpadu",
-      desc: "Akses seluruh layanan wilayah dalam satu platform terintegrasi.",
-      color: "from-violet-500/20 to-purple-500/20",
-      border: "border-violet-500/20",
-      iconColor: "text-violet-400",
-      glow: "shadow-violet-500/20",
-    },
-    {
-      icon: Zap,
-      title: "Real-Time Sync",
-      desc: "Sinkronisasi data secara real-time antar departemen dan wilayah.",
-      color: "from-amber-500/20 to-orange-500/20",
-      border: "border-amber-500/20",
-      iconColor: "text-amber-400",
-      glow: "shadow-amber-500/20",
-    },
-    {
-      icon: BarChart3,
-      title: "Analitik Cerdas",
-      desc: "Dashboard analitik canggih untuk monitoring performa magang.",
-      color: "from-emerald-500/20 to-green-500/20",
-      border: "border-emerald-500/20",
-      iconColor: "text-emerald-400",
-      glow: "shadow-emerald-500/20",
-    },
-    {
-      icon: Users,
-      title: "Manajemen Anggota",
-      desc: "Kelola data mahasiswa, pembimbing, dan instansi dengan mudah.",
-      color: "from-pink-500/20 to-rose-500/20",
-      border: "border-pink-500/20",
-      iconColor: "text-pink-400",
-      glow: "shadow-pink-500/20",
-    },
-    {
-      icon: Sparkles,
-      title: "Sistem Terintegrasi",
-      desc: "Terhubung langsung dengan sistem pusat Direktorat Wilayah 1.",
-      color: "from-blue-500/20 to-indigo-500/20",
-      border: "border-blue-500/20",
-      iconColor: "text-blue-400",
-      glow: "shadow-blue-500/20",
-    },
-  ];
+
+
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-50 font-sans overflow-x-hidden selection:bg-cyan-500/30">
@@ -118,18 +58,7 @@ export default function Home() {
             </span>
           </Link>
 
-          {/* Nav links */}
-          <div className="hidden md:flex items-center gap-8">
-            {["Beranda", "Tentang", "Kontak"].map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-[11px] font-semibold tracking-widest uppercase text-slate-400 hover:text-white transition-colors duration-200"
-              >
-                {link}
-              </a>
-            ))}
-          </div>
+
 
           {/* Actions */}
           <div className="flex items-center gap-3">
@@ -195,51 +124,9 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Stats strip */}
-        <div className="stats-bar animate-fade-in-up animation-delay-400 w-full max-w-3xl mb-24">
-          {stats.map((s, i) => (
-            <div key={i} className="stat-item">
-              <span className="stat-value">{s.value}</span>
-              <span className="stat-label">{s.label}</span>
-            </div>
-          ))}
-        </div>
 
-        {/* Scroll hint */}
-        <div className="flex flex-col items-center gap-2 animate-bounce-slow text-slate-600 mb-8">
-          <span className="text-[9px] uppercase tracking-widest font-bold">Fitur Unggulan</span>
-          <ChevronDown className="w-4 h-4" />
-        </div>
+
       </main>
-
-      {/* ── FEATURES SECTION ── */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-32">
-        <div className="text-center mb-14">
-          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-400 mb-4 block">Mengapa DW 1?</span>
-          <h2 className="text-3xl md:text-4xl font-black text-white">
-            Dirancang untuk{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-              Performa Maksimal
-            </span>
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((f, i) => (
-            <div
-              key={i}
-              className={`feature-card bg-gradient-to-br ${f.color} border ${f.border}`}
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div className={`icon-wrap ${f.iconColor} shadow-lg ${f.glow}`}>
-                <f.icon className="w-5 h-5" />
-              </div>
-              <h3 className="text-sm font-bold text-white mb-2">{f.title}</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* ── FOOTER ── */}
       <footer className="relative z-10 border-t border-white/[0.05] py-8 text-center">
