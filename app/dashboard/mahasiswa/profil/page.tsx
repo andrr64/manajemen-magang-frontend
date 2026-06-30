@@ -84,7 +84,7 @@ export default function StudentProfilePage() {
       <SuccessToast variant="mahasiswa" show={showToast} message="Profil Anda berhasil diperbarui di sistem!" title="Pembaruan Sukses" />
 
       {/* STUNNING TOP PROFILE HERO BANNER */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#121358]/20">
+      <div className="relative rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 p-6 md:p-8 text-white overflow-hidden shadow-xl shadow-[#121358]/20">
         {/* Abstract Glowing Spheres */}
         <div className="absolute right-0 top-0 w-80 h-80 bg-[#36ADA3]/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute left-1/3 -bottom-20 w-64 h-64 bg-[#2F578A]/20 rounded-full blur-[70px] pointer-events-none" />
@@ -93,13 +93,13 @@ export default function StudentProfilePage() {
           <div className="flex items-center gap-5">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-tr from-[#36ADA3] to-[#2F578A] rounded-2xl blur-sm opacity-60 animate-pulse" />
-              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#232F72] border border-[#36ADA3]/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[#232F72] border-2 border-[#36ADA3]/30 flex items-center justify-center text-white font-extrabold text-2xl shadow-inner">
                 {profile.name.split(" ").map(n=>n[0]).join("").substring(0, 2)}
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[9px] uppercase font-black tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 border border-[#36ADA3]/20 px-2.5 py-1 rounded-lg">
+                <span className="text-[9px] uppercase font-black tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 border-2 border-[#36ADA3]/20 px-2.5 py-1 rounded-lg">
                   Mahasiswa Magang
                 </span>
               </div>
@@ -120,7 +120,7 @@ export default function StudentProfilePage() {
         {/* LEFT CARD: HIGH-END PREVIEW CARD (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
           
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] relative overflow-hidden space-y-6">
+          <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] relative overflow-hidden space-y-6">
             
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#36ADA3]/10 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-[#2F578A]/10 rounded-full blur-2xl pointer-events-none" />
@@ -137,8 +137,8 @@ export default function StudentProfilePage() {
             <div className="space-y-4">
               
               {/* Field: NAMA */}
-              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border-2 border-[#36ADA3]/20">
                   <User className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -148,8 +148,8 @@ export default function StudentProfilePage() {
               </div>
 
               {/* Field: EMAIL */}
-              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border-2 border-[#36ADA3]/20">
                   <Mail className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -159,8 +159,8 @@ export default function StudentProfilePage() {
               </div>
 
               {/* Field: NO TELP */}
-              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border-2 border-[#36ADA3]/20">
                   <Phone className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -170,8 +170,8 @@ export default function StudentProfilePage() {
               </div>
 
               {/* Field: ROLE */}
-              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
-                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border border-[#36ADA3]/20">
+              <div className="group relative p-3 bg-[#F8FAFC] hover:bg-[#2F578A]/5 dark:bg-[#232F72]/30 dark:hover:bg-[#232F72]/50 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl flex items-center gap-3.5 transition-all duration-300 hover:scale-[1.01] hover:shadow-sm">
+                <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl transition-colors duration-300 border-2 border-[#36ADA3]/20">
                   <Shield className="w-4.5 h-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -188,7 +188,7 @@ export default function StudentProfilePage() {
 
         {/* RIGHT CARD: POLISHED INTERACTIVE FORM (7 Cols) */}
         <div className="lg:col-span-7">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6">
+          <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6">
             
             <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
               <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white flex items-center gap-2">
@@ -210,7 +210,7 @@ export default function StudentProfilePage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                    className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                     placeholder="Masukkan nama lengkap Anda..."
                   />
                   <User className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
@@ -229,7 +229,7 @@ export default function StudentProfilePage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                       placeholder="Masukkan alamat email resmi..."
                     />
                     <Mail className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
@@ -247,7 +247,7 @@ export default function StudentProfilePage() {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                      className="w-full pl-11 pr-4 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                       placeholder="Masukkan nomor handphone..."
                     />
                     <Phone className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
@@ -266,7 +266,7 @@ export default function StudentProfilePage() {
                       type="text" 
                       disabled
                       value={formData.nim}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold tracking-wider"
+                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border-2 border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold tracking-wider"
                     />
                     <BookOpen className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/40 absolute left-4 top-4" />
                   </div>
@@ -282,7 +282,7 @@ export default function StudentProfilePage() {
                       type="text" 
                       disabled
                       value={formData.role}
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-slate-100 dark:bg-[#232F72]/50 border-2 border-[#2F578A]/10 dark:border-[#2F578A]/30 rounded-2xl text-xs focus:outline-none dark:text-[#F1F5F9]/40 cursor-not-allowed font-extrabold"
                     />
                     <Shield className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/40 absolute left-4 top-4" />
                   </div>
@@ -303,7 +303,7 @@ export default function StudentProfilePage() {
                         type={showOldPassword ? "text" : "password"}
                         value={oldPassword}
                         onChange={(e) => setOldPassword(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                         placeholder="Masukkan password lama..."
                       />
                       <Lock className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
@@ -319,7 +319,7 @@ export default function StudentProfilePage() {
                         type={showNewPassword ? "text" : "password"}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
+                        className="w-full pl-11 pr-10 py-3.5 bg-[#F8FAFC] focus:bg-white dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 focus:border-[#36ADA3] focus:ring-1 focus:ring-[#36ADA3] rounded-2xl text-xs focus:outline-none transition-all dark:text-white font-semibold shadow-inner"
                         placeholder="Min. 8 karakter..."
                       />
                       <Lock className="w-4.5 h-4.5 text-[#2F578A] dark:text-[#F1F5F9]/50 absolute left-4 top-4 group-focus-within/input:text-[#36ADA3] transition-colors" />
@@ -365,3 +365,4 @@ export default function StudentProfilePage() {
     </div>
   );
 }
+

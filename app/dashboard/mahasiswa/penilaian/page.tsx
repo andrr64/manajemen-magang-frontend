@@ -103,7 +103,7 @@ export default function StudentPenilaianPage() {
 
       {/* ── TABS & TOMBOL DOWNLOAD ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
+        <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
           <button
             onClick={() => setActiveTab("laporan")}
             className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
@@ -153,14 +153,14 @@ export default function StudentPenilaianPage() {
       {activeTab === "laporan" && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {/* HERO HEADER */}
-      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] text-white relative overflow-hidden shadow-xl border border-[#2F578A]/30">
+      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-[#232F72] via-[#121358] to-[#121358] text-white relative overflow-hidden shadow-xl border-2 border-[#2F578A]/30">
         <div className="absolute -right-10 -top-10 w-72 h-72 bg-[#36ADA3]/10 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
 
           {/* Info kiri */}
           <div className="space-y-3">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 px-3 py-1.5 rounded-lg border border-[#36ADA3]/20">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#36ADA3] bg-[#36ADA3]/10 px-3 py-1.5 rounded-lg border-2 border-[#36ADA3]/20">
               <Award className="w-3.5 h-3.5" /> Penilaian Magang
             </span>
             <h3 className="text-xl md:text-2xl font-extrabold tracking-tight">
@@ -188,7 +188,7 @@ export default function StudentPenilaianPage() {
           {/* Nilai kanan */}
           <div className="flex gap-3 items-center flex-shrink-0">
             {sudahDinilai ? (
-              <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl">
+              <div className="flex items-center gap-3 p-4 bg-white/5 border-2 border-white/10 rounded-2xl">
                 <div className="text-center">
                   <span className="text-[9px] font-black uppercase tracking-wider text-[#F1F5F9]/70 block">Nilai Akhir</span>
                   <span className="text-3xl font-black text-white mt-0.5 block">{avg.toFixed(2)}</span>
@@ -200,7 +200,7 @@ export default function StudentPenilaianPage() {
                 </div>
               </div>
             ) : (
-              <div className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+              <div className="px-5 py-4 bg-white/5 border-2 border-white/10 rounded-2xl text-center">
                 <Clock className="w-5 h-5 text-amber-400 mx-auto mb-1" />
                 <p className="text-[10px] font-black uppercase tracking-wider text-amber-400">Menunggu Penilaian</p>
               </div>
@@ -211,8 +211,8 @@ export default function StudentPenilaianPage() {
 
       {/* BELUM DINILAI */}
       {!sudahDinilai && (
-        <div className="border border-amber-200/50 dark:border-amber-900/40 rounded-3xl p-10 bg-white dark:bg-[#121358] shadow-sm flex flex-col items-center gap-4 text-center">
-          <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/40 text-amber-500 dark:text-amber-400 rounded-2xl">
+        <div className="border-2 border-amber-200/50 dark:border-amber-900/40 rounded-3xl p-10 bg-white dark:bg-[#121358] shadow-sm flex flex-col items-center gap-4 text-center">
+          <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200/40 text-amber-500 dark:text-amber-400 rounded-2xl">
             <Clock className="w-8 h-8" />
           </div>
           <p className="font-extrabold text-sm text-[#232F72] dark:text-white">Penilaian belum tersedia</p>
@@ -226,7 +226,7 @@ export default function StudentPenilaianPage() {
       {/* TABEL KRITERIA — hanya tampil jika SUDAH_DINILAI */}
       {sudahDinilai && (
         <>
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
+          <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
             <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[#36ADA3]" /> Rincian Per Kriteria
             </h4>
@@ -249,7 +249,7 @@ export default function StudentPenilaianPage() {
                         <p className="text-[10px] text-[#2F578A]/70 dark:text-[#F1F5F9]/50 mt-0.5">{item.desc}</p>
                       </td>
                       <td className="py-3.5 text-center">
-                        <span className={`inline-flex items-center justify-center font-black px-3 py-1 rounded-xl text-xs border ${scoreBadge(item.score)}`}>
+                        <span className={`inline-flex items-center justify-center font-black px-3 py-1 rounded-xl text-xs border-2 ${scoreBadge(item.score)}`}>
                           {item.score.toFixed(1)}
                         </span>
                       </td>
@@ -266,7 +266,7 @@ export default function StudentPenilaianPage() {
                   <tr className="border-t-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 bg-[#F8FAFC] dark:bg-[#232F72]/20">
                     <td colSpan={2} className="py-3.5 pl-4 font-black text-xs text-[#232F72] dark:text-white">NILAI TOTAL</td>
                     <td className="py-3.5 text-center">
-                      <span className={`inline-flex items-center justify-center font-black px-3 py-1.5 rounded-xl text-sm border ${scoreBadge(avg)}`}>
+                      <span className={`inline-flex items-center justify-center font-black px-3 py-1.5 rounded-xl text-sm border-2 ${scoreBadge(avg)}`}>
                         {avg.toFixed(2)}
                       </span>
                     </td>
@@ -282,7 +282,7 @@ export default function StudentPenilaianPage() {
           {/* Catatan + Skala */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {penilaian.catatan && penilaian.catatan !== "-" && (
-              <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-5 rounded-3xl bg-white dark:bg-[#121358] shadow-sm space-y-2">
+              <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 p-5 rounded-3xl bg-white dark:bg-[#121358] shadow-sm space-y-2">
                 <p className="text-[10px] font-black uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 tracking-wider flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-[#36ADA3]" /> Catatan Mentor
                 </p>
@@ -290,8 +290,8 @@ export default function StudentPenilaianPage() {
                 <p className="text-[10px] font-bold text-[#2F578A]/60 dark:text-[#F1F5F9]/40">— {penilaian.namaMentor}</p>
               </div>
             )}
-            <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 p-5 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex items-center gap-4">
-              <div className="p-3.5 bg-[#2F578A]/10 dark:bg-[#232F72]/50 text-[#36ADA3] rounded-2xl border border-[#2F578A]/20 flex-shrink-0">
+            <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 p-5 rounded-3xl bg-white dark:bg-[#121358] shadow-sm flex items-center gap-4">
+              <div className="p-3.5 bg-[#2F578A]/10 dark:bg-[#232F72]/50 text-[#36ADA3] rounded-2xl border-2 border-[#2F578A]/20 flex-shrink-0">
                 <Scale className="w-5 h-5" />
               </div>
               <div>
@@ -314,7 +314,7 @@ export default function StudentPenilaianPage() {
       ══════════════════════════════════════════════════════════════ */}
 
       {activeTab === "rekap" && sudahDinilai && (
-        <div className="bg-white dark:bg-[#0f1535] border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="bg-white dark:bg-[#0f1535] border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
           
           <div className="p-8 md:p-12 space-y-8 text-[#1a1a2e] dark:text-[#e8eaf6]">
             
@@ -346,7 +346,7 @@ export default function StudentPenilaianPage() {
             </div>
 
             {/* TABEL */}
-            <div className="border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-xl overflow-hidden">
+            <div className="border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-[#232F72] dark:bg-[#121358] text-white">
                   <tr>
@@ -438,3 +438,4 @@ export default function StudentPenilaianPage() {
     </div>
   );
 }
+

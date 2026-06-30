@@ -34,7 +34,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const { cls, icon, label } = cfg[status] ?? cfg["Belum Disetujui"];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border-2 ${cls}`}>
       {icon} {label}
     </span>
   );
@@ -96,7 +96,7 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
       </div>
 
       {/* Card detail */}
-      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 bg-white dark:bg-[#121358] shadow-xl space-y-6">
+      <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 bg-white dark:bg-[#121358] shadow-xl space-y-6">
 
         {/* Judul */}
         <div className="pb-5 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
@@ -105,7 +105,7 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
 
         {/* Tanggal & waktu */}
         <div className="grid grid-cols-1 gap-4">
-          <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl space-y-1">
+          <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl space-y-1">
             <p className="text-[10px] font-black uppercase text-[#2F578A]/80 dark:text-[#F1F5F9]/50 tracking-wider flex items-center gap-1.5">
               <Calendar className="w-3 h-3" /> Tanggal
             </p>
@@ -125,7 +125,7 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
 
         {/* Diverifikasi oleh mentor */}
         {activity.status === "Disetujui" && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/40 dark:border-emerald-900/40 rounded-2xl">
+          <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200/40 dark:border-emerald-900/40 rounded-2xl">
             <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-xl flex-shrink-0">
               <UserCheck className="w-4 h-4" />
             </div>
@@ -145,7 +145,7 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
           </p>
 
           {fileUrls.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 py-6 border border-dashed border-[#2F578A]/30 dark:border-[#2F578A]/40 rounded-2xl">
+            <div className="flex flex-col items-center gap-2 py-6 border-2 border-dashed border-[#2F578A]/30 dark:border-[#2F578A]/40 rounded-2xl">
               <AlertCircle className="w-7 h-7 text-[#2F578A]/40" />
               <p className="text-xs font-bold text-[#2F578A]/60 dark:text-[#F1F5F9]/40">Belum ada lampiran</p>
               <Link
@@ -165,7 +165,7 @@ export default function MahasiswaKegiatanDetailPage({ params }: PageProps) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-4 py-3.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl hover:border-[#36ADA3] hover:bg-[#36ADA3]/5 transition-all group"
+                    className="flex items-center gap-3 px-4 py-3.5 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl hover:border-[#36ADA3] hover:bg-[#36ADA3]/5 transition-all group"
                   >
                     <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
                       <Paperclip className="w-4 h-4" />

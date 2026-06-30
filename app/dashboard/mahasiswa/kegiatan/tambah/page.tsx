@@ -57,7 +57,7 @@ export default function TambahKegiatanPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/mahasiswa/kegiatan"
-          className="p-2 bg-white dark:bg-[#121358] border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-xl text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-all cursor-pointer"
+          className="p-2 bg-white dark:bg-[#121358] border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-xl text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]/30 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -67,7 +67,7 @@ export default function TambahKegiatanPage() {
         </div>
       </div>
 
-      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 bg-white dark:bg-[#121358] shadow-xl">
+      <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 bg-white dark:bg-[#121358] shadow-xl">
         <form onSubmit={handleSubmit} className="space-y-6 text-xs font-bold text-[#232F72] dark:text-[#F1F5F9]">
 
           {/* Judul */}
@@ -79,7 +79,7 @@ export default function TambahKegiatanPage() {
               value={newTitle}
               onChange={e => setNewTitle(e.target.value)}
               placeholder="Contoh: Membuat API Endpoint Get data-mahasiswa..."
-              className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
+              className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
             />
           </div>
 
@@ -91,7 +91,7 @@ export default function TambahKegiatanPage() {
               value={newKeterangan}
               onChange={e => setNewKeterangan(e.target.value)}
               placeholder="Jelaskan apa yang dikerjakan pada kegiatan ini..."
-              className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors resize-none text-xs font-semibold"
+              className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors resize-none text-xs font-semibold"
             />
           </div>
 
@@ -103,7 +103,7 @@ export default function TambahKegiatanPage() {
               required
               value={newDate}
               onChange={e => setNewDate(e.target.value)}
-              className="w-full md:w-1/2 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
+              className="w-full md:w-1/2 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-2xl focus:outline-none focus:border-[#36ADA3] dark:text-white transition-colors"
             />
           </div>
 
@@ -118,7 +118,7 @@ export default function TambahKegiatanPage() {
             {selectedFiles.length > 0 && (
               <div className="space-y-2">
                 {selectedFiles.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl">
+                  <div key={i} className="flex items-center justify-between gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-2xl">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
                         <FileIcon className="w-4 h-4" />
@@ -161,7 +161,7 @@ export default function TambahKegiatanPage() {
           <div className="pt-4 flex justify-end gap-3 border-t border-[#2F578A]/20 dark:border-[#2F578A]/40">
             <Link
               href="/dashboard/mahasiswa/kegiatan"
-              className="px-5 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 hover:bg-[#2F578A]/10 border border-[#2F578A]/30 dark:border-[#2F578A]/50 text-[#232F72] dark:text-white rounded-xl font-black flex items-center justify-center cursor-pointer transition-all active:scale-95"
+              className="px-5 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 hover:bg-[#2F578A]/10 border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 text-[#232F72] dark:text-white rounded-xl font-black flex items-center justify-center cursor-pointer transition-all active:scale-95"
             >
               Batal
             </Link>
@@ -182,3 +182,4 @@ export default function TambahKegiatanPage() {
     </div>
   );
 }
+

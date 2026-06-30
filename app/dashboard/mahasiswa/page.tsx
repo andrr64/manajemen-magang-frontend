@@ -115,7 +115,7 @@ export default function StudentDashboardHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         
         {/* Metric 1: Kehadiran */}
-        <div className="glass-card p-5 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+        <div className="glass-card p-5 rounded-3xl border-2 border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div>
             <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-wider block">
               Total Kehadiran
@@ -131,13 +131,13 @@ export default function StudentDashboardHome() {
               Kehadiran Anda {isTotalKehadiranLoading ? "..." : (total ? ((total / 80) * 100).toFixed(1) : 96.2)}% (Sangat Baik)
             </span>
           </div>
-          <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200/20 shadow-sm">
+          <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-2 border-emerald-200/20 shadow-sm">
             <Clock className="w-5.5 h-5.5" />
           </div>
         </div>
 
         {/* Metric 2: Sisa Waktu */}
-        <div className="glass-card p-5 rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+        <div className="glass-card p-5 rounded-3xl border-2 border-[#2F578A]/30 dark:border-[#2F578A] bg-white dark:bg-[#232F72]/40 dark:backdrop-blur-md flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div>
             <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 dark:text-slate-550 uppercase tracking-wider block">
               Sisa Waktu Magang
@@ -153,7 +153,7 @@ export default function StudentDashboardHome() {
               {isStudentLoading ? "Menghitung sisa waktu..." : sisaWaktuFormatted}
             </span>
           </div>
-          <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200/20 shadow-sm">
+          <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-2 border-amber-200/20 shadow-sm">
             <Calendar className="w-5.5 h-5.5" />
           </div>
         </div>
@@ -162,3 +162,4 @@ export default function StudentDashboardHome() {
     </div>
   );
 }
+

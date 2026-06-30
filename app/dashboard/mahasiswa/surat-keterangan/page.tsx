@@ -43,7 +43,7 @@ export default function StudentSuratKeteranganPage() {
           <h3 className="text-xl font-black text-[#232F72] dark:text-white">Surat Keterangan Magang</h3>
           <p className="text-xs text-[#2F578A] dark:text-[#F1F5F9]/70 mt-1">Berkas resmi penyelesaian praktikum kerja magang Anda.</p>
         </div>
-        <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-12 bg-white dark:bg-[#121358] text-center space-y-4 max-w-md">
+        <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-12 bg-white dark:bg-[#121358] text-center space-y-4 max-w-md">
           <FileText className="w-12 h-12 text-[#2F578A]/40 mx-auto" />
           <p className="font-extrabold text-sm text-[#232F72] dark:text-white">Tidak ada periode magang aktif</p>
           <p className="text-xs text-[#2F578A]/70 dark:text-[#F1F5F9]/50">Data surat keterangan hanya tersedia untuk mahasiswa yang sedang aktif menjalani magang.</p>
@@ -61,7 +61,7 @@ export default function StudentSuratKeteranganPage() {
     
 
       {/* Status banner */}
-      <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border ${
+      <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl border-2 ${
         sudahDiunggah
           ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400"
           : "bg-amber-50 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/40 text-amber-700 dark:text-amber-400"
@@ -79,7 +79,7 @@ export default function StudentSuratKeteranganPage() {
       </div>
 
       {/* Metadata card */}
-      <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
+      <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl bg-white dark:bg-[#121358] shadow-sm overflow-hidden">
         <div className="p-5 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
           <p className="text-[10px] font-black uppercase tracking-wider text-[#2F578A]/80 dark:text-[#F1F5F9]/50">Informasi Surat Keterangan</p>
         </div>
@@ -120,3 +120,4 @@ export default function StudentSuratKeteranganPage() {
     </div>
   );
 }
+
