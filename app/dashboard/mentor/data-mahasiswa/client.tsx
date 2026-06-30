@@ -62,7 +62,7 @@ export default function MentorDataMahasiswaPage() {
   const stats = useMemo(() => {
     if (backendStats) {
       return {
-        totalCount: (backendStats.totalAktif || 0) + (backendStats.totalSelesai || 0) + (backendStats.totalAktifTanpaPenilaian || 0),
+        totalCount: backendStats.totalMahasiswa || 0,
         activeCount: backendStats.totalAktif || 0,
         pendingCount: backendStats.totalAktifTanpaPenilaian || 0,
         completedCount: backendStats.totalSelesai || 0
@@ -107,7 +107,7 @@ export default function MentorDataMahasiswaPage() {
       {/* SEARCH AND FILTERS PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <Filter className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
+          <Filter className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0" />
           <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF]">Panel Filter & Pencarian</h4>
         </div>
 
@@ -126,7 +126,7 @@ export default function MentorDataMahasiswaPage() {
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
                 className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] dark:border-[#121358] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
               />
-              <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3 flex-shrink-0" />
             </div>
           </div>
 
@@ -255,7 +255,7 @@ export default function MentorDataMahasiswaPage() {
                       title="Kirim Email"
                       onClick={(e) => e.stopPropagation()} // Stop navigation trigger
                     >
-                      <Mail className="w-3.5 h-3.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50" />
+                      <Mail className="w-3.5 h-3.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex-shrink-0" />
                       <span className="truncate max-w-[150px]">{student.email}</span>
                     </a>
                   </td>
@@ -263,8 +263,8 @@ export default function MentorDataMahasiswaPage() {
                   {/* Column 4: Universitas */}
                   <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="inline-flex items-center gap-1 text-[#232F72]/80 dark:text-[#F1F5F9] font-bold">
-                      <School className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF]" />
-                      <span>{student.university}</span>
+                      <School className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0" />
+                      <span className="truncate max-w-[150px]">{student.university}</span>
                     </div>
                   </td>
 
@@ -275,7 +275,7 @@ export default function MentorDataMahasiswaPage() {
                       className="inline-flex items-center gap-1 hover:text-[#232F72] dark:text-[#FFFFFF] dark:hover:text-[#232F72] dark:text-[#FFFFFF]"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Phone className="w-3.5 h-3.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50" />
+                      <Phone className="w-3.5 h-3.5 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 flex-shrink-0" />
                       <span>{student.phone}</span>
                     </a>
                   </td>
@@ -289,7 +289,7 @@ export default function MentorDataMahasiswaPage() {
                           ? "bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border-pink-200/50 dark:border-pink-900/40"
                           : "bg-[#F1F5F9] dark:bg-[#232F72]/80 text-[#2F578A] dark:text-[#F1F5F9]/80 border-[#2F578A]/30 dark:border-[#2F578A]/40"
                     }`}>
-                      <User className="w-3 h-3" />
+                      <User className="w-3 h-3 flex-shrink-0" />
                       {student.gender}
                     </span>
                   </td>
@@ -349,7 +349,7 @@ export default function MentorDataMahasiswaPage() {
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-sky-600 dark:hover:bg-sky-500 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
                         title="Edit Data Mahasiswa"
                       >
-                        <Pencil className="w-3.5 h-3.5" />
+                        <Pencil className="w-3.5 h-3.5 flex-shrink-0" />
                       </Link>
 
                       <Link
@@ -357,7 +357,7 @@ export default function MentorDataMahasiswaPage() {
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-rose-600 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
                         title="Hapus Mahasiswa"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
                       </Link>
                     </div>
                   </td>

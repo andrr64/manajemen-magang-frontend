@@ -82,7 +82,7 @@ export default function MentorReferenceLetterPage() {
       {/* FILTER PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
+          <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0" />
           <h4 className="font-extrabold text-sm text-[#232F72] dark:text-[#FFFFFF]">Pencarian & Penyaringan Berkas</h4>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -98,7 +98,7 @@ export default function MentorReferenceLetterPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-[#F1F5F9] dark:bg-[#232F72] border border-[#2F578A]/50 dark:border-[#2F578A] focus:border-[#232F72] rounded-xl text-xs font-semibold focus:outline-none transition-all dark:text-white"
               />
-              <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-[#2F578A]/80 dark:text-[#F1F5F9]/50 absolute left-3.5 top-3 flex-shrink-0" />
             </div>
           </div>
           <div className="md:col-span-4">
@@ -158,8 +158,8 @@ export default function MentorReferenceLetterPage() {
             label: "Universitas Asal",
             render: (letLog) => (
               <Link href={`/dashboard/mentor/surat-keterangan/${letLog.studentId}`} className="inline-flex items-center gap-1 text-[#232F72]/80 dark:text-[#F1F5F9] font-bold">
-                <School className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF]" />
-                <span>{letLog.studentUniv}</span>
+                <School className="w-3.5 h-3.5 text-[#232F72] dark:text-[#FFFFFF] flex-shrink-0" />
+                <span className="truncate max-w-[150px]">{letLog.studentUniv}</span>
               </Link>
             ),
           },
@@ -170,7 +170,7 @@ export default function MentorReferenceLetterPage() {
               const isUploaded = letLog.status === "Sudah Diunggah";
               return isUploaded ? (
                 <div className="flex items-center gap-1.5 text-[#232F72] dark:text-[#FFFFFF]">
-                  <Paperclip className="w-3.5 h-3.5" />
+                  <Paperclip className="w-3.5 h-3.5 flex-shrink-0" />
                   <span className="max-w-[180px] truncate font-semibold">{letLog.fileName}</span>
                 </div>
               ) : (
@@ -212,7 +212,7 @@ export default function MentorReferenceLetterPage() {
                   }`}
                 >
                   {isUploaded ? "Kelola Surat" : "Unggah Surat"}
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
                 </Link>
               );
             },

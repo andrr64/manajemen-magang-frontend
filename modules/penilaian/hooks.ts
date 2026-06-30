@@ -107,3 +107,56 @@ export function usePenilaianStats(namaMahasiswa?: string) {
     refreshStats: fetchStats
   };
 }
+
+export function usePenilaianRekap() {
+  const [rekap, setRekap] = useState<Record<string, PenilaianResponse[] | null> | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchRekap = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await penilaianAPI.getRekapPenilaian();
+      setRekap(response.data);
+    } catch (err: any) {
+      const errMsg = err.message || "Gagal memuat rekap penilaian.";
+      setError(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRekap();
+  }, [fetchRekap]);
+
+  return { rekap, isLoading, error, refreshRekap: fetchRekap };
+}
+
+export function usePenilaianRekapMahasiswa(mahasiswaId?: string) {
+  const [rekap, setRekap] = useState<PenilaianResponse[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchRekap = useCallback(async () => {
+    if (!mahasiswaId) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await penilaianAPI.getRekapByMahasiswaId(mahasiswaId);
+      setRekap(response.data);
+    } catch (err: any) {
+      const errMsg = err.message || "Gagal memuat detail rekap mahasiswa.";
+      setError(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [mahasiswaId]);
+
+  useEffect(() => {
+    fetchRekap();
+  }, [fetchRekap]);
+
+  return { rekap, isLoading, error, refreshRekap: fetchRekap };
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Activity, CreateActivityRequest, ActivityStat } from "./types";
+import { Activity, CreateActivityRequest, ActivityStat, ActivityRekapResponse } from "./types";
 import { kegiatanAPI, MentorActivityLog } from "./api";
 import { mediaAPI } from "../media/api";
 import { notifier } from "@/modules/notifier";
@@ -171,4 +171,34 @@ export function useActivityStats(status?: string, namaMahasiswa?: string) {
   useEffect(() => { fetchStats(); }, [fetchStats]);
 
   return { stats, isLoading, error, refreshStats: fetchStats };
+}
+
+export function useRekapKegiatan(startDate?: string, endDate?: string, mahasiswaId?: string) {
+  const [data, setData] = useState<ActivityRekapResponse[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchRekap = useCallback(async () => {
+    if (!startDate || !endDate) {
+      setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await kegiatanAPI.getRekapActivities(startDate, endDate, mahasiswaId);
+      setData(res.data);
+    } catch (err: any) {
+      const msg = err.message || "Gagal memuat rekap kegiatan.";
+      notifier.error(msg);
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [startDate, endDate, mahasiswaId]);
+
+  useEffect(() => { fetchRekap(); }, [fetchRekap]);
+
+  return { data, isLoading, error, refreshRekap: fetchRekap };
 }

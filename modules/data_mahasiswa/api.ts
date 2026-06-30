@@ -1,6 +1,7 @@
 import { executeHybridRequest } from "../api-client";
 import { API_ROUTES } from "../api-routes";
-import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse } from "./types";
+import { Student, CreateStudentRequest, UpdateStudentRequest, StudentResponse, StudentStatResponse, StudentDetailResponse } from "./types";
+import { mediaAPI } from "../media/api";
 
 function mapBackendStudentToFrontend(item: StudentResponse): Student {
   const formatDate = (start: string | null, end: string | null) => {
@@ -115,6 +116,7 @@ export const mahasiswaAPI = {
         return {
           ...res,
           data: {
+            totalMahasiswa: stats.totalMahasiswa,
             totalAktif: stats.totalAktif,
             totalSelesai: stats.totalSelesai,
             totalAktifTanpaPenilaian: stats.totalAktifTanpaPenilaian
@@ -134,9 +136,34 @@ export const mahasiswaAPI = {
       }
     ).then((res) => {
       if (true) {
+        const detail = res.data as unknown as StudentDetailResponse;
+        
+        // Handle case where backend might return StudentResponse instead of StudentDetailResponse in older cache
+        // but since we just updated it, it should be StudentDetailResponse
+        const isDetailResponse = detail && "rekapitulasiKehadiran" in detail;
+        
+        const rawStudent = isDetailResponse ? detail.mahasiswa : (res.data as unknown as StudentResponse);
+        const student = mapBackendStudentToFrontend(rawStudent);
+        
+        if (isDetailResponse) {
+          student.grade = detail.totalNilai;
+          student.attendance = {
+            present: detail.rekapitulasiKehadiran.hadir,
+            sick: detail.rekapitulasiKehadiran.sakit,
+            leave: detail.rekapitulasiKehadiran.izin,
+            absent: detail.rekapitulasiKehadiran.tidakHadir,
+          };
+          student.dataKegiatan = detail.dataKegiatan?.map(act => ({
+            ...act,
+            fileUrls: (act.fileUrls || []).map(key => key.startsWith("http") ? key : mediaAPI.getFileUrl(key))
+          })) || [];
+          student.logbooksCount = student.dataKegiatan.length || 0;
+          student.logbooksPending = student.dataKegiatan.filter(k => k.status?.toLowerCase() === 'belum disetujui' || k.status?.toLowerCase() === 'dalam review').length || 0;
+        }
+
         return {
           ...res,
-          data: mapBackendStudentToFrontend(res.data as unknown as StudentResponse)
+          data: student
         };
       }
       return res;

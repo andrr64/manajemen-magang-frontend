@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { dashboardMentorAPI } from "./api";
 import { notifier } from "@/modules/notifier";
-import { DashboardStatResponse, SearchStudentResponse, RegisterStudentRequest } from "./types";
+import { DashboardStatResponse, SearchStudentResponse, RegisterStudentRequest, AttendanceStatResponse } from "./types";
 
 /**
  * Hook untuk mendapatkan statistik dashboard mentor.
@@ -81,5 +81,43 @@ export function useSearchStudents(initialSearchTerm: string = "") {
     searchTerm,
     setSearchTerm,
     refreshStudents: () => fetchStudents(searchTerm)
+  };
+}
+
+/**
+ * Hook untuk mendapatkan statistik kehadiran berdasarkan range tanggal.
+ */
+export function useAttendanceStatsByDateRange(tanggalAwal: string, tanggalAkhir: string) {
+  const [stats, setStats] = useState<AttendanceStatResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    if (!tanggalAwal || !tanggalAkhir) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await dashboardMentorAPI.getAttendanceStatsByDateRange(tanggalAwal, tanggalAkhir);
+      if (response.data) {
+        setStats(response.data);
+      }
+    } catch (err: any) {
+      const errMsg = err.message || "Gagal mengambil statistik kehadiran.";
+      notifier.error(errMsg);
+      setError(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tanggalAwal, tanggalAkhir]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return {
+    stats,
+    isLoading,
+    error,
+    refreshStats: fetchStats
   };
 }

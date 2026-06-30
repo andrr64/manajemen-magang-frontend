@@ -68,4 +68,20 @@ export const penilaianAPI = {
       { method: "GET" }
     );
   },
+
+  getRekapPenilaian: async () => {
+    return executeHybridRequest<Record<string, PenilaianResponse[] | null>>(
+      "Get rekap penilaian",
+      API_ROUTES.PENILAIAN_REKAP,
+      { method: "GET" }
+    );
+  },
+
+  getRekapByMahasiswaId: async (mahasiswaId: string) => {
+    return executeHybridRequest<PenilaianResponse[]>(
+      "Get rekap penilaian mahasiswa",
+      API_ROUTES.PENILAIAN_REKAP_MAHASISWA(mahasiswaId),
+      { method: "GET" }
+    );
+  },
 };

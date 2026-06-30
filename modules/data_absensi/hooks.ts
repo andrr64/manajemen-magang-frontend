@@ -8,6 +8,7 @@ import {
   AbsensiHarianMentorResponse,
   CheckInRequest,
   SubmitAbsensiRequest,
+  RekapAbsensiResponse,
 } from "./types";
 import { absensiAPI } from "./api";
 
@@ -19,7 +20,7 @@ import { absensiAPI } from "./api";
  * Fetch semua mahasiswa bimbingan yang periode magangnya mencakup tanggal tsb.
  * absensiStatus = "alpha" jika belum ada record, "hadir"|"izin"|"sakit" jika sudah.
  */
-export function useAbsensiHarianMentor(tanggal?: string, pageSize: number = 20) {
+export function useAbsensiHarianMentor(tanggal?: string, pageSize: number = 5) {
   const [data,       setData]       = useState<AbsensiHarianMentorResponse[]>([]);
   const [page,       setPage]       = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -60,6 +61,27 @@ export function useAbsensiHarianMentor(tanggal?: string, pageSize: number = 20) 
   };
 }
 
+export function useAbsensiHarianMentorStatistik(tanggal?: string) {
+  const [stats, setStats] = useState<{ hadir: number, alfa: number, off: number }>({ hadir: 0, alfa: 0, off: 0 });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await absensiAPI.getAbsensiHarianMentorStatistik(tanggal);
+      setStats(res.data);
+    } catch (err: any) {
+      console.error("Gagal memuat statistik harian:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tanggal]);
+
+  useEffect(() => { fetchStats(); }, [fetchStats]);
+
+  return { stats, isLoading, refreshStats: fetchStats };
+}
+
 // =====================================================================
 // useSubmitAbsensiMentor — MENTOR: catat absensi untuk 1 mahasiswa
 // =====================================================================
@@ -97,16 +119,22 @@ export function useSubmitAbsensiMentor() {
 
 export function useAttendance() {
   const [history,      setHistory]      = useState<AttendanceLog[]>([]);
+  const [page,         setPage]         = useState<number>(1);
+  const [totalPages,   setTotalPages]   = useState<number>(1);
+  const [total,        setTotal]        = useState<number>(0);
   const [isLoading,    setIsLoading]    = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error,        setError]        = useState<string | null>(null);
 
-  const fetchHistory = useCallback(async (status?: string, namaMahasiswa?: string) => {
+  const fetchHistory = useCallback(async (status?: string, namaMahasiswa?: string, tanggal?: string, pageIndex: number = 1, pageSize: number = 10) => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await absensiAPI.getHistory(status, namaMahasiswa);
+      const res = await absensiAPI.getHistory(status, namaMahasiswa, tanggal, pageIndex, pageSize);
       setHistory(res.data);
+      setPage(pageIndex);
+      setTotalPages(res.totalPages ?? 1);
+      setTotal(res.length ?? 0);
     } catch (err: any) {
       const errMsg = err.message || "Gagal memuat riwayat kehadiran.";
       notifier.error(errMsg);
@@ -196,6 +224,9 @@ export function useAttendance() {
 
   return {
     history,
+    page,
+    totalPages,
+    total,
     isLoading,
     isSubmitting,
     error,
@@ -204,6 +235,7 @@ export function useAttendance() {
     exportCSV,
     getSuratKeterangan,
     refreshHistory: fetchHistory,
+    goToPage: (status?: string, namaMahasiswa?: string, tanggal?: string, p: number = 1) => fetchHistory(status, namaMahasiswa, tanggal, p),
     clearError: () => setError(null),
   };
 }
@@ -236,6 +268,74 @@ export function useAttendanceStats(namaMahasiswa?: string) {
 
   return { stats, isLoading, error, refreshStats: fetchStats };
 }
+
+// =====================================================================
+// useRekapAbsensi — MENTOR/ADMIN: Get rekap absensi
+// =====================================================================
+
+export function useRekapAbsensi(tanggalAwal?: string, tanggalAkhir?: string, mahasiswaId?: string) {
+  const [data, setData] = useState<RekapAbsensiResponse[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    if (!tanggalAwal || !tanggalAkhir) {
+      setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await absensiAPI.getRekapAbsensi(tanggalAwal, tanggalAkhir, mahasiswaId);
+      setData(res.data);
+    } catch (err: any) {
+      const errMsg = err.message || "Gagal memuat rekap absensi.";
+      notifier.error(errMsg);
+      setError(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tanggalAwal, tanggalAkhir, mahasiswaId]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  return { data, isLoading, error, refreshData: fetchData };
+}
+
+  // =====================================================================
+  // useRekapDetailAbsensi
+  // =====================================================================
+
+  export function useRekapDetailAbsensi(tanggalAwal?: string, tanggalAkhir?: string, mahasiswaId?: string) {
+    const [data, setData] = useState<import("./types").RekapDetailAbsensiResponse[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+  
+    const fetchData = useCallback(async () => {
+      if (!tanggalAwal || !tanggalAkhir || !mahasiswaId) {
+        setIsLoading(false);
+        return;
+      }
+      
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await absensiAPI.getRekapDetailAbsensi(tanggalAwal, tanggalAkhir, mahasiswaId);
+        setData(res.data);
+      } catch (err: any) {
+        const errMsg = err.message || "Gagal memuat rekap detail absensi.";
+        notifier.error(errMsg);
+        setError(errMsg);
+      } finally {
+        setIsLoading(false);
+      }
+    }, [tanggalAwal, tanggalAkhir, mahasiswaId]);
+  
+    useEffect(() => { fetchData(); }, [fetchData]);
+  
+    return { data, isLoading, error, refetch: fetchData };
+  }
 
 // =====================================================================
 // useSubmitAbsensi — MAHASISWA: submit absensi harian + file upload

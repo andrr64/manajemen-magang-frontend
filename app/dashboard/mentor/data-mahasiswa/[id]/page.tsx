@@ -24,6 +24,9 @@ import {
   GraduationCap,
   BadgeCheck,
   Zap,
+  Eye,
+  XCircle,
+  Activity,
 } from "lucide-react";
 import { useStudentDetail } from "@/modules/data_mahasiswa/hooks";
 
@@ -41,6 +44,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
   const student = apiStudent;
 
   const [successMessage, setSuccessMessage] = useState("");
+  const [viewingActivityFile, setViewingActivityFile] = useState<{ activityName: string; fileUrls: string[] } | null>(null);
 
   if (isLoading) {
     return (
@@ -87,66 +91,81 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
     );
   }
 
-  const dummyLogbooks = [
-    {
-      week: 8,
-      date: "25 Mei 2026",
-      task: "Integrasi API Pembayaran & Pengujian Backend",
-      desc: "Melakukan integrasi API pembayaran menggunakan gateway Midtrans. Membuat unit testing untuk skenario pembayaran sukses, tertunda, dan gagal. Menambahkan webhook listener untuk sinkronisasi status transaksi secara real-time.",
-      status: "Dalam Review",
-      category: "Technical Dev",
-    },
-    {
-      week: 7,
-      date: "18 Mei 2026",
-      task: "Implementasi Dashboard Admin & Visualisasi Chart",
-      desc: "Membangun tampilan dashboard admin dengan analitik statistik transaksi mingguan dan bulanan. Menggunakan Chart.js untuk visualisasi data interaktif. Menyempurnakan layout agar responsif di mobile.",
-      status: "Disetujui",
-      category: "Frontend UI/UX",
-    },
-    {
-      week: 6,
-      date: "11 Mei 2026",
-      task: "Setup Database & Model Relasional Transaksi",
-      desc: "Mendesain skema database relasional untuk menampung transaksi, detail pesanan, dan log aktivitas user. Membuat migrasi tabel, seeder data testing, serta mengoptimalkan query relational join.",
-      status: "Disetujui",
-      category: "Database Design",
-    },
-    {
-      week: 5,
-      date: "04 Mei 2026",
-      task: "Autentikasi Pengguna & Manajemen Role (RBAC)",
-      desc: "Mengembangkan modul registrasi, login, dan logout lengkap dengan proteksi JWT. Menerapkan Middleware Role-Based Access Control (RBAC) untuk memisahkan hak akses antara Admin, Merchant, dan Pelanggan umum.",
-      status: "Disetujui",
-      category: "Security & Auth",
-    },
-    {
-      week: 4,
-      date: "27 Apr 2026",
-      task: "Slicing Figma UI & Komponen Dasar React",
-      desc: "Melakukan konversi rancangan UI/UX Figma menjadi komponen-komponen Next.js yang reusable. Menyusun state global menggunakan Context API serta menambahkan feedback form interaktif.",
-      status: "Disetujui",
-      category: "Slicing UI",
-    },
-    {
-      week: 3,
-      date: "20 Apr 2026",
-      task: "Uji Kelayakan Kebutuhan Pengguna & Riset Kompetitor",
-      desc: "Melakukan survei singkat kepada 15 calon pengguna potensial untuk memvalidasi fitur-fitur utama. Menganalisis kelebihan serta kekurangan platform kompetitor sejenis untuk diferensiasi produk.",
-      status: "Disetujui",
-      category: "Business Analyst",
-    },
-  ];
+  const activities = student.dataKegiatan || [];
+  const approvedCount = activities.filter(
+    (l) => l.status?.toLowerCase() === "disetujui"
+  ).length;
+  const pendingCount = activities.filter(
+    (l) => l.status?.toLowerCase() === "belum disetujui" || l.status?.toLowerCase() === "dalam review"
+  ).length;
+  const totalActivities = activities.length;
 
-  const approvedCount = dummyLogbooks.filter(
-    (l) => l.status === "Disetujui"
-  ).length;
-  const pendingCount = dummyLogbooks.filter(
-    (l) => l.status === "Dalam Review"
-  ).length;
+  const getStatusLabel = (status: string | undefined) => {
+    if (!status) return "Draft";
+    const s = status.toLowerCase();
+    if (s === "disetujui") return "Disetujui";
+    if (s === "ditolak") return "Ditolak";
+    if (s === "belum disetujui" || s === "dalam review") return "Dalam Review";
+    return status;
+  };
 
   return (
     <div className="space-y-6">
+      {/* FILE LIST MODAL */}
+      {viewingActivityFile !== null && (
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setViewingActivityFile(null)}>
+          <div onClick={e => e.stopPropagation()} className="bg-white dark:bg-[#121358] border border-[#2F578A]/50 dark:border-[#2F578A] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2F578A]">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-[#F8FAFC] dark:bg-[#232F72] border border-[#2F578A]/30 text-[#232F72] dark:text-white rounded-xl">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white leading-tight">Berkas Lampiran</h4>
+                  <p className="text-[10px] text-[#2F578A]/80 dark:text-[#F1F5F9]/50 font-semibold mt-0.5">{viewingActivityFile.activityName}</p>
+                </div>
+              </div>
+              <button onClick={() => setViewingActivityFile(null)} className="p-1.5 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72] rounded-xl text-[#2F578A]/80 dark:text-[#F1F5F9]/50 cursor-pointer transition-colors">
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            {viewingActivityFile.fileUrls.length === 0 ? (
+              <div className="py-8 text-center space-y-2">
+                <AlertCircle className="w-8 h-8 text-[#2F578A]/60 mx-auto" />
+                <p className="text-xs font-bold text-[#232F72] dark:text-white">Tidak ada lampiran</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {viewingActivityFile.fileUrls.map((url, i) => {
+                  const name = url.split("/").pop() || `berkas-${i + 1}`;
+                  return (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-3 bg-[#F8FAFC] dark:bg-[#232F72]/40 border border-[#2F578A]/20 dark:border-[#2F578A]/50 rounded-2xl hover:border-[#36ADA3] hover:bg-[#36ADA3]/5 transition-all group"
+                    >
+                      <div className="p-2 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl flex-shrink-0">
+                        <Eye className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold text-[#232F72] dark:text-white truncate group-hover:text-[#36ADA3] transition-colors">{name}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex justify-end pt-2">
+              <button onClick={() => setViewingActivityFile(null)} className="px-5 py-2 bg-[#232F72] hover:brightness-110 text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer">
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SUCCESS TOAST */}
       {successMessage && (
         <div className="fixed bottom-6 right-6 z-50 p-4 bg-[#36ADA3] text-white rounded-2xl shadow-2xl shadow-[#36ADA3]/30 flex items-center gap-3 animate-float max-w-sm border border-white/20">
@@ -217,32 +236,6 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                 <User className="w-3 h-3" />
                 {student.gender}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider bg-white/10 text-white/80 border border-white/20">
-                <GraduationCap className="w-3 h-3" />
-                {student.program}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider bg-white/10 text-white/80 border border-white/20">
-                <Building2 className="w-3 h-3" />
-                {student.company}
-              </span>
-            </div>
-
-            {/* Quick stats inside hero */}
-            <div className="grid grid-cols-3 gap-3 pt-1">
-              {[
-                { label: "Progress", value: `${student.progress}%`, icon: TrendingUp, color: "text-[#36ADA3]" },
-                { label: "Logbook OK", value: `${approvedCount}/${dummyLogbooks.length}`, icon: BadgeCheck, color: "text-emerald-400" },
-                { label: "Perlu Review", value: `${pendingCount}`, icon: Zap, color: "text-amber-400" },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
-                >
-                  <stat.icon className={`w-4 h-4 ${stat.color} mb-1`} />
-                  <p className="text-white font-black text-lg leading-none">{stat.value}</p>
-                  <p className="text-white/50 text-[9px] font-bold uppercase tracking-wider mt-0.5">{stat.label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -313,22 +306,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
               </p>
             </div>
 
-            {/* Progress bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold text-[#232F72] dark:text-white">
-                <span>Pengerjaan Proyek</span>
-                <span className="text-[#36ADA3]">{student.progress}%</span>
-              </div>
-              <div className="w-full bg-[#F1F5F9] dark:bg-[#232F72] h-3 rounded-full overflow-hidden border border-[#2F578A]/20">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#121358] to-[#36ADA3] transition-all duration-700"
-                  style={{ width: `${student.progress}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-semibold text-right">
-                {student.logbooksCount - student.logbooksPending}/{student.logbooksCount} logbook dikumpulkan
-              </p>
-            </div>
+
           </div>
 
           {/* ATTENDANCE CARD */}
@@ -345,7 +323,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                 { label: "Hadir", count: (student?.attendance?.present || 0), bg: "from-[#36ADA3]/10 to-[#36ADA3]/5", border: "border-[#36ADA3]/30", text: "text-[#36ADA3]", dot: "bg-[#36ADA3]" },
                 { label: "Sakit", count: (student?.attendance?.sick || 0), bg: "from-amber-500/10 to-amber-500/5", border: "border-amber-400/30", text: "text-amber-500", dot: "bg-amber-500" },
                 { label: "Izin", count: (student?.attendance?.leave || 0), bg: "from-[#2F578A]/10 to-[#2F578A]/5", border: "border-[#2F578A]/30", text: "text-[#2F578A] dark:text-blue-300", dot: "bg-[#2F578A]" },
-                { label: "Alfa", count: (student?.attendance?.absent || 0), bg: "from-rose-500/10 to-rose-500/5", border: "border-rose-400/30", text: "text-rose-500", dot: "bg-rose-500" },
+                { label: "Tidak Hadir", count: (student?.attendance?.absent || 0), bg: "from-rose-500/10 to-rose-500/5", border: "border-rose-400/30", text: "text-rose-500", dot: "bg-rose-500" },
               ].map((att, i) => (
                 <div key={i} className={`p-4 rounded-2xl bg-gradient-to-br ${att.bg} border ${att.border} flex flex-col gap-1`}>
                   <div className="flex items-center gap-1.5">
@@ -372,45 +350,14 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
           <div className="rounded-3xl border border-[#2F578A]/30 dark:border-[#2F578A]/60 bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md shadow-sm p-6 space-y-4">
             <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[#121358] flex items-center justify-center">
-                <Briefcase className="w-4 h-4 text-[#36ADA3]" />
+                <Calendar className="w-4 h-4 text-[#36ADA3]" />
               </div>
-              Detail Penempatan Magang Industri
+              Periode Magang
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  icon: Building2,
-                  label: "Perusahaan Mitra",
-                  main: student.company,
-                  details: [`Posisi: ${student.role}`, `Program Studi: ${student.program}`],
-                  accent: "from-[#121358] to-[#232F72]",
-                },
-                {
-                  icon: Calendar,
-                  label: "Periode Magang",
-                  main: student.period,
-                  details: ["Durasi: 6 Bulan Kontrak", "Supervisor: Bpk. Hermawan S.T."],
-                  accent: "from-[#2F578A] to-[#121358]",
-                },
-              ].map((item, i) => (
-                <div key={i} className="relative p-5 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 bg-[#F8FAFC] dark:bg-[#232F72]/20 overflow-hidden group hover:border-[#36ADA3]/40 transition-all">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-[#36ADA3]/5 rounded-full blur-2xl" />
-                  <div className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${item.accent} flex items-center justify-center mb-3 shadow-md`}>
-                    <item.icon className="w-4 h-4 text-[#36ADA3]" />
-                  </div>
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#2F578A] dark:text-[#F1F5F9]/50 mb-1">{item.label}</p>
-                  <h5 className="font-extrabold text-sm text-[#232F72] dark:text-white leading-snug mb-2">{item.main}</h5>
-                  <div className="space-y-1">
-                    {item.details.map((d, j) => (
-                      <p key={j} className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/60 font-semibold flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-[#36ADA3] flex-shrink-0" />
-                        {d}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="relative p-5 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 bg-[#F8FAFC] dark:bg-[#232F72]/20 overflow-hidden hover:border-[#36ADA3]/40 transition-all">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-[#36ADA3]/5 rounded-full blur-2xl" />
+              <h5 className="font-extrabold text-base text-[#232F72] dark:text-white leading-snug">{student.period}</h5>
             </div>
           </div>
 
@@ -422,7 +369,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                   <div className="w-7 h-7 rounded-lg bg-[#121358] flex items-center justify-center">
                     <Clock className="w-4 h-4 text-[#36ADA3]" />
                   </div>
-                  Logbook Mingguan Mahasiswa
+                  Daftar Kegiatan Magang
                 </h4>
                 <p className="text-[11px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-semibold mt-1 ml-9">
                   Tinjau dan setujui deskripsi tugas mingguan mahasiswa bimbingan
@@ -438,17 +385,20 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
 
             {/* Timeline */}
             <div className="relative pl-8 space-y-4 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-[#36ADA3] before:via-[#2F578A]/40 before:to-transparent">
-              {dummyLogbooks?.map((log, idx) => (
-                <div key={log.week} className="relative group">
+              {activities?.map((log, idx) => {
+                const uiStatus = getStatusLabel(log.status);
+                const displayDate = new Date(log.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+                return (
+                <div key={log.id || idx} className="relative group">
                   {/* dot */}
                   <span
                     className={`absolute -left-8 top-3 w-5 h-5 rounded-full border-2 border-white dark:border-[#121358] flex items-center justify-center shadow-md transition-transform group-hover:scale-110 ${
-                      log.status === "Dalam Review"
+                      uiStatus === "Dalam Review"
                         ? "bg-amber-500 shadow-amber-400/40 animate-pulse"
                         : "bg-[#36ADA3] shadow-[#36ADA3]/40"
                     }`}
                   >
-                    {log.status === "Disetujui" ? (
+                    {uiStatus === "Disetujui" ? (
                       <Check className="w-2.5 h-2.5 text-white" />
                     ) : (
                       <Clock className="w-2.5 h-2.5 text-white" />
@@ -458,7 +408,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                   {/* card */}
                   <div
                     className={`p-4 rounded-2xl border transition-all duration-200 hover:shadow-md ${
-                      log.status === "Dalam Review"
+                      uiStatus === "Dalam Review"
                         ? "border-amber-300/50 dark:border-amber-700/40 bg-amber-50/50 dark:bg-amber-950/10 hover:border-amber-400/60"
                         : "border-[#2F578A]/20 dark:border-[#2F578A]/30 bg-[#F8FAFC]/50 dark:bg-[#232F72]/10 hover:border-[#36ADA3]/30"
                     }`}
@@ -466,43 +416,46 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                     <div className="flex justify-between items-start flex-wrap gap-2 mb-2">
                       <div>
                         <span className="text-[9px] font-bold text-[#2F578A] dark:text-[#F1F5F9]/50 uppercase tracking-widest block">
-                          Minggu Ke-{log.week} • {log.date}
+                          Kegiatan • {displayDate}
                         </span>
                         <h5 className="font-extrabold text-xs text-[#232F72] dark:text-white leading-snug mt-0.5">
-                          {log.task}
+                          {log.judul}
                         </h5>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg bg-[#121358]/10 dark:bg-[#F1F5F9]/10 text-[#2F578A] dark:text-[#F1F5F9]/60 border border-[#2F578A]/15 dark:border-[#2F578A]/30">
-                          {log.category}
-                        </span>
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${
-                            log.status === "Disetujui"
+                            uiStatus === "Disetujui"
                               ? "bg-[#36ADA3]/10 text-[#36ADA3] border-[#36ADA3]/30"
                               : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-400/30"
                           }`}
                         >
-                          {log.status === "Disetujui" ? <BadgeCheck className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
-                          {log.status}
+                          {uiStatus === "Disetujui" ? <BadgeCheck className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
+                          {uiStatus}
                         </span>
                       </div>
                     </div>
 
-                    <p className="text-[11px] leading-relaxed text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold">
-                      {log.desc}
+                    <p className="text-[11px] leading-relaxed text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold whitespace-pre-wrap">
+                      {log.deskripsi}
                     </p>
 
-                    {log.status === "Dalam Review" && (
-                      <div className="pt-3 mt-2 flex items-center justify-between gap-2 border-t border-amber-200/40 dark:border-amber-800/30">
-                        <span className="text-[10px] text-[#2F578A] dark:text-[#F1F5F9]/50 font-medium flex items-center gap-1">
-                          <FileText className="w-3 h-3 text-[#36ADA3]" />
-                          <span className="text-[#36ADA3] font-bold hover:underline cursor-pointer">
-                            laporan_mingguan_w{log.week}.pdf
-                          </span>
-                        </span>
+                    {log.fileUrls && log.fileUrls.length > 0 && (
+                      <div className="mt-3">
                         <button
-                          onClick={() => handleApproveLogbook(log.week)}
+                          onClick={() => setViewingActivityFile({ activityName: log.judul, fileUrls: log.fileUrls! })}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#232F72] dark:bg-[#232F72]/40 hover:text-white dark:hover:bg-[#121358] text-[#232F72] dark:text-white border border-[#2F578A]/30 rounded-xl font-bold transition-all text-[10px] hover:scale-[1.02] active:scale-95 shadow-sm cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>{log.fileUrls.length} berkas</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {uiStatus === "Dalam Review" && (
+                      <div className="pt-3 mt-2 flex items-center justify-end gap-2 border-t border-amber-200/40 dark:border-amber-800/30">
+                        <button
+                          onClick={() => handleApproveLogbook(idx + 1)}
                           className="px-4 py-1.5 bg-gradient-to-r from-[#36ADA3] to-[#2F578A] hover:from-[#36ADA3]/90 hover:to-[#2F578A]/90 active:scale-95 text-white font-extrabold text-[10px] rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-[#36ADA3]/20"
                         >
                           <Check className="w-3.5 h-3.5" />
@@ -512,7 +465,7 @@ export default function MentorStudentDetailPage({ params }: PageProps) {
                     )}
                   </div>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
 

@@ -38,9 +38,36 @@ export interface StudentResponse {
 }
 
 export interface StudentStatResponse {
+  totalMahasiswa: number;
   totalAktif: number;
   totalSelesai: number;
   totalAktifTanpaPenilaian: number;
+}
+
+export interface AttendanceRecap {
+  hadir: number;
+  izin: number;
+  sakit: number;
+  tidakHadir: number;
+}
+
+export interface ActivityResponse {
+  id: string;
+  mahasiswaId: string;
+  namaMahasiswa: string;
+  judul: string;
+  deskripsi: string;
+  waktu: string;
+  fileUrls: string[];
+  status: string;
+  namaMentor: string | null;
+}
+
+export interface StudentDetailResponse {
+  mahasiswa: StudentResponse;
+  rekapitulasiKehadiran: AttendanceRecap;
+  dataKegiatan: ActivityResponse[];
+  totalNilai: number | null;
 }
 
 // =====================================================================
@@ -81,12 +108,14 @@ export interface Student {
   namaMentor?: string | null;
   userId?: string | null;
   idUniversity?: number | null;
+  dataKegiatan?: ActivityResponse[];
 }
 
 // =====================================================================
 // STATISTIK
 // =====================================================================
 export interface StudentStat {
+  totalMahasiswa: number;
   totalAktif: number;
   totalSelesai: number;
   totalAktifTanpaPenilaian: number;

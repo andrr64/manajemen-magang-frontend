@@ -4,6 +4,12 @@ export interface DashboardStatResponse {
   rekapAbsensi: Record<string, number>;
 }
 
+export interface AttendanceStatResponse {
+  jumlahHadir: number;
+  jumlahIzin: number;
+  jumlahSakit: number;
+}
+
 export interface RegisterStudentRequest {
   email: string;
   password?: string;

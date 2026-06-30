@@ -91,8 +91,7 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
           </div>
           <div className="overflow-hidden">
             <h4 className="font-bold text-sm text-[#232F72] dark:text-[#FFFFFF] truncate">{user?.nama || user?.email || "Mentor"}</h4>
-            <p className="text-xs text-[#2F578A] dark:text-[#36ADA3] font-semibold truncate mt-0.5">{user?.role === "mentor" ? "Dosen & Pembimbing" : "Mentor"}</p>
-            <p className="text-[10px] text-slate-400 dark:text-[#F1F5F9]/50 truncate">{user?.nim ? `NIDN. ${user.nim}` : "NIDN. -"}</p>
+            <p className="text-xs text-[#2F578A] dark:text-[#36ADA3] font-semibold truncate mt-0.5">{user?.role === "mentor" ? "admin/mentor" : "Mentor"}</p>
           </div>
         </div>
       </div>
@@ -132,13 +131,7 @@ export default function MentorSidebar({ onClose }: MentorSidebarProps) {
           <ArrowLeftIcon />
           <span>Kembali ke Beranda</span>
         </Link>
-        <button
-          onClick={() => setTheme(isDark ? "light" : "dark")}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-slate-100 dark:hover:bg-[#121358]/50 hover:text-[#232F72] dark:hover:text-[#FFFFFF] transition-colors"
-        >
-          {!mounted ? <Moon className="w-4.5 h-4.5" /> : isDark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
-          <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
-        </button>
+
         <button
           onClick={async () => {
             if (confirm("Apakah Anda yakin ingin keluar?")) {

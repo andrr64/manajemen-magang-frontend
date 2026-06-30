@@ -10,6 +10,7 @@ export const API_ROUTES = {
   ABSENSI_LIST:                "/api/absensi",
   ABSENSI_STATISTIK:           "/api/absensi/statistik",
   ABSENSI_EKSPOR:              "/api/absensi/ekspor",
+  ABSENSI_REKAP:               "/api/absensi/rekap",
   ABSENSI_VERIFY:    (id: string | number) => `/api/absensi/${id}/verifikasi`,
   ABSENSI_DELETE:    (id: string | number) => `/api/absensi/${id}`,
   ABSENSI_SURAT_KET: (id: string | number) => `/api/absensi/${id}/surat-keterangan`,
@@ -20,10 +21,12 @@ export const API_ROUTES = {
   ABSENSI_STATISTIK_KEHADIRAN: "/api/absensi/statistik-kehadiran",
   ABSENSI_CHECKOUT:            "/api/absensi/mahasiswa/checkout",
   ABSENSI_MENTOR_HARIAN: "/api/absensi/mentor/harian",
+  ABSENSI_MENTOR_HARIAN_STATISTIK: "/api/absensi/mentor/harian/statistik",
   ABSENSI_MENTOR_SUBMIT: "/api/absensi/mentor/submit",
 
   // ─── KEGIATAN ─────────────────────────────────────────────────────────────
   KEGIATAN_LIST:       "/api/kegiatan",
+  KEGIATAN_REKAP:      "/api/kegiatan/rekap",
   KEGIATAN_STATISTIK:  "/api/kegiatan/statistik",
   KEGIATAN_DETAIL:   (id: string | number) => `/api/kegiatan/${id}`,
   KEGIATAN_FILE:     (id: string | number) => `/api/kegiatan/${id}/file`,
@@ -41,6 +44,8 @@ export const API_ROUTES = {
   PENILAIAN_LIST:        "/api/penilaian",
   PENILAIAN_STATISTIK:   "/api/penilaian/statistik",
   PENILAIAN_MAHASISWA:   "/api/penilaian/mahasiswa/nilai",
+  PENILAIAN_REKAP:       "/api/penilaian/rekap",
+  PENILAIAN_REKAP_MAHASISWA: (id: string | number) => `/api/penilaian/rekap/${id}`,
 
   // ─── SERTIFIKAT ───────────────────────────────────────────────────────────
   SERTIFIKAT_LIST:        "/api/sertifikat",
@@ -59,6 +64,7 @@ export const API_ROUTES = {
   // ─── DASHBOARD ────────────────────────────────────────────────────────────
   DASHBOARD_MAHASISWA_STATISTIK: "/api/dashboard-mahasiswa/statistik",
   DASHBOARD_MENTOR_STATISTIK:    "/api/dashboard-mentor/statistik",
+  DASHBOARD_MENTOR_STATISTIK_KEHADIRAN: "/api/dashboard-mentor/statistik-kehadiran",
   DASHBOARD_MENTOR_MAHASISWA:    "/api/dashboard-mentor/mahasiswa",
 
   // ─── MEDIA ────────────────────────────────────────────────────────────────

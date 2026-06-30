@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -12,19 +12,25 @@ import {
   School,
   ChevronRight,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Download,
+  Loader2
 } from "lucide-react";
-import { useStudentAssessments, usePenilaianStats } from "@/modules/penilaian/hooks";
+import { useStudentAssessments, usePenilaianStats, usePenilaianRekap } from "@/modules/penilaian/hooks";
 import { useStudents } from "@/modules/data_mahasiswa/hooks";
 import { DataTable } from "@/components/ui/data-table";
 import { PageHeader, StatsGrid, StatItem } from "@/components/shared";
+import ttdImage from "../../mahasiswa/absensi/assets/ttd-pak-agus.png";
+import { useDownloadPenilaianMentorPDF } from "./useDownloadPenilaianMentorPDF";
 
 export default function MentorPenilaianPage() {
+  const [activeTab, setActiveTab] = useState<"data" | "ekspor">("data");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
 
   const { assessments, isLoading, refreshAssessments } = useStudentAssessments();
   const { stats: apiStats } = usePenilaianStats(searchQuery);
+  const { rekap, isLoading: isRekapLoading } = usePenilaianRekap();
   const { rawStudents } = useStudents();
   const studentsList = rawStudents;
 
@@ -80,6 +86,33 @@ export default function MentorPenilaianPage() {
     return { total, graded, pending, ratio };
   }, [enrichedStudents]);
 
+  const rekapList = useMemo(() => {
+    if (!rekap) return [];
+    return Object.entries(rekap).map(([nama, penilaians]) => ({
+      nama,
+      penilaian: penilaians && penilaians.length > 0 ? penilaians[0] : null
+    }));
+  }, [rekap]);
+
+  const [ttdBase64, setTtdBase64] = useState<string | null>(null);
+  useEffect(() => {
+    const src = typeof ttdImage === "string" ? ttdImage : (ttdImage as any).src;
+    const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
+      setTtdBase64(canvas.toDataURL("image/png"));
+    };
+  }, []);
+
+  const { download: downloadPDF, isGenerating: isGeneratingPDF } = useDownloadPenilaianMentorPDF(
+    rekapList, ttdBase64
+  );
+
   return (
     <div className="space-y-6">
 
@@ -93,7 +126,32 @@ export default function MentorPenilaianPage() {
         return <StatsGrid stats={statsConfig} gridClass="grid-cols-2" />;
       })()}
 
-      {/* FILTER PANEL */}
+      <div className="flex border-b border-[#2F578A]/20 dark:border-[#2F578A]/50 mt-4">
+        <button
+          onClick={() => setActiveTab("data")}
+          className={`pb-3 px-4 text-sm font-extrabold uppercase tracking-wide transition-all ${
+            activeTab === "data"
+              ? "border-b-2 border-[#36ADA3] text-[#232F72] dark:text-white"
+              : "text-[#2F578A]/60 dark:text-[#F1F5F9]/40 hover:text-[#232F72] dark:hover:text-[#F1F5F9]"
+          }`}
+        >
+          Data Penilaian
+        </button>
+        <button
+          onClick={() => setActiveTab("ekspor")}
+          className={`pb-3 px-4 text-sm font-extrabold uppercase tracking-wide transition-all ${
+            activeTab === "ekspor"
+              ? "border-b-2 border-[#36ADA3] text-[#232F72] dark:text-white"
+              : "text-[#2F578A]/60 dark:text-[#F1F5F9]/40 hover:text-[#232F72] dark:hover:text-[#F1F5F9]"
+          }`}
+        >
+          Ekspor Rekap
+        </button>
+      </div>
+
+      {activeTab === "data" && (
+        <div className="space-y-6">
+          {/* FILTER PANEL */}
       <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <Sparkles className="w-4 h-4 text-[#232F72] dark:text-[#FFFFFF]" />
@@ -151,9 +209,6 @@ export default function MentorPenilaianPage() {
                   <p className="font-extrabold text-[#232F72] dark:text-[#FFFFFF] leading-tight">
                     {student.name}
                   </p>
-                  <span className="text-[10px] font-bold text-[#2F578A]/80 dark:text-[#F1F5F9]/50 block mt-0.5">
-                    Mitra: {student.company}
-                  </span>
                 </div>
               </Link>
             ),
@@ -184,7 +239,7 @@ export default function MentorPenilaianPage() {
             render: (student) => {
               const isGraded = student.penilaianId !== null && student.penilaianId !== undefined;
               return isGraded
-                ? <span className="font-black text-[#232F72] dark:text-[#FFFFFF] text-sm">{student.grade}</span>
+                ? <span className="font-black text-[#232F72] dark:text-[#FFFFFF] text-sm">{Number(student.grade).toFixed(1).replace('.', ',')}</span>
                 : <span className="text-[#2F578A]/80 dark:text-[#F1F5F9]/50">—</span>;
             },
           },
@@ -229,6 +284,119 @@ export default function MentorPenilaianPage() {
           },
         ]}
       />
+        </div>
+      )}
+
+      {activeTab === "ekspor" && (
+        <div className="space-y-6">
+          <div className="glass-card border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358]/40 dark:backdrop-blur-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#36ADA3]" />
+                <h4 className="font-extrabold text-lg text-[#232F72] dark:text-[#FFFFFF]">Rekapitulasi Penilaian Mahasiswa</h4>
+              </div>
+              <button
+                onClick={downloadPDF}
+                disabled={isGeneratingPDF || rekapList.length === 0}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#232F72] hover:bg-[#2F578A] text-white rounded-xl text-xs font-bold transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
+              >
+                {isGeneratingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                <span>{isGeneratingPDF ? "Membuat PDF..." : "Ekspor ke PDF"}</span>
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto rounded-xl border border-[#2F578A]/20 dark:border-[#2F578A]/50">
+              <table className="w-full text-left border-collapse text-xs md:text-sm">
+                <thead>
+                  <tr className="bg-[#232F72] text-white">
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-12 text-center">No</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[30%]">Nama Mahasiswa</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[40%]">Kriteria Penilaian</th>
+                    <th className="px-4 py-3 font-extrabold border-b border-[#2F578A]/50 w-[20%] text-center">Nilai</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-[#121358]/40">
+                  {isRekapLoading ? (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-[#2F578A] dark:text-white font-semibold">
+                        Memuat data rekapitulasi...
+                      </td>
+                    </tr>
+                  ) : rekapList.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-[#2F578A] dark:text-white font-semibold">
+                        Belum ada data rekapitulasi penilaian.
+                      </td>
+                    </tr>
+                  ) : (
+                    rekapList.map((row, index) => {
+                      const p = row.penilaian;
+                      const isEven = index % 2 === 0;
+                      const rowClass = isEven ? "bg-white dark:bg-[#121358]/20" : "bg-[#F8FAFC] dark:bg-[#232F72]/20";
+
+                      if (!p) {
+                        return (
+                          <tr key={index} className={`border-b border-[#2F578A]/20 dark:border-[#2F578A]/50 ${rowClass}`}>
+                            <td className="px-4 py-3 text-center font-bold text-[#232F72] dark:text-white">{index + 1}</td>
+                            <td className="px-4 py-3 font-extrabold text-[#232F72] dark:text-white">{row.nama}</td>
+                            <td className="px-4 py-3 font-semibold text-amber-600 dark:text-amber-400 italic">Belum di nilai</td>
+                            <td className="px-4 py-3 font-bold text-center text-[#232F72] dark:text-white">-</td>
+                          </tr>
+                        );
+                      }
+
+                      const kriteria = [
+                        { label: "Kinerja Pekerjaan", value: p.kinerja },
+                        { label: "Kedisiplinan", value: p.kedisiplinan },
+                        { label: "Tanggung Jawab", value: p.tanggungJawab },
+                        { label: "Komunikasi", value: p.komunikasi },
+                        { label: "Sikap & Etika Kerja", value: p.sikap },
+                        { label: "Kerapihan", value: p.kerapihan },
+                        { label: "Kehadiran", value: p.absensi },
+                        { label: "Kerjasama Tim", value: p.kerjasama },
+                        { label: "Catatan", value: p.catatan || "-" }
+                      ];
+
+                      return (
+                        <React.Fragment key={index}>
+                          <tr className={`border-b border-[#2F578A]/10 dark:border-[#2F578A]/20 ${rowClass}`}>
+                            <td className="px-4 py-3 text-center font-bold text-[#232F72] dark:text-white align-top" rowSpan={kriteria.length}>
+                              {index + 1}
+                            </td>
+                            <td className="px-4 py-3 font-extrabold text-[#232F72] dark:text-white align-top" rowSpan={kriteria.length}>
+                              {row.nama}
+                            </td>
+                            <td className="px-4 py-2 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80 border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+                              {kriteria[0].label}
+                            </td>
+                            <td className="px-4 py-2 font-bold text-center text-[#232F72] dark:text-white border-b border-[#2F578A]/10 dark:border-[#2F578A]/30">
+                              {kriteria[0].value}
+                            </td>
+                          </tr>
+                          {kriteria.slice(1).map((k, kIdx) => {
+                            const isLast = kIdx === kriteria.length - 2;
+                            return (
+                              <tr key={`${index}-${kIdx}`} className={rowClass}>
+                                <td className={`px-4 py-2 font-semibold text-[#2F578A] dark:text-[#F1F5F9]/80 ${isLast ? 'border-b border-[#2F578A]/20 dark:border-[#2F578A]/50' : 'border-b border-[#2F578A]/10 dark:border-[#2F578A]/30'}`}>
+                                  {k.label}
+                                </td>
+                                <td className={`px-4 py-2 font-bold text-center text-[#232F72] dark:text-white ${isLast ? 'border-b border-[#2F578A]/20 dark:border-[#2F578A]/50' : 'border-b border-[#2F578A]/10 dark:border-[#2F578A]/30'}`}>
+                                  {k.value}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
+          </div>
+        </div>
+      )}
 
     </div>
   );

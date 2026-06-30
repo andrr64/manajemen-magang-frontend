@@ -14,6 +14,12 @@ export interface ActivityResponse {
   namaMentor: string | null;
 }
 
+export interface ActivityRekapResponse {
+  namaMahasiswa: string;
+  namaKegiatan: string;
+  waktu: string;
+}
+
 export interface ActivityStatResponse {
   totalKegiatan: number;
   disetujui: number;

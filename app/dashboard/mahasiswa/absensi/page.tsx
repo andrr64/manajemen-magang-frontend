@@ -109,7 +109,7 @@ function StatusBadge({ type }: { type: AttendanceLog["type"] }) {
   };
   const { cls, label } = cfg[type] ?? cfg.Alpha;
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border ${cls}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border-2 ${cls}`}>
       {label}
     </span>
   );
@@ -209,10 +209,28 @@ export default function StudentAttendancePage() {
     }
   };
 
+  const handleExportCSV = () => {
+    if (!profile) return;
+    const csvRows = ["No;Tanggal;Status;Waktu Mulai;Waktu Selesai"];
+    chronologicalHistory.forEach((log, index) => {
+      csvRows.push(`${index + 1};${log.date};${log.type};${log.checkIn};${log.checkOut}`);
+    });
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `rekap_absensi_${profile.name.replace(/\s+/g, '_')}_${today}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault(); e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-    else setDragActive(false);
+    else if (e.type === "dragleave") setDragActive(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -251,7 +269,7 @@ export default function StudentAttendancePage() {
 
       {/* ── TABS & TOMBOL DOWNLOAD ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
+        <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
           <button
             onClick={() => setActiveTab("laporan")}
             className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
@@ -273,21 +291,23 @@ export default function StudentAttendancePage() {
             Preview Rekap
           </button>
         </div>
-        <button
-          onClick={downloadPDF}
-          disabled={isGenerating}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
-                     bg-[#232F72] dark:bg-[#36ADA3] text-white
-                     hover:bg-[#1a2256] dark:hover:bg-[#2eb1a6]
-                     disabled:opacity-60 disabled:cursor-not-allowed
-                     shadow-[0_0_14px_rgba(35,47,114,0.25)] dark:shadow-[0_0_14px_rgba(54,173,163,0.3)]
-                     transition-all active:scale-95 cursor-pointer"
-        >
-          {isGenerating
-            ? <><Loader2 className="w-4 h-4 animate-spin" /> Membuat PDF...</>
-            : <><Download className="w-4 h-4" /> Download Rekap Absensi</>
-          }
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={downloadPDF}
+            disabled={isGenerating}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
+                       bg-[#232F72] dark:bg-[#36ADA3] text-white
+                       hover:bg-[#1a2256] dark:hover:bg-[#2eb1a6]
+                       disabled:opacity-60 disabled:cursor-not-allowed
+                       shadow-[0_0_14px_rgba(35,47,114,0.25)] dark:shadow-[0_0_14px_rgba(54,173,163,0.3)]
+                       transition-all active:scale-95 cursor-pointer"
+          >
+            {isGenerating
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Membuat PDF...</>
+              : <><Download className="w-4 h-4" /> Download Rekap Absensi</>
+            }
+          </button>
+        </div>
       </div>
 
       {activeTab === "laporan" && (
@@ -300,8 +320,8 @@ export default function StudentAttendancePage() {
               { label: "Sakit",       value: stats.sakit,      icon: Stethoscope,  color: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border-sky-200/50 dark:border-sky-900/40" },
               { label: "Tidak Hadir", value: stats.tidakHadir, icon: UserX,        color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-200/50 dark:border-rose-900/40" },
             ].map(({ label, value, icon: Icon, color }) => (
-              <div key={label} className={`p-5 rounded-3xl border ${color} flex items-center gap-4 shadow-sm`}>
-                <div className={`p-3 rounded-2xl border ${color}`}><Icon className="w-5 h-5" /></div>
+              <div key={label} className={`p-5 rounded-3xl border-2 ${color} flex items-center gap-4 shadow-sm`}>
+                <div className={`p-3 rounded-2xl border-2 ${color}`}><Icon className="w-5 h-5" /></div>
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-80">{label}</span>
                   <p className="text-xl font-black leading-none mt-1">{value} <span className="text-xs font-bold opacity-70">hari</span></p>
@@ -311,7 +331,7 @@ export default function StudentAttendancePage() {
           </div>
 
       {/* ── PERSENTASE KEHADIRAN ── */}
-      <div className="border border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 bg-white dark:bg-[#121358]/40 shadow-sm space-y-3">
+      <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A] rounded-3xl p-5 md:p-6 bg-white dark:bg-[#121358]/40 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#36ADA3]" />
@@ -341,7 +361,7 @@ export default function StudentAttendancePage() {
 
         {/* LEFT: FORM IZIN / SAKIT */}
         <div className="lg:col-span-7">
-          <div className="border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6">
+          <div className="border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-6 md:p-8 shadow-xl bg-white dark:bg-[#121358] space-y-6">
             <div className="flex items-center justify-between pb-3.5 border-b border-[#2F578A]/20 dark:border-[#2F578A]/40">
               <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white flex items-center gap-2">
                 <CalendarDays className="w-4 h-4 text-[#36ADA3]" />
@@ -354,7 +374,7 @@ export default function StudentAttendancePage() {
 
             {sudahAbsen ? (
               <div className="py-8 flex flex-col items-center gap-4 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200/50 dark:border-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <div>
@@ -381,7 +401,7 @@ export default function StudentAttendancePage() {
                     ] as const).map(({ val, label, icon: Icon, desc }) => (
                       <button
                         key={val} type="button" onClick={() => setStatus(val)}
-                        className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer text-center ${
+                        className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer text-center ${
                           status === val
                             ? "bg-[#36ADA3]/10 border-[#36ADA3] text-[#36ADA3] shadow-[0_0_15px_rgba(54,173,163,0.2)] scale-[1.02]"
                             : "bg-[#F8FAFC]/50 border-[#2F578A]/30 dark:bg-[#232F72]/30 dark:border-[#2F578A] text-[#2F578A] dark:text-[#F1F5F9]/70 hover:bg-[#F8FAFC] dark:hover:bg-[#232F72]"
@@ -415,7 +435,7 @@ export default function StudentAttendancePage() {
                       }`}
                     >
                       <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                      <div className="p-3 bg-[#36ADA3]/10 text-[#36ADA3] rounded-2xl border border-[#36ADA3]/20 shadow-sm mb-3">
+                      <div className="p-3 bg-[#36ADA3]/10 text-[#36ADA3] rounded-2xl border-2 border-[#36ADA3]/20 shadow-sm mb-3">
                         <UploadCloud className="w-6 h-6 animate-pulse" />
                       </div>
                       <p className="text-xs text-[#232F72] dark:text-[#F1F5F9] font-extrabold">
@@ -423,9 +443,9 @@ export default function StudentAttendancePage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/40 border border-[#2F578A]/30 dark:border-[#2F578A] rounded-2xl flex items-center justify-between gap-4">
+                    <div className="p-4 bg-[#F8FAFC] dark:bg-[#232F72]/40 border-2 border-[#2F578A]/30 dark:border-[#2F578A] rounded-2xl flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl border border-[#36ADA3]/20">
+                        <div className="p-2.5 bg-[#36ADA3]/10 text-[#36ADA3] rounded-xl border-2 border-[#36ADA3]/20">
                           <FileIcon className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
@@ -464,7 +484,7 @@ export default function StudentAttendancePage() {
         </div>
 
         {/* RIGHT: RIWAYAT */}
-        <div className="lg:col-span-5 border border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358] space-y-4">
+        <div className="lg:col-span-5 border-2 border-[#2F578A]/30 dark:border-[#2F578A]/50 rounded-3xl p-5 md:p-6 shadow-sm bg-white dark:bg-[#121358] space-y-4">
           <div>
             <h4 className="font-extrabold text-sm text-[#232F72] dark:text-white">Riwayat Absensi</h4>
             <p className="text-[11px] text-[#2F578A] dark:text-[#F1F5F9]/70 font-semibold mt-0.5">
@@ -479,11 +499,7 @@ export default function StudentAttendancePage() {
             ) : fullHistory.map((item, idx) => (
               <div
                 key={String(item.id) + idx}
-                className={`px-3.5 py-3 rounded-2xl border flex items-center justify-between gap-3 ${
-                  item.type === "Alpha"  ? "bg-rose-50/60 dark:bg-rose-950/20 border-rose-100/60 dark:border-rose-900/30"
-                  : item.type === "Hadir" ? "bg-emerald-50/40 dark:bg-emerald-950/10 border-emerald-100/40 dark:border-emerald-900/20"
-                  : "bg-[#F8FAFC] dark:bg-[#232F72]/30 border-[#2F578A]/20 dark:border-[#2F578A]/40"
-                }`}
+                className="px-3.5 py-3 rounded-2xl border-2 flex items-center justify-between gap-3 bg-[#F8FAFC] dark:bg-[#232F72]/30 border-[#2F578A]/20 dark:border-[#2F578A]/40"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[9px] font-black flex-shrink-0 ${
@@ -513,7 +529,7 @@ export default function StudentAttendancePage() {
       ══════════════════════════════════════════════════════════════ */}
 
       {activeTab === "rekap" && (
-        <div className="bg-white dark:bg-[#0f1535] border border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="bg-white dark:bg-[#0f1535] border-2 border-[#2F578A]/20 dark:border-[#2F578A]/40 rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
 
           <div className="p-8 md:p-12 space-y-8 text-[#1a1a2e] dark:text-[#e8eaf6]">
 
@@ -532,7 +548,7 @@ export default function StudentAttendancePage() {
               {([
                 { label: "Nama",           nilai: profile?.name || "Budi Santoso" },
                 { label: "NIM",            nilai: profile?.nim || "2021001234" },
-                { label: "Instansi / PT",  nilai: profile?.university || "Universitas Negeri Jakarta" },
+                { label: "Universitas",    nilai: profile?.university || "Universitas Negeri Jakarta" },
                 { label: "Periode Magang", nilai: formatPeriode(profile?.tanggalMulai, profile?.tanggalBerakhir) },
               ] as const).map(({ label, nilai }) => (
                 <div key={label} className="flex gap-2">
@@ -546,7 +562,7 @@ export default function StudentAttendancePage() {
             <div className="border-t border-dashed border-[#2F578A]/25 dark:border-[#2F578A]/40" />
 
             {/* TABEL */}
-            <div className="overflow-x-auto rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/30">
+            <div className="overflow-x-auto rounded-2xl border-2 border-[#2F578A]/20 dark:border-[#2F578A]/30">
               <table className="w-full text-[11px] border-collapse">
                 <thead>
                   <tr className="bg-[#232F72] dark:bg-[#0d1a4a] text-white">
@@ -642,3 +658,4 @@ export default function StudentAttendancePage() {
     </div>
   );
 }
+

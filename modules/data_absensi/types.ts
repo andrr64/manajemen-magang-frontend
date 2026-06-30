@@ -26,6 +26,17 @@ export interface AbsensiMahasiswaStatResponse {
   totalAlfa: number;
 }
 
+export type RekapAbsensiResponse = [string, string, string];
+
+export interface RekapDetailAbsensiResponse {
+  id: string | null;
+  namaMahasiswa: string;
+  tanggal: string; // YYYY-MM-DD
+  status: string;
+  createdAt: string | null; // ISO DateTime
+  attachmentUrl: string | null;
+}
+
 // =====================================================================
 // SHARED / COMMON
 // =====================================================================
