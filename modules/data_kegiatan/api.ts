@@ -169,18 +169,15 @@ export const kegiatanAPI = {
     });
   },
 
-  getRekapActivities: async () => {
+  getRekapActivities: async (startDate?: string, endDate?: string, mahasiswaId?: string) => {
+    const q = new URLSearchParams();
+    if (startDate) q.append("startDate", startDate);
+    if (endDate) q.append("endDate", endDate);
+    if (mahasiswaId) q.append("mahasiswaId", mahasiswaId);
+
     return executeHybridRequest<ActivityRekapResponse[]>(
       "Get all rekap activities",
-      API_ROUTES.KEGIATAN_REKAP,
-      { method: "GET" }
-    );
-  },
-
-  getRekapActivitiesByMahasiswaId: async (mahasiswaId: string) => {
-    return executeHybridRequest<ActivityRekapResponse[]>(
-      `Get rekap activities for mahasiswa ${mahasiswaId}`,
-      `${API_ROUTES.KEGIATAN_REKAP}/${mahasiswaId}`,
+      `${API_ROUTES.KEGIATAN_REKAP}?${q.toString()}`,
       { method: "GET" }
     );
   },

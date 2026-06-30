@@ -43,6 +43,35 @@ export default function MentorActivitiesPage() {
   const [activeTab, setActiveTab] = useState<"data" | "ekspor">("data");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
+  const [eksporFilter, setEksporFilter] = useState<"Hari ini" | "Minggu ini" | "Bulan ini" | "Tahun ini">("Bulan ini");
+
+  const { tanggalAwal, tanggalAkhir } = useMemo(() => {
+    const today = new Date();
+    let start = new Date(today);
+    if (eksporFilter === "Hari ini") {
+      start = new Date(today);
+    } else if (eksporFilter === "Minggu ini") {
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      start = new Date(today.setDate(diff));
+    } else if (eksporFilter === "Bulan ini") {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+    } else {
+      start = new Date(today.getFullYear(), 0, 1);
+    }
+    
+    const formatDate = (date: Date) => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+    
+    return {
+      tanggalAwal: formatDate(start),
+      tanggalAkhir: formatDate(new Date())
+    };
+  }, [eksporFilter]);
 
   const [showToast, setShowToast] = useState("");
   const [viewingActivityFile, setViewingActivityFile] = useState<{ studentName: string; activityName: string; fileUrls: string[] } | null>(null);
@@ -101,10 +130,10 @@ export default function MentorActivitiesPage() {
     };
   }, []);
 
-  const { data: rekapData } = useRekapKegiatan();
+  const { data: rekapData } = useRekapKegiatan(tanggalAwal, tanggalAkhir);
   
   const { download: downloadPDF, isGenerating: isGeneratingPDF } = useDownloadKegiatanMentorPDF(
-    rekapData, ttdBase64, stats
+    rekapData, ttdBase64, stats, tanggalAwal, tanggalAkhir
   );
 
   const handleExportCSV = () => {
@@ -476,10 +505,20 @@ export default function MentorActivitiesPage() {
       {activeTab === "ekspor" && (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max">
-              <span className="px-5 py-2.5 rounded-xl text-xs font-bold bg-white dark:bg-[#232F72] text-[#232F72] dark:text-white shadow-sm">
-                Rekap Kegiatan
-              </span>
+            <div className="flex bg-[#F8FAFC] dark:bg-[#121358]/60 p-1 rounded-2xl border border-[#2F578A]/20 dark:border-[#2F578A]/40 w-max overflow-x-auto max-w-full">
+              {["Hari ini", "Minggu ini", "Bulan ini", "Tahun ini"].map(filter => (
+                <button
+                  key={filter}
+                  onClick={() => setEksporFilter(filter as any)}
+                  className={`whitespace-nowrap px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
+                    eksporFilter === filter
+                      ? "bg-white dark:bg-[#232F72] text-[#232F72] dark:text-white shadow-sm"
+                      : "text-slate-500 dark:text-slate-400 hover:text-[#232F72] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#232F72]/50"
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -529,6 +568,12 @@ export default function MentorActivitiesPage() {
                 <div className="flex gap-2">
                   <span className="font-bold text-[#2F578A] dark:text-[#36ADA3] w-36 flex-shrink-0">Tipe Laporan</span>
                   <span className="font-semibold text-[#232F72] dark:text-white">:&nbsp;Rekap Kegiatan Seluruh Mahasiswa</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-bold text-[#2F578A] dark:text-[#36ADA3] w-36 flex-shrink-0">Periode Kegiatan</span>
+                  <span className="font-semibold text-[#232F72] dark:text-white">:&nbsp;
+                    {new Date(tanggalAwal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} - {new Date(tanggalAkhir).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                  </span>
                 </div>
               </div>
 

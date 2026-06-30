@@ -35,7 +35,9 @@ const STATUS_LABEL: Record<string, string> = {
 export function useDownloadKegiatanMentorPDF(
   kegiatanData: import("../../../../modules/data_kegiatan/types").ActivityRekapResponse[],
   ttdBase64: string | null,
-  stats: { approved: number; pending: number; total: number }
+  stats: { approved: number; pending: number; total: number },
+  tanggalAwal: string,
+  tanggalAkhir: string
 ) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -75,9 +77,22 @@ export function useDownloadKegiatanMentorPDF(
       y += 1;
       doc.setLineWidth(0.3);
       doc.line(ml, y, pw - mr, y);
+      y += 5;
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(navyR, navyG, navyB);
+      doc.text("Tipe Laporan", ml, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(": Rekap Kegiatan Seluruh Mahasiswa", ml + 25, y);
+      y += 4;
+      doc.setFont("helvetica", "bold");
+      doc.text("Periode Kegiatan", ml, y);
+      doc.setFont("helvetica", "normal");
+      const fmtStart = new Date(tanggalAwal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+      const fmtEnd = new Date(tanggalAkhir).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+      doc.text(`: ${fmtStart} - ${fmtEnd}`, ml + 25, y);
       y += 7;
-
-
 
       // Tabel
       const colWidths = [12, 60, cw - 12 - 60 - 38, 38];
