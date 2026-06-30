@@ -63,30 +63,19 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-neutral-950 flex font-sans text-neutral-100">
       {/* Left side: Artistic graphic / Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-900 to-indigo-950 p-12 overflow-hidden flex-col justify-between">
-        <div className="absolute top-0 left-0 w-full h-full">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-900 to-indigo-950 p-12 overflow-hidden flex-col justify-center items-center text-center">
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] rounded-full bg-blue-600/20 blur-[120px]"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[30rem] h-[30rem] rounded-full bg-indigo-500/20 blur-[100px]"></div>
         </div>
         
-        <div className="relative z-10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shadow-xl shadow-blue-900/50">
-              <Image src="/favicon.ico" alt="Logo" width={48} height={48} className="object-contain w-full h-full p-1" />
-            </div>
-            <span className="font-bold text-2xl tracking-tight text-white whitespace-nowrap">
-              Direktorat <span className="text-cyan-400">Wilayah 1</span>
-            </span>
+        <div className="relative z-10 flex flex-col items-center gap-8">
+          <div className="w-48 h-48 bg-white rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl shadow-blue-900/50">
+            <Image src="/favicon.ico" alt="Logo" width={192} height={192} className="object-contain w-full h-full p-4" />
           </div>
-        </div>
-
-        <div className="relative z-10 mt-auto">
-          <h1 className="text-5xl font-extrabold leading-tight text-white mb-6">
-            Mulai Perjalanan <br />Karir Anda di Sini.
-          </h1>
-          <p className="text-blue-200 text-lg max-w-md leading-relaxed">
-            Platform manajemen magang terpadu yang mempertemukan mahasiswa berbakat dengan mentor profesional di industri.
-          </p>
+          <span className="font-extrabold text-5xl md:text-6xl tracking-tight text-white whitespace-nowrap">
+            Direktorat <span className="text-cyan-400">Wilayah 1</span>
+          </span>
         </div>
       </div>
 
@@ -96,11 +85,11 @@ export default function RegisterPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-[500px] bg-blue-600/10 blur-[100px] lg:hidden rounded-full pointer-events-none"></div>
         
         <div className="w-full max-w-md relative z-10">
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-              <Image src="/favicon.ico" alt="Logo" width={40} height={40} className="object-contain w-full h-full p-1" />
+          <div className="lg:hidden flex flex-col items-center gap-4 mb-10 text-center">
+            <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-900/30">
+              <Image src="/favicon.ico" alt="Logo" width={80} height={80} className="object-contain w-full h-full p-2" />
             </div>
-            <span className="font-bold text-2xl tracking-tight text-white whitespace-nowrap">
+            <span className="font-extrabold text-3xl tracking-tight text-white whitespace-nowrap">
               Direktorat <span className="text-cyan-400">Wilayah 1</span>
             </span>
           </div>

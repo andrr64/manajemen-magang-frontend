@@ -45,7 +45,9 @@ export default function DetailKegiatanClient({ mahasiswaId }: { mahasiswaId: str
   const { download: downloadPDF, isGenerating: isGeneratingPDF } = useDownloadKegiatanMentorPDF(
     rekapData,
     ttdBase64,
-    { approved: 0, pending: 0, total: 0 }
+    { approved: 0, pending: 0, total: 0 },
+    student?.tanggalMulai || new Date().toISOString(),
+    student?.tanggalBerakhir || new Date().toISOString()
   );
 
   return (
