@@ -25,6 +25,7 @@ import { useDownloadRekapPDF } from "./useDownloadRekapPDF";
 type IzinSakitStatus = "izin" | "sakit";
 
 function localDateISO(d: Date = new Date()) {
+  // Gunakan tanggal lokal browser (WIB / GMT+7) — bukan UTC
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -139,7 +140,9 @@ export default function StudentAttendancePage() {
   const today = todayISO();
 
   const todayRecord = useMemo(
-    () => riwayat.find(r => r.tanggalISO === today),
+    // Alpha = record sintetis dari SQL COALESCE (belum ada submit nyata)
+    // Hanya Hadir/Izin/Sakit yang berarti mahasiswa sudah mengisi absensi
+    () => riwayat.find(r => r.tanggalISO === today && r.type !== "Alpha"),
     [riwayat, today],
   );
   const sudahAbsen = !!todayRecord;
@@ -152,11 +155,22 @@ export default function StudentAttendancePage() {
     const result: AttendanceLog[] = allDates.map(date => {
       const rec = byDate.get(date);
       if (rec) return rec;
+      // Jika hari ini belum ada record → jangan tandai Alpha,
+      // biarkan form submit tetap terbuka (tampilkan sebagai placeholder kosong di riwayat saja)
+      if (date === today) {
+        return {
+          id: `pending-${date}`, date: formatDateShort(date),
+          tanggalISO: date, type: "Alpha" as const,
+          checkIn: "-- : --", checkOut: "-- : --",
+          document: null, status: "Diverifikasi" as const,
+          _isPendingToday: true, // flag internal, tidak dirender sebagai Alpha di stats
+        } as AttendanceLog & { _isPendingToday?: boolean };
+      }
       return {
         id: `alpha-${date}`, date: formatDateShort(date),
-        tanggalISO: date, type: "Alpha",
+        tanggalISO: date, type: "Alpha" as const,
         checkIn: "-- : --", checkOut: "-- : --",
-        document: null, status: "Diverifikasi",
+        document: null, status: "Diverifikasi" as const,
       };
     });
     return result.reverse();
@@ -164,13 +178,16 @@ export default function StudentAttendancePage() {
 
   const stats = useMemo(() => {
     const total      = fullHistory.length;
+    // Hari ini yang belum ada record (pending) tidak dihitung sebagai Alpha
+    const todayPending = (fullHistory as any[]).some(r => r._isPendingToday);
     const hadir      = fullHistory.filter(r => r.type === "Hadir").length;
     const izin       = fullHistory.filter(r => r.type === "Izin").length;
     const sakit      = fullHistory.filter(r => r.type === "Sakit").length;
-    const tidakHadir = fullHistory.filter(r => r.type === "Alpha").length;
-    const pct        = total > 0 ? Math.round((hadir / total) * 100) : 0;
-    const pctHadirTermasukIzin = total > 0 ? Math.round(((hadir + izin + sakit) / total) * 100) : 0;
-    return { total, hadir, izin, sakit, tidakHadir, pct, pctHadirTermasukIzin };
+    const tidakHadir = fullHistory.filter(r => r.type === "Alpha" && !(r as any)._isPendingToday).length;
+    const effectiveTotal = todayPending ? total - 1 : total;
+    const pct        = effectiveTotal > 0 ? Math.round((hadir / effectiveTotal) * 100) : 0;
+    const pctHadirTermasukIzin = effectiveTotal > 0 ? Math.round(((hadir + izin + sakit) / effectiveTotal) * 100) : 0;
+    return { total: effectiveTotal, hadir, izin, sakit, tidakHadir, pct, pctHadirTermasukIzin };
   }, [fullHistory]);
 
   // ── state rekap PDF ────────────────────────────────────────────────

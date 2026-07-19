@@ -362,7 +362,7 @@ export default function MentorCertificateDetailPage({ params }: PageProps) {
                         CERTIFICATE OF APPRECIATION
                       </h4>
                       <p className="text-[10px] text-slate-400 leading-normal font-semibold">
-                        Sistem memverifikasi kelulusan bimbingan magang program MBKM industri secara formal.
+                        Yoi
                       </p>
                     </div>
 
