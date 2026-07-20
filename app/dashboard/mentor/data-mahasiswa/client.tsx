@@ -30,7 +30,7 @@ export default function MentorDataMahasiswaPage() {
 
   const { toggleActiveStatus } = useIam();
 
-  const { students: filteredStudents, isLoading, updateStudent } = useStudents({
+  const { students: filteredStudents, isLoading, updateStudent, refreshStudents } = useStudents({
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
     universitas: univFilter !== "Semua" ? univFilter : undefined,
     status: statusFilter !== "Semua" ? statusFilter : undefined,
@@ -386,6 +386,7 @@ export default function MentorDataMahasiswaPage() {
                             return;
                           }
                           await toggleActiveStatus(student.userId);
+                          await refreshStudents();
                         }}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-amber-600 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
                         title="Aktif/Non-aktifkan Akses Login Mahasiswa"
