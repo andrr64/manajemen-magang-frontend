@@ -13,9 +13,11 @@ import {
   UserPlus,
   Pencil,
   Trash2,
+  Power
 } from "lucide-react";
 import { useStudents, useStudentStats } from "@/modules/data_mahasiswa/hooks";
 import { useUniversitas } from "@/modules/universitas/hooks";
+import { useIam } from "@/modules/iam/hooks";
 import { SuccessToast, TableLoadingRow, TableEmptyRow, PageHeader, DashboardPagination } from "@/components/shared";
 
 export default function MentorDataMahasiswaPage() {
@@ -25,6 +27,8 @@ export default function MentorDataMahasiswaPage() {
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  const { toggleActiveStatus } = useIam();
 
   const { students: filteredStudents, isLoading, updateStudent } = useStudents({
     gender: genderFilter !== "Semua" ? genderFilter : undefined,
@@ -359,6 +363,22 @@ export default function MentorDataMahasiswaPage() {
                       >
                         <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
                       </Link>
+
+                      <button
+                        type="button"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!student.userId) {
+                            alert("UserId tidak ditemukan pada data mahasiswa ini.");
+                            return;
+                          }
+                          await toggleActiveStatus(student.userId);
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#F1F5F9] dark:bg-[#232F72] hover:bg-amber-600 hover:text-white border border-transparent dark:border-[#2F578A] text-[11px] font-bold rounded-xl transition-all text-[#232F72]/80 dark:text-[#F1F5F9]"
+                        title="Aktif/Non-aktifkan Akses Login Mahasiswa"
+                      >
+                        <Power className="w-3.5 h-3.5 flex-shrink-0" />
+                      </button>
                     </div>
                   </td>
                 </tr>
