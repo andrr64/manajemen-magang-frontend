@@ -53,7 +53,8 @@ function mapBackendStudentToFrontend(item: StudentResponse): Student {
     statusPeriode: item.statusPeriode,
     mentorId: item.mentorId,
     namaMentor: item.namaMentor,
-    userId: item.userId
+    userId: item.userId,
+    isActive: item.isActive
   };
 }
 

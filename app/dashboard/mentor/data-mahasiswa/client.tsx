@@ -218,13 +218,14 @@ export default function MentorDataMahasiswaPage() {
                 <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Universitas</th>
                 <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">No. HP</th>
                 <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Gender</th>
+                <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60 text-center">Status Akun</th>
                 <th className="py-3 px-3 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60">Periode Magang</th>
                 <th className="py-3 pl-3 pr-4 font-bold border border-[#2F578A]/30 dark:border-[#2F578A] bg-[#F1F5F9]/70 dark:bg-[#232F72]/60 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-xs">
               {isLoading ? (
-                <TableLoadingRow colSpan={7} text="Memuat data mahasiswa bimbingan..." />
+                <TableLoadingRow colSpan={9} text="Memuat data mahasiswa bimbingan..." />
               ) : pagedStudents?.map((student) => (
                 <tr 
                   key={student.id} 
@@ -298,6 +299,18 @@ export default function MentorDataMahasiswaPage() {
                     </span>
                   </td>
  
+                  {/* Column 6.5: Status Akun */}
+                  <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50 text-center">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
+                      student.isActive !== false
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/40"
+                        : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-200/50 dark:border-rose-900/40"
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${student.isActive !== false ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
+                      {student.isActive !== false ? "Aktif" : "Non-aktif"}
+                    </span>
+                  </td>
+
                   {/* Column 7: Periode Magang */}
                   <td className="py-4 px-3 border border-[#2F578A]/20 dark:border-[#2F578A]/50">
                     <div className="flex flex-col gap-1.5 group/period">
@@ -386,7 +399,7 @@ export default function MentorDataMahasiswaPage() {
 
               {pagedStudents.length === 0 && (
                 <TableEmptyRow
-                  colSpan={8}
+                  colSpan={9}
                   title="Tidak ada mahasiswa yang cocok"
                   description="Silakan sesuaikan kriteria pencarian atau atur ulang filter Anda menggunakan tombol di atas."
                   onReset={resetFilters}

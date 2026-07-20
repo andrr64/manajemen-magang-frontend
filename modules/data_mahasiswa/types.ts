@@ -35,6 +35,7 @@ export interface StudentResponse {
   statusPeriode: string | null;
   mentorId: string | null;
   namaMentor: string | null;
+  isActive?: boolean;
 }
 
 export interface StudentStatResponse {
@@ -109,6 +110,7 @@ export interface Student {
   userId?: string | null;
   idUniversity?: number | null;
   dataKegiatan?: ActivityResponse[];
+  isActive?: boolean;
 }
 
 // =====================================================================
