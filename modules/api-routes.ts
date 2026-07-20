@@ -5,6 +5,7 @@ export const API_ROUTES = {
   IAM_ME:       "/api/iam/me",
   IAM_UPDATE:   "/api/iam/update",
   IAM_LOGOUT:   "/api/iam/logout",
+  IAM_TOGGLE_ACTIVE: (id: string | number) => `/api/iam/users/${id}/toggle-active`,
 
   // ─── ABSENSI ──────────────────────────────────────────────────────────────
   ABSENSI_LIST:                "/api/absensi",

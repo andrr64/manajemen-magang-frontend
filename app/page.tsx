@@ -45,7 +45,7 @@ export default function Home() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/60 group-hover:scale-105 transition-all duration-300">
-              <Image 
+              <Image
                 src="/dw1-logo.png"
                 alt="Logo DW 1"
                 width={40}
@@ -57,8 +57,6 @@ export default function Home() {
               DIREKTORAT WILAYAH<span className="text-cyan-400"> 1</span>
             </span>
           </Link>
-
-
 
           {/* Actions */}
           <div className="flex items-center gap-3">

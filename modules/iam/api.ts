@@ -65,5 +65,13 @@ export const iamAPI = {
       API_ROUTES.IAM_LOGOUT,
       { method: "POST" }
     );
+  },
+
+  toggleActiveStatus: async (userId: string | number) => {
+    return executeHybridRequest(
+      `Toggle active status for user ${userId}`,
+      API_ROUTES.IAM_TOGGLE_ACTIVE(userId),
+      { method: "PUT" }
+    );
   }
 };

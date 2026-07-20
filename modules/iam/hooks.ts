@@ -121,6 +121,23 @@ export function useIam() {
     }
   };
 
+  const toggleActiveStatus = async (userId: string | number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await iamAPI.toggleActiveStatus(userId);
+      notifier.success("Status aktif user berhasil diubah!");
+    } catch (err: any) {
+      const errMsg = err.message || "Failed to toggle user status.";
+      notifier.error(errMsg);
+      setError(errMsg);
+      setIsLoading(false);
+      throw new Error(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     user: mounted ? store.user : null,
     isAuthenticated: mounted ? store.isAuthenticated : false,
@@ -130,6 +147,7 @@ export function useIam() {
     register,
     updateProfile,
     logout,
+    toggleActiveStatus,
     refreshSession: () => fetchSession(false)
   };
 }
