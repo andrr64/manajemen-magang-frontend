@@ -136,26 +136,6 @@ export default function MentorActivitiesPage() {
     rekapData, ttdBase64, stats, tanggalAwal, tanggalAkhir
   );
 
-  const handleExportCSV = () => {
-    if (!rekapData || rekapData.length === 0) return;
-    const csvRows = ["No;Nama Mahasiswa;Kegiatan;Waktu"];
-    rekapData.forEach((act, index) => {
-      const formattedDate = new Date(act.waktu.split("T")[0]).toLocaleDateString("id-ID", {
-        weekday: "long", day: "numeric", month: "long", year: "numeric",
-      });
-      csvRows.push(`${index + 1};${act.namaMahasiswa};${act.namaKegiatan};${formattedDate}`);
-    });
-    const csvString = csvRows.join("\n");
-    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `rekap_kegiatan_${new Date().toISOString().split("T")[0]}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleCeklisActivity = async (actId: any, studentName: string) => {
     try {
@@ -521,18 +501,6 @@ export default function MentorActivitiesPage() {
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleExportCSV}
-                disabled={!rekapData || rekapData.length === 0}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-extrabold
-                           bg-emerald-600 dark:bg-emerald-500 text-white
-                           hover:bg-emerald-700 dark:hover:bg-emerald-600
-                           disabled:opacity-60 disabled:cursor-not-allowed
-                           shadow-[0_0_14px_rgba(5,150,105,0.25)] dark:shadow-[0_0_14px_rgba(16,185,129,0.3)]
-                           transition-all active:scale-95 cursor-pointer"
-              >
-                <Download className="w-4 h-4" /> CSV
-              </button>
               <button
                 onClick={downloadPDF}
                 disabled={isGeneratingPDF || !rekapData || rekapData.length === 0}
